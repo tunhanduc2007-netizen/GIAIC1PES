@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ucl-neon: #00f2ff;
+  --ucl-blue: #0055a4;
+  --ucl-dark: #020617;
+  --ucl-star: #fbbf24;
+  --ucl-silver: #94a3b8;
+  
+  /* Responsive Typography */
+  --font-xs: clamp(0.7rem, 0.6rem + 0.5vw, 0.8rem);
+  --font-sm: clamp(0.8rem, 0.7rem + 0.5vw, 0.9rem);
+  --font-base: clamp(0.9rem, 0.8rem + 0.5vw, 1rem);
+  --font-lg: clamp(1rem, 0.9rem + 1vw, 1.25rem);
+  --font-xl: clamp(1.25rem, 1.1rem + 1.5vw, 1.75rem);
+  --font-2xl: clamp(1.5rem, 1.3rem + 2vw, 2.5rem);
+  --font-3xl: clamp(2rem, 1.8rem + 3vw, 4rem);
+
+  /* Safe Area */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+}
+
+@layer base {
+  body {
+    @apply text-white selection:bg-ucl-neon selection:text-ucl-dark overflow-x-hidden;
+    background-image: linear-gradient(rgba(2, 6, 23, 0.8), rgba(2, 6, 23, 0.95)), url('/bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-color: #020617;
+    padding-top: var(--safe-top);
+    padding-bottom: var(--safe-bottom);
+    padding-left: var(--safe-left);
+    padding-right: var(--safe-right);
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+    min-height: 100vh;
+    width: 100%;
+  }
+
+  * {
+    @apply border-white/10;
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer components {
+  .responsive-container {
+    @apply w-full max-w-[1440px] mx-auto px-4 md:px-8 lg:px-12;
+  }
+
+  .responsive-title {
+    font-size: clamp(1.5rem, 5vw + 1rem, 4.5rem);
+    @apply font-black italic tracking-tighter leading-none uppercase;
+  }
+
+  .responsive-subtitle {
+    font-size: clamp(0.7rem, 2vw, 1rem);
+    @apply font-bold uppercase tracking-[0.2em] text-ucl-silver;
+  }
+
+  .glass-card {
+    @apply bg-white/[0.03] backdrop-blur-2xl border border-white/10 rounded-[2rem] shadow-2xl;
+  }
+
+  .ucl-button {
+    @apply px-8 py-3 bg-ucl-neon text-ucl-dark rounded-full font-black text-xs uppercase tracking-[0.2em] 
+    hover:bg-white hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(0,242,255,0.3)];
+  }
+
+  .table-responsive {
+    @apply overflow-x-auto w-full custom-scrollbar;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(2, 6, 23, 0.8);
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--ucl-neon);
+    border-radius: 10px;
+  }
+}
+
+/* Global Transitions */
+.transition-standard {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+/* GPU Acceleration */
+.gpu-accel {
+  transform: translateZ(0);
+  will-change: transform, opacity;
+}
+
+/* Typography Helpers */
+.text-ucl-neon { color: var(--ucl-neon); }
+.text-ucl-silver { color: var(--ucl-silver); }
+.bg-ucl-dark { background-color: var(--ucl-dark); }
