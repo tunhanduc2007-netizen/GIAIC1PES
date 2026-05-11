@@ -34,6 +34,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import * as XLSX from 'xlsx';
 import confetti from 'canvas-confetti';
 import { cn, calculateStandings } from './lib/utils';
+import { supabase } from './lib/supabase';
 
 // --- COMPONENTS ---
 import Dashboard from './components/Dashboard';
@@ -45,6 +46,7 @@ import TournamentManager from './components/TournamentManager';
 import MatchHistory from './components/MatchHistory';
 import Rewards from './components/Rewards';
 import CustomTable from './components/CustomTable';
+import BackupRestore from './components/BackupRestore';
 
 const INITIAL_PLAYERS = [
   { id: '1', name: 'Tottenham', team: 'Tottenham', owner: 'Bu', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
@@ -127,6 +129,7 @@ function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [players, setPlayers] = useState(() => {
     const saved = localStorage.getItem('pes_v8_players');
@@ -160,7 +163,51 @@ function App() {
     localStorage.setItem('pes_v8_matches', JSON.stringify(matches));
     localStorage.setItem('pes_v8_tourney', JSON.stringify(tourneyMatches));
     localStorage.setItem('pes_v8_custom_tables', JSON.stringify(customTables));
-  }, [players, matches, tourneyMatches, customTables]);
+
+    const syncData = async () => {
+      try {
+        if (!isLoading) {
+          await Promise.all([
+            supabase.from('players').upsert(players),
+            supabase.from('matches').upsert(matches),
+            supabase.from('tourney_matches').upsert(tourneyMatches),
+            supabase.from('custom_tables').upsert(customTables)
+          ]);
+        }
+      } catch (error) {
+        console.error('Error syncing to Supabase:', error);
+      }
+    };
+    syncData();
+  }, [players, matches, tourneyMatches, customTables, isLoading]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [
+          { data: pData },
+          { data: mData },
+          { data: tData },
+          { data: cData }
+        ] = await Promise.all([
+          supabase.from('players').select('*'),
+          supabase.from('matches').select('*'),
+          supabase.from('tourney_matches').select('*'),
+          supabase.from('custom_tables').select('*')
+        ]);
+
+        if (pData && pData.length > 0) setPlayers(pData);
+        if (mData && mData.length > 0) setMatches(mData);
+        if (tData && tData.length > 0) setTourneyMatches(tData);
+        if (cData && cData.length > 0) setCustomTables(cData);
+      } catch (error) {
+        console.error('Error fetching from Supabase:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   useEffect(() => {
     const handleTabChange = (e) => setActiveTab(e.detail);
@@ -187,12 +234,25 @@ function App() {
     { id: 'history', name: 'Lịch sử đấu', icon: History },
     { id: 'tables', name: 'Bảng tùy chỉnh', icon: TableIcon },
     { id: 'podium', name: 'Vinh danh', icon: Award },
+    { id: 'sync', name: 'Sao lưu & Khôi phục', icon: RotateCw },
   ];
 
   const handleTabClick = (id) => {
     setActiveTab(id);
     setIsMobileMenuOpen(false);
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-ucl-dark flex flex-col items-center justify-center space-y-6">
+        <div className="w-16 h-16 border-4 border-ucl-neon border-t-transparent rounded-full animate-spin shadow-[0_0_30px_rgba(0,242,255,0.3)]" />
+        <div className="text-center">
+          <h2 className="text-2xl font-black italic text-white tracking-widest uppercase">ĐANG KẾT NỐI</h2>
+          <p className="text-ucl-neon text-[10px] font-bold uppercase tracking-[0.3em] mt-2 animate-pulse">Syncing with Supabase Cloud</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-ucl-dark overflow-hidden selection:bg-ucl-neon selection:text-ucl-dark">
@@ -306,6 +366,18 @@ function App() {
                 )}
                 {activeTab === 'podium' && <Rewards standings={standings} />}
                 {activeTab === 'tables' && <CustomTable customTables={customTables} setCustomTables={setCustomTables} />}
+                {activeTab === 'sync' && (
+                  <BackupRestore 
+                    players={players} 
+                    matches={matches} 
+                    tourneyMatches={tourneyMatches} 
+                    customTables={customTables}
+                    setPlayers={setPlayers}
+                    setMatches={setMatches}
+                    setTourneyMatches={setTourneyMatches}
+                    setCustomTables={setCustomTables}
+                  />
+                )}
               </motion.div>
             </AnimatePresence>
           </div>
