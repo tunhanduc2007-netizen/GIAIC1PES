@@ -67,7 +67,27 @@ const INITIAL_PLAYERS = [
   { id: '16', name: 'Marshall', team: 'Marshall', owner: 'Thịnh', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
 ];
 
-const INITIAL_MATCHES = [];
+const INITIAL_MATCHES = [
+  // Round 1
+  { id: 'r1_1', playerAId: '1', playerBId: '2', teamA: 'Tottenham', teamB: 'Arsenal', scoreA: 4, scoreB: 4, date: '2026-05-11T10:00:01Z' },
+  { id: 'r1_2', playerAId: '3', playerBId: '4', teamA: 'Man City', teamB: 'Bayern', scoreA: 2, scoreB: 5, date: '2026-05-11T10:00:02Z' },
+  { id: 'r1_3', playerAId: '5', playerBId: '6', teamA: 'Newcastle', teamB: 'Villarreal CF', scoreA: 1, scoreB: 5, date: '2026-05-11T10:00:03Z' },
+  { id: 'r1_4', playerAId: '7', playerBId: '8', teamA: 'Man United', teamB: 'PSV', scoreA: 3, scoreB: 4, date: '2026-05-11T10:00:04Z' },
+  { id: 'r1_5', playerAId: '9', playerBId: '10', teamA: 'Olympic Lyon', teamB: 'Napoli', scoreA: 4, scoreB: 1, date: '2026-05-11T10:00:05Z' },
+  { id: 'r1_6', playerAId: '11', playerBId: '12', teamA: 'AC Milan', teamB: 'Benfica', scoreA: 2, scoreB: 2, date: '2026-05-11T10:00:06Z' },
+  { id: 'r1_7', playerAId: '13', playerBId: '14', teamA: 'Real Betis', teamB: 'Atletico', scoreA: 5, scoreB: 3, date: '2026-05-11T10:00:07Z' },
+  { id: 'r1_8', playerAId: '15', playerBId: '16', teamA: 'Real Madrid', teamB: 'Marshall', scoreA: 2, scoreB: 1, date: '2026-05-11T10:00:08Z' },
+  
+  // Round 2
+  { id: 'r2_1', playerAId: '10', playerBId: '11', teamA: 'Napoli', teamB: 'AC Milan', scoreA: 2, scoreB: 0, scorersA: 'Hojlund, Neres', date: '2026-05-11T11:00:01Z' },
+  { id: 'r2_2', playerAId: '3', playerBId: '1', teamA: 'Man City', teamB: 'Tottenham', scoreA: 1, scoreB: 1, scorersA: 'Doku', scorersB: 'Kudus', date: '2026-05-11T11:00:02Z' },
+  { id: 'r2_3', playerAId: '12', playerBId: '8', teamA: 'Benfica', teamB: 'PSV', scoreA: 0, scoreB: 1, scorersB: 'Diouech', yellowA: 'Otamendi', date: '2026-05-11T11:00:03Z' },
+  { id: 'r2_4', playerAId: '2', playerBId: '13', teamA: 'Arsenal', teamB: 'Real Betis', scoreA: 0, scoreB: 0, date: '2026-05-11T11:00:04Z' },
+  { id: 'r2_5', playerAId: '16', playerBId: '5', teamA: 'Marshall', teamB: 'Newcastle', scoreA: 2, scoreB: 2, scorersA: 'Traore, Paixao', scorersB: 'Wisa, Elanga', date: '2026-05-11T11:00:05Z' },
+  { id: 'r2_6', playerAId: '6', playerBId: '9', teamA: 'Villarreal CF', teamB: 'Olympic Lyon', scoreA: 0, scoreB: 0, yellowA: 'Endrick, Niakate', date: '2026-05-11T11:00:06Z' },
+  { id: 'r2_7', playerAId: '7', playerBId: '15', teamA: 'Man United', teamB: 'Real Madrid', scoreA: 3, scoreB: 1, scorersA: 'Mbeumo, Cunhax2', scorersB: 'Bellingham', date: '2026-05-11T11:00:07Z' },
+  { id: 'r2_8', playerAId: '14', playerBId: '4', teamA: 'Atletico', teamB: 'Bayern', scoreA: 0, scoreB: 4, scorersB: 'Diaz, Olise, Kane, Goretzka', date: '2026-05-11T11:00:08Z' },
+];
 const INITIAL_CUSTOM_TABLES = [];
 
 const MusicPlayer = () => {

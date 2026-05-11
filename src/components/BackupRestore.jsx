@@ -51,6 +51,44 @@ const BackupRestore = ({ players, matches, tourneyMatches, customTables, setPlay
     reader.readAsText(file);
   };
 
+  const importRounds1And2 = () => {
+    if (confirm('Bạn có muốn nạp dữ liệu Round 1 & 2 từ ảnh chụp màn hình không?')) {
+      const round1And2 = [
+        // Round 1
+        { id: 'r1_1', playerAId: '1', playerBId: '2', teamA: 'Tottenham', teamB: 'Arsenal', scoreA: 4, scoreB: 4, date: '2026-05-11T10:00:01Z' },
+        { id: 'r1_2', playerAId: '3', playerBId: '4', teamA: 'Man City', teamB: 'Bayern', scoreA: 2, scoreB: 5, date: '2026-05-11T10:00:02Z' },
+        { id: 'r1_3', playerAId: '5', playerBId: '6', teamA: 'Newcastle', teamB: 'Villarreal CF', scoreA: 1, scoreB: 5, date: '2026-05-11T10:00:03Z' },
+        { id: 'r1_4', playerAId: '7', playerBId: '8', teamA: 'Man United', teamB: 'PSV', scoreA: 3, scoreB: 4, date: '2026-05-11T10:00:04Z' },
+        { id: 'r1_5', playerAId: '9', playerBId: '10', teamA: 'Olympic Lyon', teamB: 'Napoli', scoreA: 4, scoreB: 1, date: '2026-05-11T10:00:05Z' },
+        { id: 'r1_6', playerAId: '11', playerBId: '12', teamA: 'AC Milan', teamB: 'Benfica', scoreA: 2, scoreB: 2, date: '2026-05-11T10:00:06Z' },
+        { id: 'r1_7', playerAId: '13', playerBId: '14', teamA: 'Real Betis', teamB: 'Atletico', scoreA: 5, scoreB: 3, date: '2026-05-11T10:00:07Z' },
+        { id: 'r1_8', playerAId: '15', playerBId: '16', teamA: 'Real Madrid', teamB: 'Marshall', scoreA: 2, scoreB: 1, date: '2026-05-11T10:00:08Z' },
+        
+        // Round 2
+        { id: 'r2_1', playerAId: '10', playerBId: '11', teamA: 'Napoli', teamB: 'AC Milan', scoreA: 2, scoreB: 0, scorersA: 'Hojlund, Neres', date: '2026-05-11T11:00:01Z' },
+        { id: 'r2_2', playerAId: '3', playerBId: '1', teamA: 'Man City', teamB: 'Tottenham', scoreA: 1, scoreB: 1, scorersA: 'Doku', scorersB: 'Kudus', date: '2026-05-11T11:00:02Z' },
+        { id: 'r2_3', playerAId: '12', playerBId: '8', teamA: 'Benfica', teamB: 'PSV', scoreA: 0, scoreB: 1, scorersB: 'Diouech', yellowA: 'Otamendi', date: '2026-05-11T11:00:03Z' },
+        { id: 'r2_4', playerAId: '2', playerBId: '13', teamA: 'Arsenal', teamB: 'Real Betis', scoreA: 0, scoreB: 0, date: '2026-05-11T11:00:04Z' },
+        { id: 'r2_5', playerAId: '16', playerBId: '5', teamA: 'Marshall', teamB: 'Newcastle', scoreA: 2, scoreB: 2, scorersA: 'Traore, Paixao', scorersB: 'Wisa, Elanga', date: '2026-05-11T11:00:05Z' },
+        { id: 'r2_6', playerAId: '6', playerBId: '9', teamA: 'Villarreal CF', teamB: 'Olympic Lyon', scoreA: 0, scoreB: 0, yellowA: 'Endrick, Niakate', date: '2026-05-11T11:00:06Z' },
+        { id: 'r2_7', playerAId: '7', playerBId: '15', teamA: 'Man United', teamB: 'Real Madrid', scoreA: 3, scoreB: 1, scorersA: 'Mbeumo, Cunhax2', scorersB: 'Bellingham', date: '2026-05-11T11:00:07Z' },
+        { id: 'r2_8', playerAId: '14', playerBId: '4', teamA: 'Atletico', teamB: 'Bayern', scoreA: 0, scoreB: 4, scorersB: 'Diaz, Olise, Kane, Goretzka', date: '2026-05-11T11:00:08Z' },
+      ];
+
+      // Merge with current matches, avoiding duplicates by ID
+      const existingIds = new Set(matches.map(m => m.id));
+      const newMatches = [...matches];
+      round1And2.forEach(m => {
+        if (!existingIds.has(m.id)) {
+          newMatches.push(m);
+        }
+      });
+
+      setMatches(newMatches);
+      alert('Đã nhập dữ liệu Round 1 & 2 thành công!');
+    }
+  };
+
   const handleReset = () => {
     if (confirm('CẢNH BÁO: Tất cả dữ liệu (Cầu thủ, Kết quả, Lịch sử...) sẽ bị xóa vĩnh viễn. Hành động này không thể hoàn tác!')) {
       if (confirm('Xác nhận xóa toàn bộ dữ liệu một lần nữa?')) {
@@ -126,6 +164,31 @@ const BackupRestore = ({ players, matches, tourneyMatches, customTables, setPlay
               <Upload size={18} /> Chọn Tệp Tin
             </button>
           </div>
+        </motion.div>
+
+        {/* Quick Import Rounds */}
+        <motion.div 
+          whileHover={{ y: -5 }}
+          className="glass-card p-8 border-ucl-neon/20 space-y-6 md:col-span-2"
+        >
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-ucl-neon/20 rounded-2xl border border-ucl-neon/40 text-ucl-neon">
+              <CheckCircle2 size={24} />
+            </div>
+            <div>
+              <h3 className="font-black italic uppercase tracking-widest text-lg">Nạp nhanh Round 1 & 2</h3>
+              <p className="text-[10px] text-ucl-silver font-bold uppercase">Dữ liệu từ ảnh chụp màn hình</p>
+            </div>
+          </div>
+          <p className="text-xs text-ucl-silver leading-relaxed">
+            Tự động thêm 16 trận đấu của Vòng 1 và Vòng 2 (bao gồm người ghi bàn và thẻ phạt) vào lịch sử đấu của bạn.
+          </p>
+          <button 
+            onClick={importRounds1And2}
+            className="w-full bg-ucl-neon text-ucl-dark font-black uppercase tracking-widest text-xs py-4 rounded-xl flex items-center justify-center gap-3 hover:scale-[1.02] transition-all shadow-[0_0_20px_rgba(0,242,255,0.2)]"
+          >
+            <CheckCircle2 size={18} /> Nhập Ngay 16 Trận Đấu
+          </button>
         </motion.div>
       </div>
 
