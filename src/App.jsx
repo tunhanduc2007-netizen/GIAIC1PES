@@ -64,26 +64,26 @@ const INITIAL_PLAYERS = [
   { id: '13', name: 'Real Betis', team: 'Real Betis', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
   { id: '14', name: 'Atletico', team: 'Atletico', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
   { id: '15', name: 'Real Madrid', team: 'Real Madrid', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '16', name: 'Marshall', team: 'Marshall', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  { id: '16', name: 'Marseille', team: 'Marseille', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
 ];
 
 const INITIAL_MATCHES = [
   // ROUND 1
-  { id: '1', playerAId: '1', playerBId: '2', teamA: 'Tottenham', teamB: 'Arsenal', scoreA: 4, scoreB: 4, scorersA: 'Perisic x2, Solomon, Waltemade', scorersB: 'Saka, Boey, Satriano, Bruno', yellowB: 'Nketiah', date: '2026-05-11T10:00:01Z' },
+  { id: '1', playerAId: '1', playerBId: '2', teamA: 'Tottenham', teamB: 'Arsenal', scoreA: 4, scoreB: 4, scorersA: 'Satriano x2, Solomon, Waltemade', scorersB: 'Saka, Boey, Bruno, Ez Abde', yellowB: 'Nketiah', date: '2026-05-11T10:00:01Z' },
   { id: '2', playerAId: '3', playerBId: '4', teamA: 'Man City', teamB: 'Bayern', scoreA: 2, scoreB: 5, scorersA: 'Haaland, Savinho', scorersB: 'Kane x3, Diaz, Olise', yellowB: 'Tah', date: '2026-05-11T10:00:02Z' },
   { id: '3', playerAId: '5', playerBId: '6', teamA: 'Newcastle', teamB: 'Villarreal CF', scoreA: 1, scoreB: 5, scorersA: 'Fofana', scorersB: 'Baena x2, Moreno x2, Gyokeres', yellowB: 'Bunchman', date: '2026-05-11T10:00:03Z' },
-  { id: '4', playerAId: '7', playerBId: '8', teamA: 'Man United', teamB: 'PSV', scoreA: 3, scoreB: 4, scorersA: 'Antony x2, Cunha', scorersB: 'Bakambu, Bakayoko, Til, Muani', yellowB: 'Opbiso', date: '2026-05-11T10:00:04Z' },
+  { id: '4', playerAId: '7', playerBId: '8', teamA: 'Man United', teamB: 'PSV', scoreA: 3, scoreB: 4, scorersA: 'Antony x2, Cunha', scorersB: 'Perisic x2, Bakambu, Bakayoko', yellowB: 'Opbiso', date: '2026-05-11T10:00:04Z' },
   { id: '5', playerAId: '9', playerBId: '10', teamA: 'Olympic Lyon', teamB: 'Napoli', scoreA: 4, scoreB: 1, scorersA: 'Sesko, Ghezal, Pepe, Fornal', scorersB: 'Hojlund', date: '2026-05-11T10:00:05Z' },
   { id: '6', playerAId: '11', playerBId: '12', teamA: 'AC Milan', teamB: 'Benfica', scoreA: 2, scoreB: 2, scorersA: 'Leao x2', scorersB: 'Pavlidis x2', date: '2026-05-11T10:00:06Z' },
-  { id: '7', playerAId: '13', playerBId: '14', teamA: 'Real Betis', teamB: 'Atletico', scoreA: 5, scoreB: 3, scorersA: 'Alvarez x2, Ez Abde, Fornal, Palmeri', scorersB: 'Simeone, Muani, Gyokeres', date: '2026-05-11T10:00:07Z' },
-  { id: '8', playerAId: '15', playerBId: '16', teamA: 'Real Madrid', teamB: 'Marshall', scoreA: 2, scoreB: 1, scorersA: 'Bellingham, Tchouameni', scorersB: 'Bakambu', date: '2026-05-11T10:00:08Z' },
+  { id: '7', playerAId: '13', playerBId: '14', teamA: 'Real Betis', teamB: 'Atletico', scoreA: 5, scoreB: 3, scorersA: 'Alvarez x2, Fornal, Palmeri, Ez Abde', scorersB: 'Simeone, Muani, Gyokeres', date: '2026-05-11T10:00:07Z' },
+  { id: '8', playerAId: '15', playerBId: '16', teamA: 'Real Madrid', teamB: 'Marseille', scoreA: 2, scoreB: 1, scorersA: 'Bellingham, Tchouameni', scorersB: 'Bakambu', date: '2026-05-11T10:00:08Z' },
 
   // ROUND 2
   { id: '9', playerAId: '10', playerBId: '11', teamA: 'Napoli', teamB: 'AC Milan', scoreA: 2, scoreB: 0, scorersA: 'Hojlund, Neres', date: '2026-05-11T11:00:01Z' },
   { id: '10', playerAId: '3', playerBId: '1', teamA: 'Man City', teamB: 'Tottenham', scoreA: 1, scoreB: 1, scorersA: 'Doku', scorersB: 'Kudus', date: '2026-05-11T11:00:02Z' },
   { id: '11', playerAId: '12', playerBId: '8', teamA: 'Benfica', teamB: 'PSV', scoreA: 0, scoreB: 1, scorersB: 'Diouech', yellowA: 'Otamendi', date: '2026-05-11T11:00:03Z' },
   { id: '12', playerAId: '2', playerBId: '13', teamA: 'Arsenal', teamB: 'Real Betis', scoreA: 0, scoreB: 0, date: '2026-05-11T11:00:04Z' },
-  { id: '13', playerAId: '16', playerBId: '5', teamA: 'Marshall', teamB: 'Newcastle', scoreA: 2, scoreB: 2, scorersA: 'Traore, Paixao', scorersB: 'Wisa, Elanga', date: '2026-05-11T11:00:05Z' },
+  { id: '13', playerAId: '16', playerBId: '5', teamA: 'Marseille', teamB: 'Newcastle', scoreA: 2, scoreB: 2, scorersA: 'Traore, Paixao', scorersB: 'Wisa, Elanga', date: '2026-05-11T11:00:05Z' },
   { id: '14', playerAId: '6', playerBId: '9', teamA: 'Villarreal CF', teamB: 'Olympic Lyon', scoreA: 0, scoreB: 0, yellowA: 'Endrick, Niakate', date: '2026-05-11T11:00:06Z' },
   { id: '15', playerAId: '7', playerBId: '15', teamA: 'Man United', teamB: 'Real Madrid', scoreA: 3, scoreB: 1, scorersA: 'Mbeumo, Cunha x2', scorersB: 'Bellingham', date: '2026-05-11T11:00:07Z' },
   { id: '16', playerAId: '14', playerBId: '4', teamA: 'Atletico', teamB: 'Bayern', scoreA: 0, scoreB: 4, scorersB: 'Diaz, Olise, Kane, Goretzka', date: '2026-05-11T11:00:08Z' },
@@ -189,15 +189,9 @@ const App = () => {
           supabase.from('custom_tables').select('*')
         ]);
 
-        if (pData && pData.length > 0) setPlayers(pData);
-        else setPlayers(INITIAL_PLAYERS);
-
-        // NẠP LẠI DỮ LIỆU CHUẨN NẾU DATABASE KHÁC BIỆT
-        if (mData && mData.length === 16) {
-           setMatches(mData);
-        } else {
-           setMatches(INITIAL_MATCHES);
-        }
+        // --- CƯỠNG CHẾ SỬ DỤNG DỮ LIỆU INITIAL CHO CẢ ĐỘI VÀ TRẬN ---
+        setPlayers(INITIAL_PLAYERS);
+        setMatches(INITIAL_MATCHES);
         
         if (tData && tData.length > 0) setTourneyMatches(tData);
         if (cData && cData.length > 0) setCustomTables(cData);
@@ -239,8 +233,8 @@ const App = () => {
             <Trophy className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-ucl-neon" size={32} />
           </div>
           <div className="flex flex-col items-center">
-            <h2 className="text-ucl-neon font-black italic tracking-widest text-xl uppercase">Initial Sync</h2>
-            <p className="text-ucl-silver text-[10px] font-bold uppercase tracking-widest mt-2 animate-pulse">Đang đồng bộ dữ liệu chuẩn...</p>
+            <h2 className="text-ucl-neon font-black italic tracking-widest text-xl uppercase">Full System Override</h2>
+            <p className="text-ucl-silver text-[10px] font-bold uppercase tracking-widest mt-2 animate-pulse">Đang ép Marseille & Toàn bộ dữ liệu chuẩn...</p>
           </div>
         </div>
       </div>

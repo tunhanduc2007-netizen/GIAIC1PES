@@ -36,16 +36,13 @@ export const calculateStandings = (players, matches) => {
       stats[m.playerBId].points += 1;
     }
 
-    // --- LOGIC XỬ LÝ VUA PHÁ LƯỚI ---
     const processScorers = (scorerStr, teamName) => {
       if (!scorerStr) return;
-      // Tách bằng dấu phẩy hoặc dấu chấm phẩy
       const parts = scorerStr.split(/[,;]/).map(s => s.trim()).filter(Boolean);
       parts.forEach(part => {
         let name = part;
         let count = 1;
         
-        // Xử lý trường hợp "Name x2" hoặc "Name (2)"
         const match = part.match(/(.+?)\s*[xX(](\d+)\)?$/);
         if (match) {
           name = match[1].trim();
@@ -60,7 +57,6 @@ export const calculateStandings = (players, matches) => {
     processScorers(m.scorersA, m.teamA);
     processScorers(m.scorersB, m.teamB);
 
-    // --- LOGIC XỬ LÝ THẺ PHẠT ---
     const processCards = (cardStr, teamName) => {
       if (!cardStr) return;
       const parts = cardStr.split(/[,;]/).map(s => s.trim()).filter(Boolean);
@@ -117,7 +113,8 @@ export const getTeamLogo = (teamName) => {
     'real madrid': 'https://media.api-sports.io/football/teams/541.png',
     'tottenham': 'https://media.api-sports.io/football/teams/47.png',
     'arsenal': 'https://media.api-sports.io/football/teams/42.png',
-    'olympiacos': 'https://media.api-sports.io/football/teams/553.png'
+    'olympiacos': 'https://media.api-sports.io/football/teams/553.png',
+    'marseille': 'https://media.api-sports.io/football/teams/81.png'
   };
 
   for (const [key, url] of Object.entries(logoMap)) {
