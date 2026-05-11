@@ -104,7 +104,7 @@ const MusicPlayer = () => {
 
   return (
     <div className="fixed bottom-6 left-6 z-50">
-      <audio ref={audioRef} loop src="/music.mp3" />
+      <audio ref={audioRef} loop src="/anthem.mp3" />
       <motion.button
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
@@ -382,7 +382,11 @@ const App = () => {
               )}
               {activeTab === 'players' && <Players players={players} setPlayers={setPlayers} />}
               {activeTab === 'match-entry' && <MatchEntry players={players} matches={matches} setMatches={setMatches} />}
-              {activeTab === 'wheel' && <AdvancedWheel players={players} matches={matches} setMatches={setMatches} />}
+              {activeTab === 'wheel' && (
+                <AdvancedWheel 
+                  onMatchCreated={(newMatch) => setTourneyMatches(prev => [newMatch, ...prev])} 
+                />
+              )}
               {activeTab === 'tournament' && (
                 <TournamentManager 
                   tourneyMatches={tourneyMatches} 
