@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, UserPlus, Trash2, Edit, Save, X, Search, Camera } from 'lucide-react';
-import { cn } from '../lib/utils';
+import { cn, getTeamLogo } from '../lib/utils';
 
 const Players = ({ players, setPlayers }) => {
   const [isAdding, setIsAdding] = useState(false);
@@ -65,7 +65,7 @@ const Players = ({ players, setPlayers }) => {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-ucl-silver" size={18} />
           <input 
             type="text" 
-            placeholder="Tìm tên người chơi..." 
+            placeholder="Tìm tên Đội..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:border-ucl-neon transition-all"
@@ -76,7 +76,7 @@ const Players = ({ players, setPlayers }) => {
           className="ucl-button flex items-center gap-2"
         >
           {isAdding ? <X size={20} /> : <UserPlus size={20} />}
-          {isAdding ? "Hủy" : "Thêm người chơi"}
+          {isAdding ? "Hủy" : "Thêm Đội"}
         </button>
       </div>
 
@@ -90,14 +90,14 @@ const Players = ({ players, setPlayers }) => {
           >
             <form onSubmit={handleAddPlayer} className="glass-card p-6 grid grid-cols-1 md:grid-cols-3 gap-6 items-end border-ucl-neon/30">
               <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-widest text-ucl-silver">Tên người chơi</label>
+                <label className="text-xs font-bold uppercase tracking-widest text-ucl-silver">Tên Đội</label>
                 <input 
                   autoFocus
                   type="text" 
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
                   className="w-full bg-white/5 border border-white/10 rounded-lg p-3 focus:outline-none focus:border-ucl-neon transition-all"
-                  placeholder="VD: Nguyễn Văn A"
+                  placeholder="VD: Real Madrid"
                 />
               </div>
               <div className="space-y-2">
@@ -131,10 +131,8 @@ const Players = ({ players, setPlayers }) => {
             )}
           >
             <div className="relative group/avatar">
-              <div className="w-16 h-16 rounded-full bg-ucl-blue flex items-center justify-center text-xl font-black border-2 border-white/10 group-hover:border-ucl-neon transition-colors overflow-hidden">
-                {player.avatar ? (
-                  <img src={player.avatar} alt={player.name} className="w-full h-full object-cover" />
-                ) : player.name.charAt(0)}
+              <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center text-xl font-black border border-white/10 group-hover:border-ucl-neon transition-all overflow-hidden">
+                <img src={getTeamLogo(player.team)} alt={player.name} className="w-10 h-10 object-contain" />
               </div>
               <button className="absolute -right-1 -bottom-1 bg-ucl-neon text-ucl-dark p-1 rounded-full opacity-0 group-hover/avatar:opacity-100 transition-opacity">
                 <Camera size={12} />

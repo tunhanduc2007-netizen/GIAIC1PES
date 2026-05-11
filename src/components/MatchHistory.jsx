@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Sword, Clock, Award, Shield, ChevronRight, Search, Trash2, Edit2, Save, X } from 'lucide-react';
-import { cn } from '../lib/utils';
+import { cn, getTeamLogo } from '../lib/utils';
 
 const MatchHistory = ({ matches, setMatches, players }) => {
   const [editingId, setEditingId] = useState(null);
@@ -95,14 +95,20 @@ const MatchHistory = ({ matches, setMatches, players }) => {
                            <input className="bg-white/5 border border-white/10 rounded px-2 py-1 text-[10px] text-white outline-none focus:border-ucl-blue" value={editValues.teamB || ''} onChange={(e) => handleChange('teamB', e.target.value)} />
                         </div>
                       ) : (
-                        <div className="flex items-center gap-2 md:gap-4 min-w-[150px]">
+                        <div className="flex items-center gap-2 md:gap-4 min-w-[180px]">
                           <div className="flex flex-col items-end flex-1">
-                            <span className="text-xs md:text-sm font-black italic tracking-tight truncate max-w-[80px] md:max-w-none">{pA?.name || match.teamA}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs md:text-sm font-black italic tracking-tight truncate max-w-[80px] md:max-w-none">{pA?.name || match.teamA}</span>
+                              <img src={getTeamLogo(pA?.name || match.teamA)} className="w-5 h-5 object-contain" alt="logo" />
+                            </div>
                             <span className="text-[8px] text-ucl-silver font-bold uppercase tracking-tighter">BU</span>
                           </div>
                           <div className="text-[8px] font-black text-ucl-neon opacity-30">VS</div>
                           <div className="flex flex-col items-start flex-1">
-                            <span className="text-xs md:text-sm font-black italic tracking-tight truncate max-w-[80px] md:max-w-none">{pB?.name || match.teamB}</span>
+                            <div className="flex items-center gap-2">
+                              <img src={getTeamLogo(pB?.name || match.teamB)} className="w-5 h-5 object-contain" alt="logo" />
+                              <span className="text-xs md:text-sm font-black italic tracking-tight truncate max-w-[80px] md:max-w-none">{pB?.name || match.teamB}</span>
+                            </div>
                             <span className="text-[8px] text-ucl-silver font-bold uppercase tracking-tighter">THỊNH</span>
                           </div>
                         </div>
@@ -137,15 +143,39 @@ const MatchHistory = ({ matches, setMatches, players }) => {
                     </td>
                     <td className="px-4 md:px-6 py-4 md:py-6">
                        {isEditing ? (
-                         <div className="grid grid-cols-2 gap-1 min-w-[100px]">
-                            <input placeholder="Y-A" className="bg-white/5 border border-white/10 rounded p-1 text-[8px]" value={editValues.yellowA || ''} onChange={(e) => handleChange('yellowA', e.target.value)} />
-                            <input placeholder="R-A" className="bg-white/5 border border-white/10 rounded p-1 text-[8px]" value={editValues.redA || ''} onChange={(e) => handleChange('redA', e.target.value)} />
-                         </div>
+                          <div className="grid grid-cols-2 gap-1 min-w-[140px]">
+                             <input placeholder="Thẻ vàng A" title="Thẻ vàng Đội A" className="bg-white/5 border border-white/10 rounded p-1 text-[8px] text-yellow-400" value={editValues.yellowA || ''} onChange={(e) => handleChange('yellowA', e.target.value)} />
+                             <input placeholder="Thẻ đỏ A" title="Thẻ đỏ Đội A" className="bg-white/5 border border-white/10 rounded p-1 text-[8px] text-red-500" value={editValues.redA || ''} onChange={(e) => handleChange('redA', e.target.value)} />
+                             <input placeholder="Thẻ vàng B" title="Thẻ vàng Đội B" className="bg-white/5 border border-white/10 rounded p-1 text-[8px] text-yellow-400" value={editValues.yellowB || ''} onChange={(e) => handleChange('yellowB', e.target.value)} />
+                             <input placeholder="Thẻ đỏ B" title="Thẻ đỏ Đội B" className="bg-white/5 border border-white/10 rounded p-1 text-[8px] text-red-500" value={editValues.redB || ''} onChange={(e) => handleChange('redB', e.target.value)} />
+                          </div>
                        ) : (
-                         <div className="flex gap-2">
-                            {(match.yellowA || match.yellowB) && <div className="flex items-center gap-1"><div className="w-1.5 h-2.5 bg-yellow-400 rounded-sm" /></div>}
-                            {(match.redA || match.redB) && <div className="flex items-center gap-1"><div className="w-1.5 h-2.5 bg-red-500 rounded-sm" /></div>}
-                         </div>
+                          <div className="flex flex-col gap-1">
+                             {match.yellowA && (
+                               <div className="flex items-center gap-1">
+                                 <div className="w-1.5 h-2.5 bg-yellow-400 rounded-sm" />
+                                 <span className="text-[8px] text-ucl-silver">{match.yellowA}</span>
+                               </div>
+                             )}
+                             {match.yellowB && (
+                               <div className="flex items-center gap-1">
+                                 <div className="w-1.5 h-2.5 bg-yellow-400 rounded-sm" />
+                                 <span className="text-[8px] text-ucl-silver">{match.yellowB}</span>
+                               </div>
+                             )}
+                             {match.redA && (
+                               <div className="flex items-center gap-1">
+                                 <div className="w-1.5 h-2.5 bg-red-500 rounded-sm" />
+                                 <span className="text-[8px] text-ucl-silver">{match.redA}</span>
+                               </div>
+                             )}
+                             {match.redB && (
+                               <div className="flex items-center gap-1">
+                                 <div className="w-1.5 h-2.5 bg-red-500 rounded-sm" />
+                                 <span className="text-[8px] text-ucl-silver">{match.redB}</span>
+                               </div>
+                             )}
+                          </div>
                        )}
                     </td>
                     <td className="px-4 md:px-6 py-4 md:py-6 text-right">

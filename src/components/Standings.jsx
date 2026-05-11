@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Trophy, Medal, Award, ChevronUp, ChevronDown, Minus, Flame, ShieldAlert } from 'lucide-react';
-import { cn } from '../lib/utils';
+import { cn, getTeamLogo } from '../lib/utils';
 
 const Standings = ({ standings = [], topScorers = [], topCards = [] }) => {
   return (
@@ -65,10 +65,8 @@ const Standings = ({ standings = [], topScorers = [], topCards = [] }) => {
                   </td>
                   <td className="px-4 md:px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-ucl-blue to-ucl-star flex items-center justify-center text-[8px] md:text-xs font-bold border border-white/10 shrink-0 shadow-lg group-hover:scale-110 transition-transform">
-                        {player.avatar ? (
-                            <img src={player.avatar} alt={player.name} className="w-full h-full rounded-full object-cover" />
-                        ) : player.name.charAt(0)}
+                      <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/5 flex items-center justify-center text-[8px] md:text-xs font-bold border border-white/10 shrink-0 shadow-lg group-hover:scale-110 transition-transform overflow-hidden">
+                        <img src={getTeamLogo(player.name)} alt={player.name} className="w-6 h-6 md:w-8 md:h-8 object-contain" />
                       </div>
                       <div className="min-w-0">
                         <p className={cn("text-xs md:text-sm truncate", isTop3 ? "text-white font-black italic" : "text-ucl-silver font-bold")}>{player.name}</p>

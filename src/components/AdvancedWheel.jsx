@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Shield, Trophy, RotateCw, Sword, Zap, AlertCircle, History, ChevronRight, X } from 'lucide-react';
-import { cn } from '../lib/utils';
+import { cn, getTeamLogo } from '../lib/utils';
 
 const TEAMS_BU = [
   { name: 'Bayern Munich', color: '#dc2626' },
@@ -265,7 +265,24 @@ const AdvancedWheel = ({ onMatchCreated }) => {
       </div>
 
       <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16 max-w-6xl mx-auto px-4">
-        <Wheel side="BU" label="BỐC THĂM BU" teams={TEAMS_BU} onResult={setResultBU} isLocked={!!resultBU} />
+        <div className="relative">
+          <Wheel side="BU" label="BỐC THĂM BU" teams={TEAMS_BU} onResult={setResultBU} isLocked={!!resultBU} />
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="w-16 h-16 rounded-full bg-ucl-dark border-4 border-ucl-neon shadow-[0_0_20px_rgba(0,242,255,0.5)] flex items-center justify-center z-20 overflow-hidden">
+               {resultBU ? (
+                 <motion.img 
+                   initial={{ scale: 0 }}
+                   animate={{ scale: 1 }}
+                   src={getTeamLogo(resultBU.name)} 
+                   alt={resultBU.name} 
+                   className="w-10 h-10 object-contain" 
+                 />
+               ) : (
+                 <span className="text-[10px] font-black text-ucl-neon uppercase tracking-tighter">BU</span>
+               )}
+            </div>
+          </div>
+        </div>
         
         <div className="flex lg:flex-col items-center gap-4">
           <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-ucl-dark border-4 border-ucl-neon/30 flex items-center justify-center shadow-[0_0_30px_rgba(0,242,255,0.2)]">
@@ -275,7 +292,24 @@ const AdvancedWheel = ({ onMatchCreated }) => {
           <div className="lg:hidden w-16 h-px bg-gradient-to-r from-ucl-neon/50 to-transparent" />
         </div>
 
-        <Wheel side="THỊNH" label="BỐC THĂM THỊNH" teams={TEAMS_THINH} onResult={setResultThinh} isLocked={!!resultThinh} />
+        <div className="relative">
+          <Wheel side="THỊNH" label="BỐC THĂM THỊNH" teams={TEAMS_THINH} onResult={setResultThinh} isLocked={!!resultThinh} />
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="w-16 h-16 rounded-full bg-ucl-dark border-4 border-ucl-neon shadow-[0_0_20px_rgba(0,242,255,0.5)] flex items-center justify-center z-20 overflow-hidden">
+               {resultThinh ? (
+                 <motion.img 
+                   initial={{ scale: 0 }}
+                   animate={{ scale: 1 }}
+                   src={getTeamLogo(resultThinh.name)} 
+                   alt={resultThinh.name} 
+                   className="w-10 h-10 object-contain" 
+                 />
+               ) : (
+                 <span className="text-[10px] font-black text-ucl-neon uppercase tracking-tighter">THỊNH</span>
+               )}
+            </div>
+          </div>
+        </div>
       </div>
 
       <AnimatePresence>

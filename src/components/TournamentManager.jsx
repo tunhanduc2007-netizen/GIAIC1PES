@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Swords, Award, ChevronRight, Save, Trash2, Trophy } from 'lucide-react';
-import { cn } from '../lib/utils';
+import { cn, getTeamLogo } from '../lib/utils';
 
 const TournamentManager = ({ tourneyMatches, setTourneyMatches, matches, setMatches, players }) => {
   const [editingId, setEditingId] = useState(null);
@@ -71,9 +71,12 @@ const TournamentManager = ({ tourneyMatches, setTourneyMatches, matches, setMatc
             </div>
 
             <div className="flex items-center justify-between gap-2 md:gap-4">
-               <div className="flex-1 text-center">
-                  <p className="text-[8px] md:text-[10px] text-ucl-silver uppercase font-bold tracking-widest truncate">{match.playerA}</p>
-                  <p className="text-sm md:text-lg font-black italic truncate">{match.teamA}</p>
+               <div className="flex-1 text-center space-y-2">
+                  <img src={getTeamLogo(match.teamA)} alt={match.teamA} className="w-8 h-8 md:w-10 md:h-10 mx-auto object-contain" />
+                  <div className="min-w-0">
+                    <p className="text-[8px] md:text-[10px] text-ucl-silver uppercase font-bold tracking-widest truncate">{match.playerA}</p>
+                    <p className="text-sm md:text-lg font-black italic truncate">{match.teamA}</p>
+                  </div>
                </div>
 
                <div className="flex flex-col items-center">
@@ -100,9 +103,12 @@ const TournamentManager = ({ tourneyMatches, setTourneyMatches, matches, setMatc
                  )}
                </div>
 
-               <div className="flex-1 text-center">
-                  <p className="text-[8px] md:text-[10px] text-ucl-silver uppercase font-bold tracking-widest truncate">{match.playerB}</p>
-                  <p className="text-sm md:text-lg font-black italic truncate">{match.teamB}</p>
+               <div className="flex-1 text-center space-y-2">
+                  <img src={getTeamLogo(match.teamB)} alt={match.teamB} className="w-8 h-8 md:w-10 md:h-10 mx-auto object-contain" />
+                  <div className="min-w-0">
+                    <p className="text-[8px] md:text-[10px] text-ucl-silver uppercase font-bold tracking-widest truncate">{match.playerB}</p>
+                    <p className="text-sm md:text-lg font-black italic truncate">{match.teamB}</p>
+                  </div>
                </div>
             </div>
 

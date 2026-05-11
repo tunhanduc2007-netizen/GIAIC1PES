@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Trophy, Star, Award, PartyPopper } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { cn } from '../lib/utils';
+import { cn, getTeamLogo } from '../lib/utils';
 
 const RewardCard = ({ rank, player, amount, color }) => (
   <motion.div
@@ -19,10 +19,14 @@ const RewardCard = ({ rank, player, amount, color }) => (
     </div>
     
     <div className={cn(
-      "w-20 h-20 rounded-full flex items-center justify-center text-4xl font-black border-4 shadow-2xl transition-transform duration-500 group-hover:scale-110",
-      color.bg, color.border, color.text
+      "w-20 h-20 rounded-full flex items-center justify-center font-black border-4 shadow-2xl transition-transform duration-500 group-hover:scale-110 overflow-hidden bg-white",
+      color.border
     )}>
-       {rank}
+       {player?.team ? (
+         <img src={getTeamLogo(player.team)} alt={player.team} className="w-full h-full object-contain p-1" />
+       ) : (
+         <span className={cn("text-4xl", color.text)}>{rank}</span>
+       )}
     </div>
 
     <div className="text-center space-y-1">

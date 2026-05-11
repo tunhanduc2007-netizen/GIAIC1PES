@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Trophy, Users, Sword, TrendingUp, DollarSign, Target, Activity, Zap, Star } from 'lucide-react';
-import { cn } from '../lib/utils';
+import { cn, getTeamLogo } from '../lib/utils';
 
 const StatCard = ({ title, value, icon: Icon, color, delay, subValue }) => (
   <motion.div
@@ -159,8 +159,8 @@ const Dashboard = ({ players, matches, standings, topScorers = [], onViewAllMatc
               return (
                 <div key={i} className="flex items-center justify-between p-5 bg-white/5 rounded-2xl border border-white/5 hover:border-ucl-neon/30 transition-all group relative overflow-hidden">
                   <div className="flex items-center gap-4 flex-1">
-                    <div className="w-12 h-12 rounded-2xl bg-ucl-blue flex items-center justify-center text-sm font-black border border-white/10 group-hover:border-ucl-neon transition-colors shadow-lg">
-                      {pA?.name?.charAt(0) || '?'}
+                    <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-sm font-black border border-white/10 group-hover:border-ucl-neon transition-colors shadow-lg overflow-hidden">
+                      <img src={getTeamLogo(pA?.name)} alt={pA?.name} className="w-8 h-8 object-contain" />
                     </div>
                     <div>
                       <span className="font-bold text-sm block tracking-tight">{pA?.name || 'Unknown'}</span>
@@ -181,8 +181,8 @@ const Dashboard = ({ players, matches, standings, topScorers = [], onViewAllMatc
                       <span className="font-bold text-sm block tracking-tight">{pB?.name || 'Unknown'}</span>
                       <span className="text-[10px] text-ucl-silver font-black uppercase tracking-tighter">{pB?.owner}</span>
                     </div>
-                    <div className="w-12 h-12 rounded-2xl bg-ucl-star flex items-center justify-center text-sm font-black border border-white/10 group-hover:border-ucl-neon transition-colors shadow-lg">
-                      {pB?.name?.charAt(0) || '?'}
+                    <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-sm font-black border border-white/10 group-hover:border-ucl-neon transition-colors shadow-lg overflow-hidden">
+                      <img src={getTeamLogo(pB?.name)} alt={pB?.name} className="w-8 h-8 object-contain" />
                     </div>
                   </div>
                 </div>
@@ -201,8 +201,8 @@ const Dashboard = ({ players, matches, standings, topScorers = [], onViewAllMatc
            <div className="flex items-end gap-2 h-64 w-full max-w-sm relative z-10">
               {/* 2nd Place */}
               <div className="flex-1 flex flex-col items-center group">
-                <div className="w-14 h-14 rounded-2xl bg-slate-400 mb-3 border-2 border-white/20 flex items-center justify-center font-black text-ucl-dark shadow-lg group-hover:scale-110 transition-transform">
-                  {standings[1]?.name?.charAt(0) || '?'}
+                <div className="w-14 h-14 rounded-2xl bg-white/5 mb-3 border-2 border-slate-400/30 flex items-center justify-center font-black text-ucl-dark shadow-lg group-hover:scale-110 transition-transform overflow-hidden">
+                  <img src={getTeamLogo(standings[1]?.name)} alt={standings[1]?.name} className="w-10 h-10 object-contain" />
                 </div>
                 <div className="w-full bg-gradient-to-t from-slate-400/20 to-slate-400/5 border-t-4 border-slate-400 h-28 flex items-center justify-center rounded-t-2xl shadow-xl">
                   <span className="text-4xl font-black text-slate-400 italic">2</span>
@@ -213,8 +213,8 @@ const Dashboard = ({ players, matches, standings, topScorers = [], onViewAllMatc
               {/* 1st Place */}
               <div className="flex-1 flex flex-col items-center group">
                 <Trophy className="text-yellow-400 mb-3 animate-bounce" size={36} />
-                <div className="w-20 h-20 rounded-2xl bg-yellow-400 mb-3 border-4 border-yellow-200/20 flex items-center justify-center font-black text-ucl-dark shadow-[0_0_40px_rgba(250,204,21,0.4)] group-hover:scale-110 transition-transform">
-                  {standings[0]?.name?.charAt(0) || '?'}
+                <div className="w-20 h-20 rounded-2xl bg-white/5 mb-3 border-4 border-yellow-400/30 flex items-center justify-center font-black text-ucl-dark shadow-[0_0_40px_rgba(250,204,21,0.2)] group-hover:scale-110 transition-transform overflow-hidden">
+                  <img src={getTeamLogo(standings[0]?.name)} alt={standings[0]?.name} className="w-14 h-14 object-contain" />
                 </div>
                 <div className="w-full bg-gradient-to-t from-yellow-400/20 to-yellow-400/5 border-t-4 border-yellow-400 h-40 flex items-center justify-center rounded-t-2xl shadow-2xl">
                   <span className="text-6xl font-black text-yellow-400 italic">1</span>
@@ -224,8 +224,8 @@ const Dashboard = ({ players, matches, standings, topScorers = [], onViewAllMatc
               
               {/* 3rd Place */}
               <div className="flex-1 flex flex-col items-center group">
-                <div className="w-12 h-12 rounded-2xl bg-orange-600 mb-3 border-2 border-white/20 flex items-center justify-center font-black text-ucl-dark shadow-lg group-hover:scale-110 transition-transform">
-                  {standings[2]?.name?.charAt(0) || '?'}
+                <div className="w-12 h-12 rounded-2xl bg-white/5 mb-3 border-2 border-orange-600/30 flex items-center justify-center font-black text-ucl-dark shadow-lg group-hover:scale-110 transition-transform overflow-hidden">
+                  <img src={getTeamLogo(standings[2]?.name)} alt={standings[2]?.name} className="w-8 h-8 object-contain" />
                 </div>
                 <div className="w-full bg-gradient-to-t from-orange-600/20 to-orange-600/5 border-t-4 border-orange-600 h-20 flex items-center justify-center rounded-t-2xl shadow-xl">
                   <span className="text-3xl font-black text-orange-600 italic">3</span>

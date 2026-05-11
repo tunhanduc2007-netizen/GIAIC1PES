@@ -150,49 +150,46 @@ function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasLoadedFromCloud, setHasLoadedFromCloud] = useState(false);
+  const isInitialMount = useRef(true);
 
-  const [players, setPlayers] = useState(() => {
-    const saved = localStorage.getItem('pes_v8_players');
-    return saved ? JSON.parse(saved) : INITIAL_PLAYERS;
-  });
-
-  const [matches, setMatches] = useState(() => {
-    const saved = localStorage.getItem('pes_v8_matches');
-    const initial = saved ? JSON.parse(saved) : INITIAL_MATCHES;
-    const seen = new Set();
-    return initial.filter(m => {
-      const key = m.id.startsWith('wheel_') ? `${m.teamA}_${m.teamB}_${m.date}` : m.id;
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
-  });
-
-  const [tourneyMatches, setTourneyMatches] = useState(() => {
-    const saved = localStorage.getItem('pes_v8_tourney');
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  const [customTables, setCustomTables] = useState(() => {
-    const saved = localStorage.getItem('pes_v8_custom_tables');
-    return saved ? JSON.parse(saved) : INITIAL_CUSTOM_TABLES;
-  });
+  const [players, setPlayers] = useState([]);
+  const [matches, setMatches] = useState([]);
+  const [tourneyMatches, setTourneyMatches] = useState([]);
+  const [customTables, setCustomTables] = useState([]);
 
   useEffect(() => {
-    localStorage.setItem('pes_v8_players', JSON.stringify(players));
-    localStorage.setItem('pes_v8_matches', JSON.stringify(matches));
-    localStorage.setItem('pes_v8_tourney', JSON.stringify(tourneyMatches));
-    localStorage.setItem('pes_v8_custom_tables', JSON.stringify(customTables));
+    // Clear old local data to force sync from cloud
+    localStorage.removeItem('ucl_players');
+    localStorage.removeItem('ucl_matches');
+    localStorage.removeItem('ucl_tourney_matches');
+    localStorage.removeItem('ucl_custom_tables');
+  }, []);
 
+  useEffect(() => {
     const syncData = async () => {
+      if (!hasLoadedFromCloud || isInitialMount.current) {
+        isInitialMount.current = false;
+        return;
+      }
+      
       try {
         if (!isLoading) {
-          await Promise.all([
+          console.log('DEBUG SUPABASE: Syncing to Cloud...', { players, matches });
+          const [p, m, t, c] = await Promise.all([
             supabase.from('players').upsert(players),
             supabase.from('matches').upsert(matches),
             supabase.from('tourney_matches').upsert(tourneyMatches),
             supabase.from('custom_tables').upsert(customTables)
           ]);
+          
+          if (p.error || m.error) {
+            const errorMsg = p.error?.message || m.error?.message;
+            console.error('DEBUG SUPABASE Sync Error:', p.error || m.error);
+            alert('LỖI ĐỒNG BỘ CLOUD:\n' + errorMsg + '\n\n(Hãy kiểm tra xem bạn đã chạy SQL tạo bảng chưa?)');
+          } else {
+            console.log('DEBUG SUPABASE: Sync successful!');
+          }
         }
       } catch (error) {
         console.error('Error syncing to Supabase:', error);
@@ -220,8 +217,12 @@ function App() {
         if (mData && mData.length > 0) setMatches(mData);
         if (tData && tData.length > 0) setTourneyMatches(tData);
         if (cData && cData.length > 0) setCustomTables(cData);
+        
+        setHasLoadedFromCloud(true);
+        console.log('DEBUG SUPABASE: Fetch successful!', { pData, mData });
       } catch (error) {
         console.error('Error fetching from Supabase:', error);
+        alert('Lỗi kết nối Supabase: ' + error.message);
       } finally {
         setIsLoading(false);
       }
@@ -247,12 +248,11 @@ function App() {
   const navigation = [
     { id: 'dashboard', name: 'Dashboard', icon: LayoutDashboard },
     { id: 'standings', name: 'Bảng xếp hạng', icon: Trophy },
-    { id: 'players', name: 'Cầu thủ', icon: Shield },
+    { id: 'players', name: 'Đội', icon: Shield },
     { id: 'wheel', name: 'Vòng quay', icon: RotateCw },
     { id: 'tourney', name: 'Cặp đấu & Nhánh', icon: Swords },
     { id: 'matches', name: 'Nhập kết quả', icon: Sword },
     { id: 'history', name: 'Lịch sử đấu', icon: History },
-    { id: 'tables', name: 'Bảng tùy chỉnh', icon: TableIcon },
     { id: 'podium', name: 'Vinh danh', icon: Award },
     { id: 'sync', name: 'Sao lưu & Khôi phục', icon: RotateCw },
   ];

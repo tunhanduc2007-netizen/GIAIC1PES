@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sword, Save, User as UserIcon, Shield, Award, Clock, Flame, ShieldAlert, ChevronRight } from 'lucide-react';
-import { cn } from '../lib/utils';
+import { cn, getTeamLogo } from '../lib/utils';
 
 const MatchEntry = ({ players, matches, setMatches }) => {
   const [playerAId, setPlayerAId] = useState('');
@@ -85,10 +85,12 @@ const MatchEntry = ({ players, matches, setMatches }) => {
               <div className="flex-1 w-full space-y-6">
                  <div className="text-center space-y-4">
                     <div className={cn(
-                      "w-24 h-24 mx-auto rounded-full flex items-center justify-center text-3xl font-black border-4 transition-all duration-500",
-                      pA ? "bg-ucl-neon text-ucl-dark border-white/20 scale-110 shadow-[0_0_30px_rgba(0,242,255,0.4)]" : "bg-white/5 text-ucl-silver border-white/5"
+                      "w-24 h-24 mx-auto rounded-full flex items-center justify-center text-3xl font-black border-4 transition-all duration-500 overflow-hidden",
+                      pA ? "bg-white/5 border-ucl-neon/50 scale-110 shadow-[0_0_30px_rgba(0,242,255,0.2)]" : "bg-white/5 text-ucl-silver border-white/5"
                     )}>
-                       {pA?.name?.charAt(0) || '?'}
+                       {pA ? (
+                         <img src={getTeamLogo(pA.name)} alt={pA.name} className="w-14 h-14 object-contain" />
+                       ) : '?'}
                     </div>
                     <select 
                       value={playerAId} 
@@ -136,10 +138,12 @@ const MatchEntry = ({ players, matches, setMatches }) => {
               <div className="flex-1 w-full space-y-6">
                  <div className="text-center space-y-4">
                     <div className={cn(
-                      "w-24 h-24 mx-auto rounded-full flex items-center justify-center text-3xl font-black border-4 transition-all duration-500",
-                      pB ? "bg-ucl-star text-white border-white/20 scale-110 shadow-[0_0_30px_rgba(255,255,255,0.2)]" : "bg-white/5 text-ucl-silver border-white/5"
+                      "w-24 h-24 mx-auto rounded-full flex items-center justify-center text-3xl font-black border-4 transition-all duration-500 overflow-hidden",
+                      pB ? "bg-white/5 border-ucl-blue/50 scale-110 shadow-[0_0_30px_rgba(0,212,255,0.2)]" : "bg-white/5 text-ucl-silver border-white/5"
                     )}>
-                       {pB?.name?.charAt(0) || '?'}
+                       {pB ? (
+                         <img src={getTeamLogo(pB.name)} alt={pB.name} className="w-14 h-14 object-contain" />
+                       ) : '?'}
                     </div>
                     <select 
                       value={playerBId} 

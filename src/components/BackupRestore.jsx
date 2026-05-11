@@ -166,6 +166,31 @@ const BackupRestore = ({ players, matches, tourneyMatches, customTables, setPlay
           </div>
         </motion.div>
 
+        {/* Cloud Sync Card */}
+        <motion.div 
+          whileHover={{ y: -5 }}
+          className="glass-card p-8 border-ucl-neon/20 shadow-[0_0_50px_rgba(0,242,255,0.1)] md:col-span-2"
+        >
+          <div className="flex items-center gap-4 mb-8">
+            <div className="p-3 bg-ucl-neon/20 rounded-2xl border border-ucl-neon/40 text-ucl-neon">
+              <RotateCw className="animate-spin-slow" size={32} />
+            </div>
+            <div>
+              <h2 className="text-3xl font-black italic uppercase tracking-tighter">ĐỒNG BỘ <span className="text-ucl-neon">DỮ LIỆU CLOUD</span></h2>
+              <p className="text-ucl-silver text-xs font-bold uppercase tracking-widest mt-1">Quản lý dữ liệu tập trung trên Supabase</p>
+            </div>
+          </div>
+          <div className="space-y-4">
+             <button 
+              onClick={handleForceSync}
+              className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-ucl-neon text-ucl-dark font-black rounded-xl hover:bg-white transition-all shadow-[0_0_20px_rgba(0,242,255,0.3)]"
+            >
+              <RotateCw size={20} /> ĐỒNG BỘ CƯỠNG CHẾ TỪ CLOUD
+            </button>
+            <p className="text-[10px] text-ucl-silver italic text-center px-4">Nhấn nút này nếu dữ liệu ở Localhost khác với trên Web (Netlify).</p>
+          </div>
+        </motion.div>
+
         {/* Quick Import Rounds */}
         <motion.div 
           whileHover={{ y: -5 }}
