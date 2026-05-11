@@ -69,14 +69,14 @@ const INITIAL_PLAYERS = [
 
 const INITIAL_MATCHES = [
   // ROUND 1
-  { id: '1', playerAId: '1', playerBId: '2', teamA: 'Tottenham', teamB: 'Arsenal', scoreA: 4, scoreB: 4, date: '2026-05-11T10:00:01Z' },
-  { id: '2', playerAId: '3', playerBId: '4', teamA: 'Man City', teamB: 'Bayern', scoreA: 2, scoreB: 5, date: '2026-05-11T10:00:02Z' },
-  { id: '3', playerAId: '5', playerBId: '6', teamA: 'Newcastle', teamB: 'Villarreal CF', scoreA: 1, scoreB: 5, date: '2026-05-11T10:00:03Z' },
-  { id: '4', playerAId: '7', playerBId: '8', teamA: 'Man United', teamB: 'PSV', scoreA: 3, scoreB: 4, date: '2026-05-11T10:00:04Z' },
-  { id: '5', playerAId: '9', playerBId: '10', teamA: 'Olympic Lyon', teamB: 'Napoli', scoreA: 4, scoreB: 1, date: '2026-05-11T10:00:05Z' },
-  { id: '6', playerAId: '11', playerBId: '12', teamA: 'AC Milan', teamB: 'Benfica', scoreA: 2, scoreB: 2, date: '2026-05-11T10:00:06Z' },
-  { id: '7', playerAId: '13', playerBId: '14', teamA: 'Real Betis', teamB: 'Atletico', scoreA: 5, scoreB: 3, date: '2026-05-11T10:00:07Z' },
-  { id: '8', playerAId: '15', playerBId: '16', teamA: 'Real Madrid', teamB: 'Marshall', scoreA: 2, scoreB: 1, date: '2026-05-11T10:00:08Z' },
+  { id: '1', playerAId: '1', playerBId: '2', teamA: 'Tottenham', teamB: 'Arsenal', scoreA: 4, scoreB: 4, scorersA: 'Perisic x2, Solomon, Waltemade', scorersB: 'Saka, Boey, Satriano, Bruno', yellowB: 'Nketiah', date: '2026-05-11T10:00:01Z' },
+  { id: '2', playerAId: '3', playerBId: '4', teamA: 'Man City', teamB: 'Bayern', scoreA: 2, scoreB: 5, scorersA: 'Haaland, Savinho', scorersB: 'Kane x3, Diaz, Olise', yellowB: 'Tah', date: '2026-05-11T10:00:02Z' },
+  { id: '3', playerAId: '5', playerBId: '6', teamA: 'Newcastle', teamB: 'Villarreal CF', scoreA: 1, scoreB: 5, scorersA: 'Fofana', scorersB: 'Baena x2, Moreno x2, Gyokeres', yellowB: 'Bunchman', date: '2026-05-11T10:00:03Z' },
+  { id: '4', playerAId: '7', playerBId: '8', teamA: 'Man United', teamB: 'PSV', scoreA: 3, scoreB: 4, scorersA: 'Antony x2, Cunha', scorersB: 'Bakambu, Bakayoko, Til, Muani', yellowB: 'Opbiso', date: '2026-05-11T10:00:04Z' },
+  { id: '5', playerAId: '9', playerBId: '10', teamA: 'Olympic Lyon', teamB: 'Napoli', scoreA: 4, scoreB: 1, scorersA: 'Sesko, Ghezal, Pepe, Fornal', scorersB: 'Hojlund', date: '2026-05-11T10:00:05Z' },
+  { id: '6', playerAId: '11', playerBId: '12', teamA: 'AC Milan', teamB: 'Benfica', scoreA: 2, scoreB: 2, scorersA: 'Leao x2', scorersB: 'Pavlidis x2', date: '2026-05-11T10:00:06Z' },
+  { id: '7', playerAId: '13', playerBId: '14', teamA: 'Real Betis', teamB: 'Atletico', scoreA: 5, scoreB: 3, scorersA: 'Alvarez x2, Ez Abde, Fornal, Palmeri', scorersB: 'Simeone, Muani, Gyokeres', date: '2026-05-11T10:00:07Z' },
+  { id: '8', playerAId: '15', playerBId: '16', teamA: 'Real Madrid', teamB: 'Marshall', scoreA: 2, scoreB: 1, scorersA: 'Bellingham, Tchouameni', scorersB: 'Bakambu', date: '2026-05-11T10:00:08Z' },
 
   // ROUND 2
   { id: '9', playerAId: '10', playerBId: '11', teamA: 'Napoli', teamB: 'AC Milan', scoreA: 2, scoreB: 0, scorersA: 'Hojlund, Neres', date: '2026-05-11T11:00:01Z' },
