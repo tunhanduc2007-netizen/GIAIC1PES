@@ -199,19 +199,19 @@ const App = () => {
           supabase.from('custom_tables').select('*')
         ]);
 
-        // --- CƯỠNG CHẾ SỬ DỤNG DANH SÁCH CẦU THỦ CHUẨN ---
-        // Xóa sạch cache cũ để tránh bị ghi đè dữ liệu sai
-        localStorage.removeItem('pes_players');
-        localStorage.removeItem('pes_matches');
-        
-        setPlayers(INITIAL_PLAYERS);
-        setMatches(INITIAL_MATCHES);
+        if (pData && pData.length > 0) {
+          setPlayers(pData);
+        } else {
+          setPlayers(INITIAL_PLAYERS);
+          await supabase.from('players').upsert(INITIAL_PLAYERS);
+        }
 
-        // Cập nhật lại Cloud ngay lập tức
-        await Promise.all([
-          supabase.from('players').upsert(INITIAL_PLAYERS),
-          supabase.from('matches').upsert(INITIAL_MATCHES)
-        ]);
+        if (mData && mData.length > 0) {
+          setMatches(mData);
+        } else {
+          setMatches(INITIAL_MATCHES);
+          await supabase.from('matches').upsert(INITIAL_MATCHES);
+        }
         
         if (tData && tData.length > 0) setTourneyMatches(tData);
         else {

@@ -27,6 +27,8 @@ const MatchEntry = ({ players, matches, setMatches }) => {
       id: Date.now().toString(),
       playerAId,
       playerBId,
+      teamA: pA?.name || '',
+      teamB: pB?.name || '',
       scoreA: parseInt(scoreA),
       scoreB: parseInt(scoreB),
       scorersA,
