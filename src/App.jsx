@@ -189,9 +189,18 @@ const App = () => {
           supabase.from('custom_tables').select('*')
         ]);
 
-        // --- CƯỠNG CHẾ SỬ DỤNG DỮ LIỆU INITIAL CHO CẢ ĐỘI VÀ TRẬN ---
-        setPlayers(INITIAL_PLAYERS);
-        setMatches(INITIAL_MATCHES);
+        // --- ƯU TIÊN SỬ DỤNG DỮ LIỆU TỪ CLOUD (SUPABASE) ---
+        if (pData && pData.length > 0) {
+          setPlayers(pData);
+        } else {
+          setPlayers(INITIAL_PLAYERS);
+        }
+
+        if (mData && mData.length > 0) {
+          setMatches(mData);
+        } else {
+          setMatches(INITIAL_MATCHES);
+        }
         
         if (tData && tData.length > 0) setTourneyMatches(tData);
         if (cData && cData.length > 0) setCustomTables(cData);
