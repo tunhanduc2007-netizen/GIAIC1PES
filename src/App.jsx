@@ -240,6 +240,7 @@ const App = () => {
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'standings', label: 'Bảng xếp hạng', icon: Trophy },
     { id: 'players', label: 'Đội', icon: Shield },
+    { id: 'match-entry', label: 'Nhập kết quả', icon: Edit },
     { id: 'wheel', label: 'Vòng quay', icon: RotateCw },
     { id: 'tournament', label: 'Cặp đấu & Nhánh', icon: Swords },
     { id: 'history', label: 'Lịch sử đấu', icon: History },
