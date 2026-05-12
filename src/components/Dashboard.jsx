@@ -154,17 +154,20 @@ const Dashboard = ({ players, matches, standings, topScorers = [], onViewAllMatc
           </div>
           <div className="space-y-4">
             {matches.slice(-5).reverse().map((match, i) => {
-              const pA = players.find(p => p.id === match.playerAId);
-              const pB = players.find(p => p.id === match.playerBId);
+              const pA = players.find(p => String(p.id) === String(match.playerAId));
+              const pB = players.find(p => String(p.id) === String(match.playerBId));
+              const teamAName = pA?.name || match.teamA || 'Unknown';
+              const teamBName = pB?.name || match.teamB || 'Unknown';
+              
               return (
                 <div key={i} className="flex items-center justify-between p-5 bg-white/5 rounded-2xl border border-white/5 hover:border-ucl-neon/30 transition-all group relative overflow-hidden">
                   <div className="flex items-center gap-4 flex-1">
                     <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-sm font-black border border-white/10 group-hover:border-ucl-neon transition-colors shadow-lg overflow-hidden">
-                      <img src={getTeamLogo(pA?.name)} alt={pA?.name} className="w-8 h-8 object-contain" />
+                      <img src={getTeamLogo(teamAName)} alt={teamAName} className="w-8 h-8 object-contain" />
                     </div>
                     <div>
-                      <span className="font-bold text-sm block tracking-tight">{pA?.name || 'Unknown'}</span>
-                      <span className="text-[10px] text-ucl-silver font-black uppercase tracking-tighter">{pA?.owner}</span>
+                      <span className="font-bold text-sm block tracking-tight">{teamAName}</span>
+                      <span className="text-[10px] text-ucl-silver font-black uppercase tracking-tighter">{pA?.owner || '---'}</span>
                     </div>
                   </div>
                   
@@ -178,11 +181,11 @@ const Dashboard = ({ players, matches, standings, topScorers = [], onViewAllMatc
                   
                   <div className="flex items-center gap-4 flex-1 justify-end">
                     <div className="text-right">
-                      <span className="font-bold text-sm block tracking-tight">{pB?.name || 'Unknown'}</span>
-                      <span className="text-[10px] text-ucl-silver font-black uppercase tracking-tighter">{pB?.owner}</span>
+                      <span className="font-bold text-sm block tracking-tight">{teamBName}</span>
+                      <span className="text-[10px] text-ucl-silver font-black uppercase tracking-tighter">{pB?.owner || '---'}</span>
                     </div>
                     <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-sm font-black border border-white/10 group-hover:border-ucl-neon transition-colors shadow-lg overflow-hidden">
-                      <img src={getTeamLogo(pB?.name)} alt={pB?.name} className="w-8 h-8 object-contain" />
+                      <img src={getTeamLogo(teamBName)} alt={teamBName} className="w-8 h-8 object-contain" />
                     </div>
                   </div>
                 </div>

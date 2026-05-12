@@ -4,6 +4,12 @@ import { Trophy, Medal, Award, ChevronUp, ChevronDown, Minus, Flame, ShieldAlert
 import { cn, getTeamLogo } from '../lib/utils';
 
 const Standings = ({ standings = [], topScorers = [], topCards = [] }) => {
+  const [showAllScorers, setShowAllScorers] = React.useState(false);
+  const [showAllCards, setShowAllCards] = React.useState(false);
+
+  const displayedScorers = showAllScorers ? topScorers : topScorers.slice(0, 5);
+  const displayedCards = showAllCards ? topCards : topCards.slice(0, 5);
+
   return (
     <div className="glass-card overflow-hidden">
       <div className="p-4 md:p-6 border-b border-white/5 bg-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -34,9 +40,6 @@ const Standings = ({ standings = [], topScorers = [], topCards = [] }) => {
           <tbody>
             {standings.map((player, index) => {
               const isTop3 = index < 3;
-              const rankIcon = index === 0 ? <Medal className="text-yellow-400" size={20} /> :
-                               index === 1 ? <Medal className="text-slate-400" size={20} /> :
-                               index === 2 ? <Medal className="text-orange-600" size={20} /> : null;
               
               return (
                 <motion.tr 
@@ -104,43 +107,63 @@ const Standings = ({ standings = [], topScorers = [], topCards = [] }) => {
       {/* Stats Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mt-6 md:mt-8 px-4 md:px-0">
         {/* Top Scorers */}
-        <div className="bg-white/5 rounded-2xl border border-white/10 overflow-hidden">
+        <div className="bg-white/5 rounded-2xl border border-white/10 overflow-hidden flex flex-col">
           <div className="p-3 md:p-4 border-b border-white/10 bg-white/5 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Flame size={16} className="text-ucl-neon" />
               <h3 className="text-[10px] md:text-xs font-black uppercase tracking-widest text-white">Vua Phá Lưới</h3>
             </div>
+            {topScorers.length > 5 && (
+              <button 
+                onClick={() => setShowAllScorers(!showAllScorers)}
+                className="text-[8px] md:text-[10px] font-black text-ucl-neon uppercase hover:underline"
+              >
+                {showAllScorers ? 'Thu gọn' : 'Xem tất cả'}
+              </button>
+            )}
           </div>
-          <div className="p-2">
-            {topScorers.slice(0, 5).map((s, idx) => (
+          <div className="p-2 flex-1">
+            {displayedScorers.length > 0 ? displayedScorers.map((s, idx) => (
               <div key={idx} className="flex items-center justify-between p-2 md:p-3 hover:bg-white/5 rounded-xl transition-colors group">
                 <div className="flex items-center gap-3">
                   <span className="text-[8px] md:text-[10px] font-black text-ucl-silver w-4">{idx + 1}</span>
-                  <span className="text-xs md:text-sm font-medium text-white group-hover:text-ucl-neon transition-colors truncate max-w-[100px] md:max-w-none">{s.name}</span>
+                  <span className="text-xs md:text-sm font-medium text-white group-hover:text-ucl-neon transition-colors truncate max-w-[140px] md:max-w-none">{s.name}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="text-xs md:text-sm font-black italic text-ucl-neon">{s.goals}</span>
                   <span className="text-[8px] md:text-[10px] text-ucl-silver uppercase font-bold">Goals</span>
                 </div>
               </div>
-            ))}
+            )) : (
+              <div className="p-6 text-center text-ucl-silver text-[8px] md:text-[10px] italic uppercase tracking-widest">
+                Chưa có bàn thắng
+              </div>
+            )}
           </div>
         </div>
 
         {/* Discipline (Cards) */}
-        <div className="bg-white/5 rounded-2xl border border-white/10 overflow-hidden">
+        <div className="bg-white/5 rounded-2xl border border-white/10 overflow-hidden flex flex-col">
           <div className="p-3 md:p-4 border-b border-white/10 bg-white/5 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <ShieldAlert size={16} className="text-yellow-400" />
               <h3 className="text-[10px] md:text-xs font-black uppercase tracking-widest text-white">Kỷ Luật</h3>
             </div>
+            {topCards.length > 5 && (
+              <button 
+                onClick={() => setShowAllCards(!showAllCards)}
+                className="text-[8px] md:text-[10px] font-black text-ucl-neon uppercase hover:underline"
+              >
+                {showAllCards ? 'Thu gọn' : 'Xem tất cả'}
+              </button>
+            )}
           </div>
-          <div className="p-2">
-            {topCards.length > 0 ? topCards.slice(0, 5).map((s, idx) => (
+          <div className="p-2 flex-1">
+            {displayedCards.length > 0 ? displayedCards.map((s, idx) => (
               <div key={idx} className="flex items-center justify-between p-2 md:p-3 hover:bg-white/5 rounded-xl transition-colors group">
                 <div className="flex items-center gap-3">
                   <span className="text-[8px] md:text-[10px] font-black text-ucl-silver w-4">{idx + 1}</span>
-                  <span className="text-xs md:text-sm font-medium text-white group-hover:text-yellow-400 transition-colors truncate max-w-[100px] md:max-w-none">{s.name}</span>
+                  <span className="text-xs md:text-sm font-medium text-white group-hover:text-yellow-400 transition-colors truncate max-w-[140px] md:max-w-none">{s.name}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   {s.yellow > 0 && (

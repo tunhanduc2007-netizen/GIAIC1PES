@@ -7,20 +7,32 @@ const TournamentManager = ({ tourneyMatches, setTourneyMatches, matches, setMatc
   const [editingId, setEditingId] = useState(null);
   const [editScoreA, setEditScoreA] = useState(0);
   const [editScoreB, setEditScoreB] = useState(0);
+  const [editScorersA, setEditScorersA] = useState('');
+  const [editScorersB, setEditScorersB] = useState('');
+  const [editYellowA, setEditYellowA] = useState('');
+  const [editYellowB, setEditYellowB] = useState('');
+  const [editRedA, setEditRedA] = useState('');
+  const [editRedB, setEditRedB] = useState('');
 
   const handleSaveResult = (match) => {
-    const pA = players.find(p => p.name === match.playerA);
-    const pB = players.find(p => p.name === match.playerB);
+    const pA = players.find(p => p.name === match.playerA || p.team === match.teamA);
+    const pB = players.find(p => p.name === match.playerB || p.team === match.teamB);
     
     // Add to main match history
     const newMatch = {
       id: Date.now().toString(),
-      playerAId: pA?.id || 'bu',
-      playerBId: pB?.id || 'thinh',
+      playerAId: pA?.id || match.ownerA?.toLowerCase() || 'bu',
+      playerBId: pB?.id || match.ownerB?.toLowerCase() || 'thinh',
       teamA: match.teamA,
       teamB: match.teamB,
       scoreA: parseInt(editScoreA),
       scoreB: parseInt(editScoreB),
+      scorersA: editScorersA,
+      scorersB: editScorersB,
+      yellowA: editYellowA,
+      yellowB: editYellowB,
+      redA: editRedA,
+      redB: editRedB,
       date: new Date().toISOString()
     };
 
@@ -28,10 +40,25 @@ const TournamentManager = ({ tourneyMatches, setTourneyMatches, matches, setMatc
 
     // Update tourney match status
     const updatedTourney = tourneyMatches.map(m => 
-      m.id === match.id ? { ...m, status: 'completed', scoreA: editScoreA, scoreB: editScoreB } : m
+      m.id === match.id ? { 
+        ...m, 
+        status: 'completed', 
+        scoreA: editScoreA, 
+        scoreB: editScoreB,
+        scorersA: editScorersA,
+        scorersB: editScorersB,
+        yellowA: editYellowA,
+        yellowB: editYellowB,
+        redA: editRedA,
+        redB: editRedB
+      } : m
     );
     setTourneyMatches(updatedTourney);
     setEditingId(null);
+    // Reset fields
+    setEditScorersA(''); setEditScorersB('');
+    setEditYellowA(''); setEditYellowB('');
+    setEditRedA(''); setEditRedB('');
   };
 
   const removeTourneyMatch = (id) => {
@@ -81,20 +108,22 @@ const TournamentManager = ({ tourneyMatches, setTourneyMatches, matches, setMatc
 
                <div className="flex flex-col items-center">
                  {editingId === match.id ? (
-                   <div className="flex items-center gap-1 md:gap-2">
-                      <input 
-                        type="number" 
-                        value={editScoreA} 
-                        onChange={(e) => setEditScoreA(e.target.value)} 
-                        className="w-10 h-10 md:w-12 md:h-12 bg-white/5 border border-white/10 rounded-xl text-center text-lg md:text-xl font-black focus:border-ucl-neon outline-none"
-                      />
-                      <span className="text-ucl-silver">-</span>
-                      <input 
-                        type="number" 
-                        value={editScoreB} 
-                        onChange={(e) => setEditScoreB(e.target.value)} 
-                        className="w-10 h-10 md:w-12 md:h-12 bg-white/5 border border-white/10 rounded-xl text-center text-lg md:text-xl font-black focus:border-ucl-neon outline-none"
-                      />
+                   <div className="flex flex-col items-center gap-4">
+                     <div className="flex items-center gap-1 md:gap-2">
+                        <input 
+                          type="number" 
+                          value={editScoreA} 
+                          onChange={(e) => setEditScoreA(e.target.value)} 
+                          className="w-10 h-10 md:w-12 md:h-12 bg-white/5 border border-white/10 rounded-xl text-center text-lg md:text-xl font-black focus:border-ucl-neon outline-none"
+                        />
+                        <span className="text-ucl-silver">-</span>
+                        <input 
+                          type="number" 
+                          value={editScoreB} 
+                          onChange={(e) => setEditScoreB(e.target.value)} 
+                          className="w-10 h-10 md:w-12 md:h-12 bg-white/5 border border-white/10 rounded-xl text-center text-lg md:text-xl font-black focus:border-ucl-neon outline-none"
+                        />
+                     </div>
                    </div>
                  ) : (
                    <div className="text-xl md:text-3xl font-black italic tracking-tighter text-ucl-neon">
@@ -112,18 +141,88 @@ const TournamentManager = ({ tourneyMatches, setTourneyMatches, matches, setMatc
                </div>
             </div>
 
+            {/* Expanded Input Fields when Editing */}
+            {editingId === match.id && (
+              <motion.div 
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                className="mt-6 space-y-4 pt-6 border-t border-white/5"
+              >
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <p className="text-[8px] font-black uppercase text-ucl-silver tracking-widest">{match.teamA} - Ghi bàn</p>
+                    <input value={editScorersA} onChange={e => setEditScorersA(e.target.value)} placeholder="Tên x2, Tên..." className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs outline-none focus:border-ucl-neon" />
+                  </div>
+                  <div className="space-y-2 text-right">
+                    <p className="text-[8px] font-black uppercase text-ucl-silver tracking-widest">{match.teamB} - Ghi bàn</p>
+                    <input value={editScorersB} onChange={e => setEditScorersB(e.target.value)} placeholder="Tên, Tên x3..." className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs outline-none focus:border-ucl-neon text-right" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <p className="text-[8px] font-black uppercase text-yellow-500 tracking-widest">Thẻ vàng</p>
+                    <input value={editYellowA} onChange={e => setEditYellowA(e.target.value)} placeholder="Tên..." className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-[10px] outline-none focus:border-yellow-500" />
+                  </div>
+                  <div className="space-y-2 text-right">
+                    <p className="text-[8px] font-black uppercase text-yellow-500 tracking-widest">Thẻ vàng</p>
+                    <input value={editYellowB} onChange={e => setEditYellowB(e.target.value)} placeholder="Tên..." className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-[10px] outline-none focus:border-yellow-500 text-right" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <p className="text-[8px] font-black uppercase text-red-500 tracking-widest">Thẻ đỏ</p>
+                    <input value={editRedA} onChange={e => setEditRedA(e.target.value)} placeholder="Tên..." className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-[10px] outline-none focus:border-red-500" />
+                  </div>
+                  <div className="space-y-2 text-right">
+                    <p className="text-[8px] font-black uppercase text-red-500 tracking-widest">Thẻ đỏ</p>
+                    <input value={editRedB} onChange={e => setEditRedB(e.target.value)} placeholder="Tên..." className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-[10px] outline-none focus:border-red-500 text-right" />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Display Stats for Completed Matches */}
+            {match.status === 'completed' && (
+              <div className="mt-4 grid grid-cols-2 gap-4 pt-4 border-t border-white/5 opacity-80">
+                <div className="text-[8px] space-y-1">
+                  {match.scorersA && <p className="text-ucl-neon font-bold"><span className="opacity-50">⚽</span> {match.scorersA}</p>}
+                  {match.yellowA && <p className="text-yellow-500 font-bold"><span className="opacity-50">🟨</span> {match.yellowA}</p>}
+                  {match.redA && <p className="text-red-500 font-bold"><span className="opacity-50">🟥</span> {match.redA}</p>}
+                </div>
+                <div className="text-[8px] space-y-1 text-right">
+                  {match.scorersB && <p className="text-ucl-neon font-bold">{match.scorersB} <span className="opacity-50">⚽</span></p>}
+                  {match.yellowB && <p className="text-yellow-500 font-bold">{match.yellowB} <span className="opacity-50">🟨</span></p>}
+                  {match.redB && <p className="text-red-500 font-bold">{match.redB} <span className="opacity-50">🟥</span></p>}
+                </div>
+              </div>
+            )}
+
             <div className="mt-6 flex justify-center">
               {match.status !== 'completed' ? (
                 editingId === match.id ? (
-                  <button 
-                    onClick={() => handleSaveResult(match)}
-                    className="ucl-button flex items-center gap-2 px-4 py-2 text-[10px]"
-                  >
-                    <Save size={12} /> Lưu kết quả
-                  </button>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => handleSaveResult(match)}
+                      className="ucl-button flex items-center gap-2 px-6 py-2 text-[10px]"
+                    >
+                      <Save size={12} /> Lưu kết quả
+                    </button>
+                    <button 
+                      onClick={() => setEditingId(null)}
+                      className="px-6 py-2 bg-white/5 border border-white/10 rounded-full font-black text-[10px] uppercase tracking-widest"
+                    >
+                      Hủy
+                    </button>
+                  </div>
                 ) : (
                   <button 
-                    onClick={() => { setEditingId(match.id); setEditScoreA(0); setEditScoreB(0); }}
+                    onClick={() => { 
+                      setEditingId(match.id); 
+                      setEditScoreA(0); setEditScoreB(0);
+                      setEditScorersA(''); setEditScorersB('');
+                      setEditYellowA(''); setEditYellowB('');
+                      setEditRedA(''); setEditRedB('');
+                    }}
                     className="flex items-center gap-2 px-6 py-2 bg-white/5 border border-white/10 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-ucl-neon hover:text-ucl-dark transition-all"
                   >
                     <Award size={12} /> Nhập tỉ số

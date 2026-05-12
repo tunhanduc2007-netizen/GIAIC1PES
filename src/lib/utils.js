@@ -3,92 +3,107 @@ export const cn = (...inputs) => {
 };
 
 export const calculateStandings = (players, matches) => {
+  // Khởi tạo bảng thống kê sạch
   const stats = {};
+  players.forEach(p => {
+    stats[String(p.id)] = { 
+      ...p, 
+      matches: 0, wins: 0, draws: 0, losses: 0, 
+      gf: 0, ga: 0, gd: 0, points: 0 
+    };
+  });
+
   const scorers = {};
   const cards = {};
 
-  players.forEach(p => {
-    stats[p.id] = { ...p, matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 };
-  });
-
   matches.forEach(m => {
-    if (!stats[m.playerAId] || !stats[m.playerBId]) return;
+    const pAId = String(m.playerAId);
+    const pBId = String(m.playerBId);
+    
+    if (!stats[pAId] || !stats[pBId]) return;
 
-    stats[m.playerAId].matches++;
-    stats[m.playerBId].matches++;
-    stats[m.playerAId].gf += m.scoreA;
-    stats[m.playerAId].ga += m.scoreB;
-    stats[m.playerBId].gf += m.scoreB;
-    stats[m.playerBId].ga += m.scoreA;
+    // Ép kiểu số cho bàn thắng
+    const sA = parseInt(m.scoreA) || 0;
+    const sB = parseInt(m.scoreB) || 0;
 
-    if (m.scoreA > m.scoreB) {
-      stats[m.playerAId].wins++;
-      stats[m.playerAId].points += 3;
-      stats[m.playerBId].losses++;
-    } else if (m.scoreA < m.scoreB) {
-      stats[m.playerBId].wins++;
-      stats[m.playerBId].points += 3;
-      stats[m.playerAId].losses++;
+    // Cập nhật số trận và bàn thắng
+    stats[pAId].matches++;
+    stats[pBId].matches++;
+    stats[pAId].gf += sA;
+    stats[pAId].ga += sB;
+    stats[pBId].gf += sB;
+    stats[pBId].ga += sA;
+
+    // Tính điểm và Thắng/Hòa/Thua
+    if (sA > sB) {
+      stats[pAId].wins++;
+      stats[pAId].points += 3;
+      stats[pBId].losses++;
+    } else if (sA < sB) {
+      stats[pBId].wins++;
+      stats[pBId].points += 3;
+      stats[pAId].losses++;
     } else {
-      stats[m.playerAId].draws++;
-      stats[m.playerBId].draws++;
-      stats[m.playerAId].points += 1;
-      stats[m.playerBId].points += 1;
+      stats[pAId].draws++;
+      stats[pBId].draws++;
+      stats[pAId].points += 1;
+      stats[pBId].points += 1;
     }
 
+    // Xử lý Vua phá lưới
     const processScorers = (scorerStr, teamName) => {
       if (!scorerStr) return;
       const parts = scorerStr.split(/[,;]/).map(s => s.trim()).filter(Boolean);
       parts.forEach(part => {
         let name = part;
         let count = 1;
-        
         const match = part.match(/(.+?)\s*[xX(](\d+)\)?$/);
         if (match) {
           name = match[1].trim();
           count = parseInt(match[2]);
         }
-        
         const key = `${name} (${teamName})`;
         scorers[key] = (scorers[key] || 0) + count;
       });
     };
-
     processScorers(m.scorersA, m.teamA);
     processScorers(m.scorersB, m.teamB);
 
-    const processCards = (cardStr, teamName) => {
+    // Xử lý Thẻ phạt
+    const processCards = (cardStr, teamName, type) => {
       if (!cardStr) return;
       const parts = cardStr.split(/[,;]/).map(s => s.trim()).filter(Boolean);
       parts.forEach(name => {
         const key = `${name} (${teamName})`;
-        cards[key] = (cards[key] || 0) + 1;
+        if (!cards[key]) cards[key] = { yellow: 0, red: 0 };
+        cards[key][type]++;
       });
     };
-
-    processCards(m.yellowA, m.teamA);
-    processCards(m.yellowB, m.teamB);
-    processCards(m.redA, m.teamA);
-    processCards(m.redB, m.teamB);
+    processCards(m.yellowA, m.teamA, 'yellow');
+    processCards(m.yellowB, m.teamB, 'yellow');
+    processCards(m.redA, m.teamA, 'red');
+    processCards(m.redB, m.teamB, 'red');
   });
 
-  const sortedStandings = Object.values(stats).sort((a, b) => {
+  // Chốt hạ dữ liệu và tính HS cuối cùng
+  const finalStandings = Object.values(stats).map(player => ({
+    ...player,
+    gd: player.gf - player.ga
+  })).sort((a, b) => {
     if (b.points !== a.points) return b.points - a.points;
-    const gdA = a.gf - a.ga;
-    const gdB = b.gf - b.ga;
-    if (gdB !== gdA) return gdB - gdA;
+    if (b.gd !== a.gd) return b.gd - a.gd;
     return b.gf - a.gf;
   });
 
-  const sortedScorers = Object.entries(scorers)
+  const finalScorers = Object.entries(scorers)
     .map(([name, goals]) => ({ name, goals }))
     .sort((a, b) => b.goals - a.goals);
 
-  const sortedCards = Object.entries(cards)
-    .map(([name, count]) => ({ name, count }))
-    .sort((a, b) => b.count - a.count);
+  const finalCards = Object.entries(cards)
+    .map(([name, data]) => ({ name, ...data, total: data.yellow + (data.red * 2) }))
+    .sort((a, b) => b.total - a.total);
 
-  return { standings: sortedStandings, topScorers: sortedScorers, topCards: sortedCards };
+  return { standings: finalStandings, topScorers: finalScorers, topCards: finalCards };
 };
 
 export const getTeamLogo = (teamName) => {

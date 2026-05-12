@@ -51,8 +51,8 @@ import BackupRestore from './components/BackupRestore';
 const INITIAL_PLAYERS = [
   { id: '1', name: 'Tottenham', team: 'Tottenham', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
   { id: '2', name: 'Arsenal', team: 'Arsenal', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '3', name: 'Man City', team: 'Man City', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '4', name: 'Bayern', team: 'Bayern', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  { id: '3', name: 'Man City', team: 'Man City', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  { id: '4', name: 'Bayern', team: 'Bayern', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
   { id: '5', name: 'Newcastle', team: 'Newcastle', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
   { id: '6', name: 'Villarreal CF', team: 'Villarreal CF', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
   { id: '7', name: 'Man United', team: 'Man United', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
@@ -69,24 +69,30 @@ const INITIAL_PLAYERS = [
 
 const INITIAL_MATCHES = [
   // ROUND 1
-  { id: '1', playerAId: '1', playerBId: '2', teamA: 'Tottenham', teamB: 'Arsenal', scoreA: 4, scoreB: 4, scorersA: 'Satriano x2, Solomon, Waltemade', scorersB: 'Saka, Boey, Bruno, Ez Abde', yellowB: 'Nketiah', date: '2026-05-11T10:00:01Z' },
-  { id: '2', playerAId: '3', playerBId: '4', teamA: 'Man City', teamB: 'Bayern', scoreA: 2, scoreB: 5, scorersA: 'Haaland, Savinho', scorersB: 'Kane x3, Diaz, Olise', yellowB: 'Tah', date: '2026-05-11T10:00:02Z' },
-  { id: '3', playerAId: '5', playerBId: '6', teamA: 'Newcastle', teamB: 'Villarreal CF', scoreA: 1, scoreB: 5, scorersA: 'Fofana', scorersB: 'Baena x2, Moreno x2, Gyokeres', yellowB: 'Bunchman', date: '2026-05-11T10:00:03Z' },
-  { id: '4', playerAId: '7', playerBId: '8', teamA: 'Man United', teamB: 'PSV', scoreA: 3, scoreB: 4, scorersA: 'Antony x2, Cunha', scorersB: 'Perisic x2, Bakambu, Bakayoko', yellowB: 'Opbiso', date: '2026-05-11T10:00:04Z' },
-  { id: '5', playerAId: '9', playerBId: '10', teamA: 'Olympic Lyon', teamB: 'Napoli', scoreA: 4, scoreB: 1, scorersA: 'Sesko, Ghezal, Pepe, Fornal', scorersB: 'Hojlund', date: '2026-05-11T10:00:05Z' },
-  { id: '6', playerAId: '11', playerBId: '12', teamA: 'AC Milan', teamB: 'Benfica', scoreA: 2, scoreB: 2, scorersA: 'Leao x2', scorersB: 'Pavlidis x2', date: '2026-05-11T10:00:06Z' },
-  { id: '7', playerAId: '13', playerBId: '14', teamA: 'Real Betis', teamB: 'Atletico', scoreA: 5, scoreB: 3, scorersA: 'Alvarez x2, Fornal, Palmeri, Ez Abde', scorersB: 'Simeone, Muani, Gyokeres', date: '2026-05-11T10:00:07Z' },
-  { id: '8', playerAId: '15', playerBId: '16', teamA: 'Real Madrid', teamB: 'Marseille', scoreA: 2, scoreB: 1, scorersA: 'Bellingham, Tchouameni', scorersB: 'Bakambu', date: '2026-05-11T10:00:08Z' },
+  { id: 'm1', playerAId: '1', playerBId: '2', teamA: 'Tottenham', teamB: 'Arsenal', scoreA: 4, scoreB: 4, scorersA: 'Satriano, Solomon, Waltemade, Kudus', scorersB: 'Saka, Boey, Bruno, Ez Abde', yellowB: 'Nketiah', date: '2026-05-11T10:00:01Z' },
+  { id: 'm2', playerAId: '3', playerBId: '4', teamA: 'Man City', teamB: 'Bayern', scoreA: 2, scoreB: 5, scorersA: 'Halaand, Savinho', scorersB: 'Kane x3, Diaz, Olise', yellowB: 'Tah', date: '2026-05-11T10:00:02Z' },
+  { id: 'm3', playerAId: '5', playerBId: '6', teamA: 'Newcastle', teamB: 'Villarreal', scoreA: 1, scoreB: 5, scorersA: 'Fofana', scorersB: 'Baena x2, Moreno x2, Gyokeres', yellowB: 'Bunchman', date: '2026-05-11T10:00:03Z' },
+  { id: 'm4', playerAId: '7', playerBId: '8', teamA: 'Man United', teamB: 'PSV', scoreA: 3, scoreB: 4, scorersA: 'Antony x2, Cunha', scorersB: 'Perisic x2, Bakambu, Bakayoko', yellowB: 'Opbiso', date: '2026-05-11T10:00:04Z' },
+  { id: 'm5', playerAId: '9', playerBId: '10', teamA: 'Olympic Lyon', teamB: 'Napoli', scoreA: 4, scoreB: 1, scorersA: 'Sesko, Ghezal, Pepe, Fornal', scorersB: 'Hojlund', date: '2026-05-11T10:00:05Z' },
+  { id: 'm6', playerAId: '11', playerBId: '12', teamA: 'AC Milan', teamB: 'Benfica', scoreA: 2, scoreB: 2, scorersA: 'Leao x2', scorersB: 'Pavlidis x2', date: '2026-05-11T10:00:06Z' },
+  { id: 'm7', playerAId: '13', playerBId: '14', teamA: 'Real Betis', teamB: 'Atletico', scoreA: 5, scoreB: 3, scorersA: 'Alvarez x2, Fornal, Palmeri, Til', scorersB: 'Simeone, Muani, Gyokeres', date: '2026-05-11T10:00:07Z' },
+  { id: 'm8', playerAId: '15', playerBId: '16', teamA: 'Real Madrid', teamB: 'Marseille', scoreA: 2, scoreB: 1, scorersA: 'Bellingham, Tchouameni', scorersB: 'Bakambu', date: '2026-05-11T10:00:08Z' },
 
   // ROUND 2
-  { id: '9', playerAId: '10', playerBId: '11', teamA: 'Napoli', teamB: 'AC Milan', scoreA: 2, scoreB: 0, scorersA: 'Hojlund, Neres', date: '2026-05-11T11:00:01Z' },
-  { id: '10', playerAId: '3', playerBId: '1', teamA: 'Man City', teamB: 'Tottenham', scoreA: 1, scoreB: 1, scorersA: 'Doku', scorersB: 'Kudus', date: '2026-05-11T11:00:02Z' },
-  { id: '11', playerAId: '12', playerBId: '8', teamA: 'Benfica', teamB: 'PSV', scoreA: 0, scoreB: 1, scorersB: 'Diouech', yellowA: 'Otamendi', date: '2026-05-11T11:00:03Z' },
-  { id: '12', playerAId: '2', playerBId: '13', teamA: 'Arsenal', teamB: 'Real Betis', scoreA: 0, scoreB: 0, date: '2026-05-11T11:00:04Z' },
-  { id: '13', playerAId: '16', playerBId: '5', teamA: 'Marseille', teamB: 'Newcastle', scoreA: 2, scoreB: 2, scorersA: 'Traore, Paixao', scorersB: 'Wisa, Elanga', date: '2026-05-11T11:00:05Z' },
-  { id: '14', playerAId: '6', playerBId: '9', teamA: 'Villarreal CF', teamB: 'Olympic Lyon', scoreA: 0, scoreB: 0, yellowA: 'Endrick, Niakate', date: '2026-05-11T11:00:06Z' },
-  { id: '15', playerAId: '7', playerBId: '15', teamA: 'Man United', teamB: 'Real Madrid', scoreA: 3, scoreB: 1, scorersA: 'Mbeumo, Cunha x2', scorersB: 'Bellingham', date: '2026-05-11T11:00:07Z' },
-  { id: '16', playerAId: '14', playerBId: '4', teamA: 'Atletico', teamB: 'Bayern', scoreA: 0, scoreB: 4, scorersB: 'Diaz, Olise, Kane, Goretzka', date: '2026-05-11T11:00:08Z' },
+  { id: 'm9', playerAId: '10', playerBId: '11', teamA: 'Napoli', teamB: 'AC Milan', scoreA: 2, scoreB: 0, scorersA: 'Hojlund, Neres', date: '2026-05-11T11:00:01Z' },
+  { id: 'm10', playerAId: '3', playerBId: '1', teamA: 'Man City', teamB: 'Tottenham', scoreA: 1, scoreB: 1, scorersA: 'Doku', scorersB: 'Kudus', date: '2026-05-11T11:00:02Z' },
+  { id: 'm11', playerAId: '12', playerBId: '8', teamA: 'Benfica', teamB: 'PSV', scoreA: 0, scoreB: 1, scorersB: 'Diouech', yellowA: 'Otamendi', date: '2026-05-11T11:00:03Z' },
+  { id: 'm12', playerAId: '2', playerBId: '13', teamA: 'Arsenal', teamB: 'Real Betis', scoreA: 0, scoreB: 0, date: '2026-05-11T11:00:04Z' },
+  { id: 'm13', playerAId: '16', playerBId: '5', teamA: 'Marseille', teamB: 'Newcastle', scoreA: 2, scoreB: 2, scorersA: 'Traore, Paixao', scorersB: 'Wisa, Elanga', date: '2026-05-11T11:00:05Z' },
+  { id: 'm14', playerAId: '6', playerBId: '9', teamA: 'Villarreal CF', teamB: 'Olympic Lyon', scoreA: 0, scoreB: 0, yellowA: 'Endrick, Niakate', date: '2026-05-11T11:00:06Z' },
+  { id: 'm15', playerAId: '7', playerBId: '15', teamA: 'Man United', teamB: 'Real Madrid', scoreA: 3, scoreB: 1, scorersA: 'Mbeumo, Cunha x2', scorersB: 'Bellingham', date: '2026-05-11T11:00:07Z' },
+  { id: 'm16', playerAId: '14', playerBId: '4', teamA: 'Atletico', teamB: 'Bayern', scoreA: 0, scoreB: 4, scorersB: 'Diaz, Olise, Kane, Goretzka', date: '2026-05-11T11:00:08Z' },
+
+  // ROUND 3
+  { id: 'm17', playerAId: '2', playerBId: '11', teamA: 'Arsenal', teamB: 'AC Milan', scoreA: 2, scoreB: 1, scorersA: 'Gyokeres, Kai', scorersB: 'Gimenez', yellowB: 'Gimenez', redB: 'Thiaw', date: '2026-05-12T10:00:01Z' },
+  { id: 'm18', playerAId: '14', playerBId: '15', teamA: 'Atletico', teamB: 'Real Madrid', scoreA: 1, scoreB: 1, scorersA: 'Gonzalez', scorersB: 'Vinicius', date: '2026-05-12T10:00:02Z' },
+  { id: 'm19', playerAId: '16', playerBId: '5', teamA: 'Marseille', teamB: 'Newcastle', scoreA: 6, scoreB: 1, scorersA: 'Paixao, Traore, Greenwood, Ndowi, Palmeire, Hojberd', scorersB: 'Wisa', yellowA: 'Lewis-Kelly, Ramsey', date: '2026-05-12T10:00:03Z' },
+  { id: 'm20', playerAId: '12', playerBId: '4', teamA: 'Benfica', teamB: 'Bayern', scoreA: 0, scoreB: 2, scorersB: 'Diaz, Musiala', yellowB: 'Musiala, Upamecano', yellowA: 'A. Silva', date: '2026-05-12T10:00:04Z' },
 ];
 
 const MusicPlayer = () => {
@@ -157,6 +163,10 @@ const App = () => {
       
       try {
         if (!isLoading) {
+          // Lưu vào LocalStorage làm dự phòng
+          localStorage.setItem('pes_tourney_matches', JSON.stringify(tourneyMatches));
+          localStorage.setItem('pes_matches', JSON.stringify(matches));
+          
           await Promise.all([
             supabase.from('players').upsert(players),
             supabase.from('matches').upsert(matches),
@@ -169,7 +179,7 @@ const App = () => {
       }
     };
 
-    const timeoutId = setTimeout(syncData, 2000);
+    const timeoutId = setTimeout(syncData, 1000);
     return () => clearTimeout(timeoutId);
   }, [players, matches, tourneyMatches, customTables, isLoading, hasLoadedFromCloud]);
 
@@ -189,20 +199,26 @@ const App = () => {
           supabase.from('custom_tables').select('*')
         ]);
 
-        // --- ƯU TIÊN SỬ DỤNG DỮ LIỆU TỪ CLOUD (SUPABASE) ---
-        if (pData && pData.length > 0) {
-          setPlayers(pData);
-        } else {
-          setPlayers(INITIAL_PLAYERS);
-        }
+        // --- CƯỠNG CHẾ SỬ DỤNG DANH SÁCH CẦU THỦ CHUẨN ---
+        // Xóa sạch cache cũ để tránh bị ghi đè dữ liệu sai
+        localStorage.removeItem('pes_players');
+        localStorage.removeItem('pes_matches');
+        
+        setPlayers(INITIAL_PLAYERS);
+        setMatches(INITIAL_MATCHES);
 
-        if (mData && mData.length > 0) {
-          setMatches(mData);
-        } else {
-          setMatches(INITIAL_MATCHES);
-        }
+        // Cập nhật lại Cloud ngay lập tức
+        await Promise.all([
+          supabase.from('players').upsert(INITIAL_PLAYERS),
+          supabase.from('matches').upsert(INITIAL_MATCHES)
+        ]);
         
         if (tData && tData.length > 0) setTourneyMatches(tData);
+        else {
+          const localTourney = localStorage.getItem('pes_tourney_matches');
+          if (localTourney) setTourneyMatches(JSON.parse(localTourney));
+        }
+        
         if (cData && cData.length > 0) setCustomTables(cData);
         
         setHasLoadedFromCloud(true);
@@ -226,7 +242,6 @@ const App = () => {
     { id: 'players', label: 'Đội', icon: Shield },
     { id: 'wheel', label: 'Vòng quay', icon: RotateCw },
     { id: 'tournament', label: 'Cặp đấu & Nhánh', icon: Swords },
-    { id: 'match-entry', label: 'Nhập kết quả', icon: Sword },
     { id: 'history', label: 'Lịch sử đấu', icon: History },
     { id: 'rewards', label: 'Vinh danh', icon: Award },
     { id: 'backup', label: 'Sao lưu & Khôi phục', icon: Settings },

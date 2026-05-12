@@ -66,8 +66,8 @@ const MatchHistory = ({ matches, setMatches, players }) => {
             <tbody className="divide-y divide-white/5">
               {matches.slice().reverse().map((match, i) => {
                 const isEditing = editingId === match.id;
-                const pA = players.find(p => p.id === match.playerAId);
-                const pB = players.find(p => p.id === match.playerBId);
+                const pA = players.find(p => String(p.id) === String(match.playerAId));
+                const pB = players.find(p => String(p.id) === String(match.playerBId));
                 
                 return (
                   <motion.tr 
@@ -101,7 +101,7 @@ const MatchHistory = ({ matches, setMatches, players }) => {
                               <span className="text-xs md:text-sm font-black italic tracking-tight truncate max-w-[80px] md:max-w-none">{pA?.name || match.teamA}</span>
                               <img src={getTeamLogo(pA?.name || match.teamA)} className="w-5 h-5 object-contain" alt="logo" />
                             </div>
-                            <span className="text-[8px] text-ucl-silver font-bold uppercase tracking-tighter">BU</span>
+                            <span className="text-[8px] text-ucl-silver font-bold uppercase tracking-tighter">{pA?.owner || 'N/A'}</span>
                           </div>
                           <div className="text-[8px] font-black text-ucl-neon opacity-30">VS</div>
                           <div className="flex flex-col items-start flex-1">
@@ -109,7 +109,7 @@ const MatchHistory = ({ matches, setMatches, players }) => {
                               <img src={getTeamLogo(pB?.name || match.teamB)} className="w-5 h-5 object-contain" alt="logo" />
                               <span className="text-xs md:text-sm font-black italic tracking-tight truncate max-w-[80px] md:max-w-none">{pB?.name || match.teamB}</span>
                             </div>
-                            <span className="text-[8px] text-ucl-silver font-bold uppercase tracking-tighter">THỊNH</span>
+                            <span className="text-[8px] text-ucl-silver font-bold uppercase tracking-tighter">{pB?.owner || 'N/A'}</span>
                           </div>
                         </div>
                       )}
