@@ -5,10 +5,7 @@ import { cn, getTeamLogo } from '../lib/utils';
 
 const TEAMS_BU = [
   { name: 'Tottenham', color: '#1e3a8a' },
-  { name: 'Newcastle', color: '#111827' },
   { name: 'Olympic Lyon', color: '#1d4ed8' },
-  { name: 'AC Milan', color: '#991b1b' },
-  { name: 'Real Betis', color: '#059669' },
   { name: 'Real Madrid', color: '#3b82f6' },
   { name: 'PSV', color: '#f97316' },
   { name: 'Bayern', color: '#dc2626' },
@@ -16,12 +13,9 @@ const TEAMS_BU = [
 
 const TEAMS_THINH = [
   { name: 'Man City', color: '#0ea5e9' },
-  { name: 'Man United', color: '#b91c1c' },
   { name: 'Marseille', color: '#008bb4' },
-  { name: 'Napoli', color: '#0055a4' },
   { name: 'Atletico', color: '#c4122e' },
   { name: 'Villarreal CF', color: '#facc15' },
-  { name: 'Benfica', color: '#e20613' },
   { name: 'Arsenal', color: '#ef4444' },
 ];
 
