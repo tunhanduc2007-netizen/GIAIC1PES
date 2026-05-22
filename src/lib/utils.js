@@ -107,34 +107,97 @@ export const calculateStandings = (players, matches) => {
 };
 
 export const getTeamLogo = (teamName) => {
-  if (!teamName) return null;
-  const name = teamName.toLowerCase();
+  if (!teamName) return 'https://flagcdn.com/w160/un.png';
+  const name = teamName.toLowerCase().trim();
   
   const logoMap = {
-    'man city': 'https://media.api-sports.io/football/teams/50.png',
-    'manchester city': 'https://media.api-sports.io/football/teams/50.png',
-    'bayern': 'https://media.api-sports.io/football/teams/157.png',
-    'newcastle': 'https://media.api-sports.io/football/teams/34.png',
-    'villarreal': 'https://media.api-sports.io/football/teams/533.png',
-    'man united': 'https://media.api-sports.io/football/teams/33.png',
-    'manchester united': 'https://media.api-sports.io/football/teams/33.png',
-    'psv': 'https://media.api-sports.io/football/teams/197.png',
-    'olympic lyon': 'https://media.api-sports.io/football/teams/80.png',
-    'napoli': 'https://media.api-sports.io/football/teams/492.png',
-    'ac milan': 'https://media.api-sports.io/football/teams/489.png',
-    'benfica': 'https://media.api-sports.io/football/teams/211.png',
-    'real betis': 'https://media.api-sports.io/football/teams/543.png',
-    'atletico': 'https://media.api-sports.io/football/teams/530.png',
-    'real madrid': 'https://media.api-sports.io/football/teams/541.png',
-    'tottenham': 'https://media.api-sports.io/football/teams/47.png',
-    'arsenal': 'https://media.api-sports.io/football/teams/42.png',
-    'olympiacos': 'https://media.api-sports.io/football/teams/553.png',
-    'marseille': 'https://media.api-sports.io/football/teams/81.png'
+    // Châu Á
+    'qatar': 'https://flagcdn.com/w160/qa.png',
+    'jordan': 'https://flagcdn.com/w160/jo.png',
+    'uzbekistan': 'https://flagcdn.com/w160/uz.png',
+    'iran': 'https://flagcdn.com/w160/ir.png',
+    'nhật bản': 'https://flagcdn.com/w160/jp.png',
+    'japan': 'https://flagcdn.com/w160/jp.png',
+    'iraq': 'https://flagcdn.com/w160/iq.png',
+    'australia': 'https://flagcdn.com/w160/au.png',
+    'saudi arabia': 'https://flagcdn.com/w160/sa.png',
+    'hàn quốc': 'https://flagcdn.com/w160/kr.png',
+    'south korea': 'https://flagcdn.com/w160/kr.png',
+    
+    // Châu Phi
+    'dr congo': 'https://flagcdn.com/w160/cd.png',
+    'tunisia': 'https://flagcdn.com/w160/tn.png',
+    'senegal': 'https://flagcdn.com/w160/sn.png',
+    'algeria': 'https://flagcdn.com/w160/dz.png',
+    'nam phi': 'https://flagcdn.com/w160/za.png',
+    'south africa': 'https://flagcdn.com/w160/za.png',
+    'ghana': 'https://flagcdn.com/w160/gh.png',
+    'cape verde': 'https://flagcdn.com/w160/cv.png',
+    'bờ biển ngà': 'https://flagcdn.com/w160/ci.png',
+    'ivory coast': 'https://flagcdn.com/w160/ci.png',
+    'maroc': 'https://flagcdn.com/w160/ma.png',
+    'morocco': 'https://flagcdn.com/w160/ma.png',
+    'ai cập': 'https://flagcdn.com/w160/eg.png',
+    'egypt': 'https://flagcdn.com/w160/eg.png',
+    
+    // Bắc & Trung Mỹ
+    'curaçao': 'https://flagcdn.com/w160/cw.png',
+    'curacao': 'https://flagcdn.com/w160/cw.png',
+    'mexico': 'https://flagcdn.com/w160/mx.png',
+    'panama': 'https://flagcdn.com/w160/pa.png',
+    'haiti': 'https://flagcdn.com/w160/ht.png',
+    'mỹ': 'https://flagcdn.com/w160/us.png',
+    'usa': 'https://flagcdn.com/w160/us.png',
+    'canada': 'https://flagcdn.com/w160/ca.png',
+    
+    // Nam Mỹ
+    'uruguay': 'https://flagcdn.com/w160/uy.png',
+    'brazil': 'https://flagcdn.com/w160/br.png',
+    'ecuador': 'https://flagcdn.com/w160/ec.png',
+    'colombia': 'https://flagcdn.com/w160/co.png',
+    'paraguay': 'https://flagcdn.com/w160/py.png',
+    'argentina': 'https://flagcdn.com/w160/ar.png',
+    
+    // Châu Âu
+    'tây ban nha': 'https://flagcdn.com/w160/es.png',
+    'spain': 'https://flagcdn.com/w160/es.png',
+    'anh': 'https://flagcdn.com/w160/gb-eng.png',
+    'england': 'https://flagcdn.com/w160/gb-eng.png',
+    'scotland': 'https://flagcdn.com/w160/gb-sct.png',
+    'bỉ': 'https://flagcdn.com/w160/be.png',
+    'belgium': 'https://flagcdn.com/w160/be.png',
+    'thổ nhĩ kỳ': 'https://flagcdn.com/w160/tr.png',
+    'turkey': 'https://flagcdn.com/w160/tr.png',
+    'bosnia & herzegovina': 'https://flagcdn.com/w160/ba.png',
+    'bosnia': 'https://flagcdn.com/w160/ba.png',
+    'croatia': 'https://flagcdn.com/w160/hr.png',
+    'đức': 'https://flagcdn.com/w160/de.png',
+    'germany': 'https://flagcdn.com/w160/de.png',
+    'ch séc': 'https://flagcdn.com/w160/cz.png',
+    'czech republic': 'https://flagcdn.com/w160/cz.png',
+    'hà lan': 'https://flagcdn.com/w160/nl.png',
+    'netherlands': 'https://flagcdn.com/w160/nl.png',
+    'pháp': 'https://flagcdn.com/w160/fr.png',
+    'france': 'https://flagcdn.com/w160/fr.png',
+    'thụy sĩ': 'https://flagcdn.com/w160/ch.png',
+    'switzerland': 'https://flagcdn.com/w160/ch.png',
+    'áo': 'https://flagcdn.com/w160/at.png',
+    'austria': 'https://flagcdn.com/w160/at.png',
+    'na uy': 'https://flagcdn.com/w160/no.png',
+    'norway': 'https://flagcdn.com/w160/no.png',
+    'bồ đào nha': 'https://flagcdn.com/w160/pt.png',
+    'portugal': 'https://flagcdn.com/w160/pt.png',
+    'thụy điển': 'https://flagcdn.com/w160/se.png',
+    'sweden': 'https://flagcdn.com/w160/se.png',
+    'italy': 'https://flagcdn.com/w160/it.png',
+    
+    // Châu Đại Dương
+    'new zealand': 'https://flagcdn.com/w160/nz.png',
   };
 
   for (const [key, url] of Object.entries(logoMap)) {
     if (name.includes(key)) return url;
   }
   
-  return null;
+  return 'https://flagcdn.com/w160/un.png';
 };

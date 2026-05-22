@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Swords, Award, ChevronRight, Save, Trash2, Trophy } from 'lucide-react';
-import { cn, getTeamLogo } from '../lib/utils';
+import { cn, getTeamLogo, calculateStandings } from '../lib/utils';
 
 const TournamentManager = ({ tourneyMatches, setTourneyMatches, matches, setMatches, players }) => {
   const [editingId, setEditingId] = useState(null);

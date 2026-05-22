@@ -43,7 +43,7 @@ const MatchHistory = ({ matches, setMatches, players }) => {
           </div>
           <div>
             <h2 className="text-2xl md:text-3xl font-black italic tracking-tighter uppercase">LỊCH SỬ <span className="text-ucl-neon">TRẬN ĐẤU</span></h2>
-            <p className="text-ucl-silver text-[10px] md:text-xs font-bold uppercase tracking-widest mt-1">Toàn bộ kết quả Champions League</p>
+            <p className="text-ucl-silver text-[10px] md:text-xs font-bold uppercase tracking-widest mt-1">Toàn bộ kết quả FIFA World Cup</p>
           </div>
         </div>
       </div>

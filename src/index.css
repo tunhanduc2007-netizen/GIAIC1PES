@@ -3,11 +3,14 @@
 @tailwind utilities;
 
 :root {
-  --ucl-neon: #00f2ff;
-  --ucl-blue: #0055a4;
-  --ucl-dark: #020617;
-  --ucl-star: #fbbf24;
-  --ucl-silver: #94a3b8;
+  --ucl-neon: #FF2A5F;    /* World Cup Neon Pink */
+  --ucl-blue: #D4AF37;    /* Trophy Gold */
+  --ucl-dark: #0a0b0d;    /* Deep Dark */
+  --ucl-star: #FFD700;    /* Bright Gold */
+  --ucl-silver: #a3a3c2;  /* Silver */
+  --wc-red: #8B1538;      /* World Cup Red */
+  --wc-purple: #4A1942;   /* World Cup Purple */
+  --wc-cyan: #00B8FF;     /* Bright Cyan */
   
   /* Responsive Typography */
   --font-xs: clamp(0.7rem, 0.6rem + 0.5vw, 0.8rem);
@@ -27,13 +30,18 @@
 
 @layer base {
   body {
-    @apply text-white selection:bg-ucl-neon selection:text-ucl-dark overflow-x-hidden;
-    background-image: linear-gradient(rgba(2, 6, 23, 0.8), rgba(2, 6, 23, 0.95)), url('/bg.jpg');
+    @apply text-white selection:bg-ucl-neon selection:text-white overflow-x-hidden;
+    font-family: 'Poppins', sans-serif;
+    background-image: 
+      radial-gradient(circle at 20% 50%, rgba(139, 21, 56, 0.3) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(74, 25, 66, 0.3) 0%, transparent 50%),
+      linear-gradient(135deg, rgba(139, 21, 56, 0.4) 0%, rgba(74, 25, 66, 0.6) 50%, rgba(10, 11, 13, 0.8) 100%),
+      url('/world_cup.jpg');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
     background-repeat: no-repeat;
-    background-color: #020617;
+    background-color: #0a0b0d;
     padding-top: var(--safe-top);
     padding-bottom: var(--safe-bottom);
     padding-left: var(--safe-left);
@@ -42,6 +50,11 @@
     scroll-behavior: smooth;
     min-height: 100vh;
     width: 100%;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 0.05em;
   }
 
   * {
@@ -57,22 +70,57 @@
   }
 
   .responsive-title {
-    font-size: clamp(1.5rem, 5vw + 1rem, 4.5rem);
-    @apply font-black italic tracking-tighter leading-none uppercase;
+    font-size: clamp(2rem, 6vw + 1.5rem, 5.5rem);
+    font-family: 'Bebas Neue', sans-serif;
+    @apply font-black tracking-wide leading-none uppercase text-white;
+    text-shadow: 0 0 30px rgba(255, 42, 95, 0.3);
   }
 
   .responsive-subtitle {
     font-size: clamp(0.7rem, 2vw, 1rem);
-    @apply font-bold uppercase tracking-[0.2em] text-ucl-silver;
+    font-family: 'Montserrat', sans-serif;
+    @apply font-bold uppercase tracking-[0.3em] text-ucl-silver;
   }
 
   .glass-card {
-    @apply bg-white/[0.03] backdrop-blur-2xl border border-white/10 rounded-[2rem] shadow-2xl;
+    @apply bg-black/40 backdrop-blur-3xl border border-white/10 rounded-[2rem] shadow-2xl;
+    box-shadow: 
+      0 25px 50px -12px rgba(139, 21, 56, 0.4), 
+      0 0 0 1px rgba(212, 175, 55, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    background-image: linear-gradient(135deg, rgba(139, 21, 56, 0.1) 0%, rgba(74, 25, 66, 0.1) 100%);
+  }
+
+  .neon-border {
+    border-color: rgba(255, 42, 95, 0.6);
+    box-shadow: 
+      0 0 30px rgba(255, 42, 95, 0.4),
+      inset 0 0 20px rgba(255, 42, 95, 0.1);
+  }
+
+  .neon-border-gold {
+    border-color: rgba(212, 175, 55, 0.6);
+    box-shadow: 
+      0 0 30px rgba(212, 175, 55, 0.4),
+      inset 0 0 20px rgba(212, 175, 55, 0.1);
   }
 
   .ucl-button {
-    @apply px-8 py-3 bg-ucl-neon text-ucl-dark rounded-full font-black text-xs uppercase tracking-[0.2em] 
-    hover:bg-white hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(0,242,255,0.3)];
+    @apply px-8 py-3 text-white rounded-full font-black text-xs uppercase tracking-[0.2em] 
+    hover:scale-105 active:scale-95 transition-all;
+    background: linear-gradient(135deg, #FF2A5F 0%, #8B1538 100%);
+    box-shadow: 
+      0 0 20px rgba(255, 42, 95, 0.5),
+      0 10px 30px rgba(139, 21, 56, 0.3);
+    font-family: 'Montserrat', sans-serif;
+  }
+  
+  .ucl-button:hover {
+    background: linear-gradient(135deg, #D4AF37 0%, #FFD700 100%);
+    box-shadow: 
+      0 0 30px rgba(212, 175, 55, 0.6),
+      0 15px 40px rgba(255, 215, 0, 0.4);
+    color: #000;
   }
 
   .table-responsive {
@@ -85,7 +133,7 @@
     height: 6px;
   }
   .custom-scrollbar::-webkit-scrollbar-track {
-    background: rgba(2, 6, 23, 0.8);
+    background: rgba(10, 11, 13, 0.8);
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
     background: var(--ucl-neon);
@@ -108,3 +156,77 @@
 .text-ucl-neon { color: var(--ucl-neon); }
 .text-ucl-silver { color: var(--ucl-silver); }
 .bg-ucl-dark { background-color: var(--ucl-dark); }
+.border-ucl-neon { border-color: var(--ucl-neon); }
+.border-ucl-blue { border-color: var(--ucl-blue); }
+.text-ucl-blue { color: var(--ucl-blue); }
+
+/* World Cup Gradient Backgrounds */
+.bg-wc-gradient {
+  background: linear-gradient(135deg, var(--wc-red) 0%, var(--wc-purple) 100%);
+}
+
+.bg-wc-gradient-gold {
+  background: linear-gradient(135deg, var(--ucl-blue) 0%, var(--ucl-star) 100%);
+}
+
+/* World Cup Glow Effects */
+.wc-glow-red {
+  box-shadow: 0 0 30px rgba(139, 21, 56, 0.6);
+}
+
+.wc-glow-gold {
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
+}
+
+/* Animated Gradient Border */
+.wc-border-animated {
+  position: relative;
+  border: 2px solid transparent;
+  background: linear-gradient(var(--ucl-dark), var(--ucl-dark)) padding-box,
+              linear-gradient(135deg, var(--ucl-neon), var(--ucl-blue), var(--wc-cyan)) border-box;
+  animation: borderRotate 3s linear infinite;
+}
+
+@keyframes borderRotate {
+  0% { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+/* EA Sports Player Card Styles */
+.fut-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(139, 21, 56, 0.3) 0%, rgba(74, 25, 66, 0.3) 100%);
+  border: 2px solid var(--ucl-blue);
+  box-shadow: 
+    0 0 30px rgba(212, 175, 55, 0.3), 
+    0 10px 40px rgba(139, 21, 56, 0.4),
+    inset 0 0 20px rgba(255, 255, 255, 0.05);
+  border-radius: 1.5rem;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.fut-card:hover {
+  transform: translateY(-12px) scale(1.03);
+  border-color: var(--ucl-neon);
+  box-shadow: 
+    0 0 40px rgba(255, 42, 95, 0.5),
+    0 20px 60px rgba(139, 21, 56, 0.6);
+}
+
+.fut-card::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 60%);
+  pointer-events: none;
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { transform: rotate(0deg); opacity: 0.3; }
+  50% { transform: rotate(180deg); opacity: 0.6; }
+}

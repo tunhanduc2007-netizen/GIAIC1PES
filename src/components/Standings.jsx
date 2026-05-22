@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Trophy, Medal, Award, ChevronUp, ChevronDown, Minus, Flame, ShieldAlert } from 'lucide-react';
 import { cn, getTeamLogo } from '../lib/utils';
+import GroupStage from './GroupStage';
 
 const Standings = ({ standings = [], topScorers = [], topCards = [] }) => {
   const [showAllScorers, setShowAllScorers] = React.useState(false);
@@ -15,20 +16,20 @@ const Standings = ({ standings = [], topScorers = [], topCards = [] }) => {
       <div className="p-4 md:p-6 border-b border-white/5 bg-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <Trophy className="text-ucl-neon shrink-0" size={24} />
-          <h3 className="text-base md:text-xl font-bold italic tracking-tighter uppercase">BẢNG XẾP HẠNG <span className="text-ucl-neon">UCL</span></h3>
+          <h3 className="text-base md:text-xl font-bold italic tracking-tighter uppercase font-bebas">BẢNG XẾP HẠNG <span className="text-ucl-neon font-bebas">FIFA WORLD CUP</span></h3>
         </div>
-        <div className="flex items-center gap-4 text-[8px] md:text-xs font-bold text-ucl-silver uppercase tracking-widest">
+        <div className="flex items-center gap-4 text-[8px] md:text-xs font-bold text-ucl-silver uppercase tracking-widest font-montserrat">
           <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-green-500" /> Thắng +3đ</span>
           <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-yellow-500" /> Hòa +1đ</span>
         </div>
       </div>
 
       <div className="table-responsive">
-        <table className="w-full text-left border-collapse min-w-[600px] md:min-w-full">
+        <table className="w-full text-left border-collapse min-w-[600px] md:min-w-full font-montserrat">
           <thead>
-            <tr className="bg-ucl-blue/30 text-ucl-silver text-[10px] md:text-xs uppercase tracking-widest font-bold">
+            <tr className="bg-ucl-blue/20 text-ucl-silver text-[10px] md:text-xs uppercase tracking-widest font-bold">
               <th className="px-4 md:px-6 py-4">Hạng</th>
-              <th className="px-4 md:px-6 py-4">Người chơi</th>
+              <th className="px-4 md:px-6 py-4">Đội tuyển quốc gia</th>
               <th className="px-2 md:px-4 py-4 text-center">T</th>
               <th className="px-2 md:px-4 py-4 text-center">W</th>
               <th className="px-2 md:px-4 py-4 text-center">D</th>
@@ -57,10 +58,10 @@ const Standings = ({ standings = [], topScorers = [], topCards = [] }) => {
                     <div className="flex items-center gap-2">
                       <span className={cn(
                         "w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-[10px] md:text-sm shrink-0",
-                        index === 0 ? "bg-yellow-400 text-ucl-dark font-black" :
-                        index === 1 ? "bg-slate-400 text-ucl-dark font-black" :
-                        index === 2 ? "bg-orange-600 text-ucl-dark font-black" :
-                        "bg-white/10 text-ucl-silver"
+                        index === 0 ? "bg-yellow-400 text-ucl-dark font-black font-bebas" :
+                        index === 1 ? "bg-slate-400 text-ucl-dark font-black font-bebas" :
+                        index === 2 ? "bg-orange-600 text-ucl-dark font-black font-bebas" :
+                        "bg-white/10 text-ucl-silver font-bebas"
                       )}>
                         {index + 1}
                       </span>
@@ -68,13 +69,13 @@ const Standings = ({ standings = [], topScorers = [], topCards = [] }) => {
                   </td>
                   <td className="px-4 md:px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/5 flex items-center justify-center text-[8px] md:text-xs font-bold border border-white/10 shrink-0 shadow-lg group-hover:scale-110 transition-transform overflow-hidden">
+                      <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-white/5 flex items-center justify-center text-[8px] md:text-xs font-bold border border-white/10 shrink-0 shadow-lg group-hover:scale-110 transition-transform overflow-hidden">
                         <img src={getTeamLogo(player.name)} alt={player.name} className="w-6 h-6 md:w-8 md:h-8 object-contain" />
                       </div>
                       <div className="min-w-0">
-                        <p className={cn("text-xs md:text-sm truncate", isTop3 ? "text-white font-black italic" : "text-ucl-silver font-bold")}>{player.name}</p>
-                        <p className="text-[8px] md:text-[10px] text-ucl-silver uppercase tracking-tighter truncate">
-                           Team: <span className="text-ucl-neon font-bold">{player.owner}</span>
+                        <p className={cn("text-xs md:text-sm truncate uppercase", isTop3 ? "text-white font-black italic" : "text-ucl-silver font-bold")}>{player.name}</p>
+                        <p className="text-[8px] md:text-[10px] text-ucl-silver uppercase tracking-tighter truncate font-montserrat">
+                           Manager: <span className="text-ucl-neon font-bold">{player.owner}</span>
                         </p>
                       </div>
                     </div>
@@ -84,12 +85,12 @@ const Standings = ({ standings = [], topScorers = [], topCards = [] }) => {
                   <td className="px-2 md:px-4 py-4 text-center text-[10px] md:text-sm text-yellow-400 font-bold">{player.draws}</td>
                   <td className="px-2 md:px-4 py-4 text-center text-[10px] md:text-sm text-red-400 font-bold">{player.losses}</td>
                   <td className="px-2 md:px-4 py-4 text-center text-[10px] md:text-sm">
-                    <span className={cn(player.gd > 0 ? "text-ucl-neon" : player.gd < 0 ? "text-red-400" : "text-ucl-silver")}>
+                    <span className={cn(player.gd > 0 ? "text-ucl-neon font-bold" : player.gd < 0 ? "text-red-400 font-bold" : "text-ucl-silver")}>
                       {player.gd > 0 ? `+${player.gd}` : player.gd}
                     </span>
                   </td>
                   <td className="px-4 md:px-6 py-4 text-center bg-ucl-neon/5">
-                    <span className="text-base md:text-xl font-black italic text-ucl-neon tracking-tighter leading-none">{player.points}</span>
+                    <span className="text-base md:text-xl font-black italic text-ucl-neon tracking-tighter leading-none font-bebas">{player.points}</span>
                   </td>
                 </motion.tr>
               );
@@ -99,7 +100,7 @@ const Standings = ({ standings = [], topScorers = [], topCards = [] }) => {
         {standings.length === 0 && (
           <div className="text-center py-20 bg-white/5">
              <Trophy className="mx-auto text-ucl-blue opacity-20 mb-4" size={64} />
-             <p className="text-ucl-silver italic">Chưa có dữ liệu xếp hạng. Hãy thêm người chơi và kết quả trận đấu.</p>
+             <p className="text-ucl-silver italic font-montserrat">Chưa có dữ liệu xếp hạng. Hãy thêm người chơi và kết quả trận đấu.</p>
           </div>
         )}
       </div>
@@ -107,10 +108,10 @@ const Standings = ({ standings = [], topScorers = [], topCards = [] }) => {
       {/* Stats Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mt-6 md:mt-8 px-4 md:px-0">
         {/* Top Scorers */}
-        <div className="bg-white/5 rounded-2xl border border-white/10 overflow-hidden flex flex-col">
+        <div className="bg-white/5 rounded-2xl border border-white/10 overflow-hidden flex flex-col font-montserrat">
           <div className="p-3 md:p-4 border-b border-white/10 bg-white/5 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Flame size={16} className="text-ucl-neon" />
+              <Flame size={16} className="text-ucl-neon animate-pulse" />
               <h3 className="text-[10px] md:text-xs font-black uppercase tracking-widest text-white">Vua Phá Lưới</h3>
             </div>
             {topScorers.length > 5 && (
@@ -131,7 +132,7 @@ const Standings = ({ standings = [], topScorers = [], topCards = [] }) => {
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="text-xs md:text-sm font-black italic text-ucl-neon">{s.goals}</span>
-                  <span className="text-[8px] md:text-[10px] text-ucl-silver uppercase font-bold">Goals</span>
+                  <span className="text-[8px] md:text-[10px] text-ucl-silver uppercase font-bold ml-1">Goals</span>
                 </div>
               </div>
             )) : (
@@ -143,7 +144,7 @@ const Standings = ({ standings = [], topScorers = [], topCards = [] }) => {
         </div>
 
         {/* Discipline (Cards) */}
-        <div className="bg-white/5 rounded-2xl border border-white/10 overflow-hidden flex flex-col">
+        <div className="bg-white/5 rounded-2xl border border-white/10 overflow-hidden flex flex-col font-montserrat">
           <div className="p-3 md:p-4 border-b border-white/10 bg-white/5 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <ShieldAlert size={16} className="text-yellow-400" />
@@ -190,8 +191,8 @@ const Standings = ({ standings = [], topScorers = [], topCards = [] }) => {
       </div>
 
       {/* Footer Info */}
-      <div className="p-4 bg-white/5 text-[10px] text-ucl-silver flex items-center justify-center gap-6 uppercase tracking-widest mt-8">
-        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-ucl-neon" /> Champions League Tournament</div>
+      <div className="p-4 bg-white/5 text-[10px] text-ucl-silver flex items-center justify-center gap-6 uppercase tracking-widest mt-8 font-montserrat">
+        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-ucl-neon" /> FIFA World Cup Tournament 2026</div>
       </div>
     </div>
   );

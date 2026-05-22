@@ -1,7 +1,98 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sword, Save, User as UserIcon, Shield, Award, Clock, Flame, ShieldAlert, ChevronRight } from 'lucide-react';
+import { Sword, Save, User as UserIcon, Shield, Award, Clock, Flame, ShieldAlert, ChevronRight, Search, X } from 'lucide-react';
 import { cn, getTeamLogo } from '../lib/utils';
+
+const SearchableSelect = ({ value, onChange, players, placeholder, side }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  
+  const selectedPlayer = players.find(p => p.id === value);
+  
+  const filteredPlayers = players.filter(p => 
+    p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    p.owner.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
+  const handleSelect = (playerId) => {
+    onChange(playerId);
+    setIsOpen(false);
+    setSearchTerm('');
+  };
+  
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full bg-ucl-dark/80 border border-white/10 rounded-xl px-4 py-3 text-center text-sm font-bold hover:border-ucl-neon outline-none transition-all cursor-pointer flex items-center justify-between"
+      >
+        <span className="flex-1">{selectedPlayer ? `${selectedPlayer.name} (${selectedPlayer.owner})` : placeholder}</span>
+        <ChevronRight className={cn("transition-transform", isOpen && "rotate-90")} size={16} />
+      </button>
+      
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="absolute top-full left-0 right-0 mt-2 bg-ucl-dark/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl z-50 max-h-96 overflow-hidden"
+          >
+            {/* Search Box */}
+            <div className="p-3 border-b border-white/10 sticky top-0 bg-ucl-dark/95">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-ucl-silver" size={16} />
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Tìm kiếm đội..."
+                  className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-10 py-2 text-sm focus:border-ucl-neon outline-none"
+                  autoFocus
+                />
+                {searchTerm && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchTerm('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-ucl-silver hover:text-white"
+                  >
+                    <X size={16} />
+                  </button>
+                )}
+              </div>
+            </div>
+            
+            {/* Options List */}
+            <div className="max-h-80 overflow-y-auto custom-scrollbar">
+              {filteredPlayers.length > 0 ? (
+                filteredPlayers.map(p => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => handleSelect(p.id)}
+                    className={cn(
+                      "w-full px-4 py-3 text-left text-sm font-bold hover:bg-white/10 transition-all flex items-center gap-3",
+                      value === p.id && "bg-ucl-neon/20 text-ucl-neon"
+                    )}
+                  >
+                    <img src={getTeamLogo(p.name)} alt={p.name} className="w-6 h-6 object-contain" />
+                    <span>{p.name}</span>
+                    <span className="text-xs opacity-60">({p.owner})</span>
+                  </button>
+                ))
+              ) : (
+                <div className="px-4 py-8 text-center text-ucl-silver text-sm">
+                  Không tìm thấy đội nào
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
 
 const MatchEntry = ({ players, matches, setMatches }) => {
   const [playerAId, setPlayerAId] = useState('');
@@ -94,14 +185,13 @@ const MatchEntry = ({ players, matches, setMatches }) => {
                          <img src={getTeamLogo(pA.name)} alt={pA.name} className="w-14 h-14 object-contain" />
                        ) : '?'}
                     </div>
-                    <select 
-                      value={playerAId} 
-                      onChange={(e) => setPlayerAId(e.target.value)}
-                      className="w-full bg-ucl-dark/80 border border-white/10 rounded-xl px-4 py-3 text-center text-sm font-bold focus:border-ucl-neon outline-none appearance-none cursor-pointer"
-                    >
-                      <option value="">CHỌN ĐỘI A</option>
-                      {players.map(p => <option key={p.id} value={p.id}>{p.name} ({p.owner})</option>)}
-                    </select>
+                    <SearchableSelect
+                      value={playerAId}
+                      onChange={setPlayerAId}
+                      players={players}
+                      placeholder="CHỌN ĐỘI A"
+                      side="A"
+                    />
                  </div>
                  
                  <div className="space-y-3">
@@ -122,14 +212,16 @@ const MatchEntry = ({ players, matches, setMatches }) => {
                     <input 
                       type="number" 
                       value={scoreA} 
-                      onChange={(e) => setScoreA(e.target.value)}
+                      onChange={(e) => setScoreA(Math.max(0, parseInt(e.target.value) || 0))}
+                      min="0"
                       className="w-20 h-24 bg-ucl-dark/90 border-2 border-white/10 rounded-3xl text-center text-5xl font-black italic focus:border-ucl-neon focus:shadow-[0_0_20px_rgba(0,242,255,0.3)] outline-none transition-all"
                     />
                     <div className="w-4 h-1 bg-ucl-neon rounded-full" />
                     <input 
                       type="number" 
                       value={scoreB} 
-                      onChange={(e) => setScoreB(e.target.value)}
+                      onChange={(e) => setScoreB(Math.max(0, parseInt(e.target.value) || 0))}
+                      min="0"
                       className="w-20 h-24 bg-ucl-dark/90 border-2 border-white/10 rounded-3xl text-center text-5xl font-black italic focus:border-ucl-neon focus:shadow-[0_0_20px_rgba(0,242,255,0.3)] outline-none transition-all"
                     />
                  </div>
@@ -147,14 +239,13 @@ const MatchEntry = ({ players, matches, setMatches }) => {
                          <img src={getTeamLogo(pB.name)} alt={pB.name} className="w-14 h-14 object-contain" />
                        ) : '?'}
                     </div>
-                    <select 
-                      value={playerBId} 
-                      onChange={(e) => setPlayerBId(e.target.value)}
-                      className="w-full bg-ucl-dark/80 border border-white/10 rounded-xl px-4 py-3 text-center text-sm font-bold focus:border-ucl-neon outline-none appearance-none cursor-pointer"
-                    >
-                      <option value="">CHỌN ĐỘI B</option>
-                      {players.map(p => <option key={p.id} value={p.id}>{p.name} ({p.owner})</option>)}
-                    </select>
+                    <SearchableSelect
+                      value={playerBId}
+                      onChange={setPlayerBId}
+                      players={players}
+                      placeholder="CHỌN ĐỘI B"
+                      side="B"
+                    />
                  </div>
 
                  <div className="space-y-3">
@@ -248,7 +339,7 @@ const MatchEntry = ({ players, matches, setMatches }) => {
                  </div>
                  <div className="text-xs space-y-1">
                     <p className="flex justify-between"><span>Thời gian:</span> <span className="text-white">{new Date().toLocaleTimeString()}</span></p>
-                    <p className="flex justify-between"><span>Giải đấu:</span> <span className="text-ucl-neon font-bold">Champions League</span></p>
+                    <p className="flex justify-between"><span>Giải đấu:</span> <span className="text-ucl-neon font-bold">FIFA World Cup</span></p>
                  </div>
               </div>
 

@@ -3,20 +3,58 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Shield, Trophy, RotateCw, Sword, Zap, AlertCircle, History, ChevronRight, X } from 'lucide-react';
 import { cn, getTeamLogo } from '../lib/utils';
 
-const TEAMS_BU = [
-  { name: 'Tottenham', color: '#1e3a8a' },
-  { name: 'Olympic Lyon', color: '#1d4ed8' },
-  { name: 'Real Madrid', color: '#3b82f6' },
-  { name: 'PSV', color: '#f97316' },
-  { name: 'Bayern', color: '#dc2626' },
+const TEAMS_THINH = [
+  { name: 'Qatar', color: '#7c2d12' },
+  { name: 'Jordan', color: '#dc2626' },
+  { name: 'Uzbekistan', color: '#38bdf8' },
+  { name: 'Iran', color: '#15803d' },
+  { name: 'Nhật Bản', color: '#1e40af' },
+  { name: 'DR Congo', color: '#38bdf8' },
+  { name: 'Tunisia', color: '#dc2626' },
+  { name: 'Senegal', color: '#15803d' },
+  { name: 'Algeria', color: '#15803d' },
+  { name: 'Nam Phi', color: '#15803d' },
+  { name: 'Curaçao', color: '#1e40af' },
+  { name: 'Mexico', color: '#15803d' },
+  { name: 'Panama', color: '#dc2626' },
+  { name: 'Uruguay', color: '#38bdf8' },
+  { name: 'Brazil', color: '#fbbf24' },
+  { name: 'Ecuador', color: '#fbbf24' },
+  { name: 'Tây Ban Nha', color: '#facc15' },
+  { name: 'Anh', color: '#1e3a8a' },
+  { name: 'Scotland', color: '#1e3a8a' },
+  { name: 'Bỉ', color: '#be123c' },
+  { name: 'Thổ Nhĩ Kỳ', color: '#dc2626' },
+  { name: 'Bosnia & Herzegovina', color: '#1e40af' },
+  { name: 'Croatia', color: '#dc2626' },
 ];
 
-const TEAMS_THINH = [
-  { name: 'Man City', color: '#0ea5e9' },
-  { name: 'Marseille', color: '#008bb4' },
-  { name: 'Atletico', color: '#c4122e' },
-  { name: 'Villarreal CF', color: '#facc15' },
-  { name: 'Arsenal', color: '#ef4444' },
+const TEAMS_BU = [
+  { name: 'Iraq', color: '#111827' },
+  { name: 'Australia', color: '#fbbf24' },
+  { name: 'Saudi Arabia', color: '#15803d' },
+  { name: 'Hàn Quốc', color: '#dc2626' },
+  { name: 'Ghana', color: '#fbbf24' },
+  { name: 'Cape Verde', color: '#1e40af' },
+  { name: 'Bờ Biển Ngà', color: '#f97316' },
+  { name: 'Maroc', color: '#0f766e' },
+  { name: 'Ai Cập', color: '#dc2626' },
+  { name: 'Haiti', color: '#1e40af' },
+  { name: 'Mỹ', color: '#b91c1c' },
+  { name: 'Canada', color: '#dc2626' },
+  { name: 'Đức', color: '#111827' },
+  { name: 'CH Séc', color: '#1e40af' },
+  { name: 'Hà Lan', color: '#f97316' },
+  { name: 'Pháp', color: '#1e3a8a' },
+  { name: 'Thụy Sĩ', color: '#dc2626' },
+  { name: 'Áo', color: '#dc2626' },
+  { name: 'Na Uy', color: '#1e40af' },
+  { name: 'New Zealand', color: '#111827' },
+  { name: 'Bồ Đào Nha', color: '#15803d' },
+  { name: 'Colombia', color: '#fbbf24' },
+  { name: 'Thụy Điển', color: '#1e40af' },
+  { name: 'Paraguay', color: '#dc2626' },
+  { name: 'Argentina', color: '#60a5fa' },
 ];
 
 const Wheel = ({ teams, onResult, label, side, isLocked }) => {
@@ -59,10 +97,10 @@ const Wheel = ({ teams, onResult, label, side, isLocked }) => {
       ctx.beginPath();
       ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillStyle = '#64748b';
-      ctx.font = 'bold 14px Inter';
+      ctx.fillStyle = '#a3a3c2';
+      ctx.font = 'bold 14px Montserrat';
       ctx.textAlign = 'center';
-      ctx.fillText('ĐÃ HẾT ĐỘI', centerX, centerY);
+      ctx.fillText('ĐÃ HẾT ĐỘI TUYỂN', centerX, centerY);
       return;
     }
 
@@ -79,12 +117,12 @@ const Wheel = ({ teams, onResult, label, side, isLocked }) => {
 
       const gradient = ctx.createRadialGradient(centerX, centerY, 50, centerX, centerY, radius);
       gradient.addColorStop(0, team.color);
-      gradient.addColorStop(1, '#000');
+      gradient.addColorStop(1, '#050507');
       
       ctx.fillStyle = gradient;
       ctx.fill();
       
-      ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+      ctx.strokeStyle = 'rgba(255,255,255,0.08)';
       ctx.lineWidth = 1;
       ctx.stroke();
 
@@ -93,27 +131,27 @@ const Wheel = ({ teams, onResult, label, side, isLocked }) => {
       ctx.rotate(startAngle + sliceAngle / 2);
       ctx.textAlign = 'right';
       ctx.fillStyle = 'white';
-      ctx.font = `900 italic ${canvasSize < 300 ? '8px' : '10px'} "Inter"`;
+      ctx.font = `900 italic ${canvasSize < 300 ? '9px' : '11px'} "Montserrat"`;
       ctx.fillText(team.name.toUpperCase(), radius - 30, 4);
       ctx.restore();
     });
 
     ctx.beginPath();
     ctx.arc(centerX, centerY, radius + 2, 0, Math.PI * 2);
-    ctx.strokeStyle = side === 'BU' ? '#00f2ff' : '#005cff';
+    ctx.strokeStyle = side === 'BU' ? '#ff2a5f' : '#d4af37';
     ctx.lineWidth = 4;
     ctx.stroke();
 
     ctx.beginPath();
     ctx.arc(centerX, centerY, canvasSize * 0.1, 0, Math.PI * 2);
-    ctx.fillStyle = '#0f172a';
+    ctx.fillStyle = '#0a0b0d';
     ctx.fill();
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
     ctx.lineWidth = 2;
     ctx.stroke();
 
     ctx.fillStyle = 'white';
-    ctx.font = `black ${canvasSize < 300 ? '10px' : '12px'} Inter`;
+    ctx.font = `900 ${canvasSize < 300 ? '10px' : '12px'} Montserrat`;
     ctx.textAlign = 'center';
     ctx.fillText(side, centerX, centerY + 5);
   };
@@ -162,7 +200,7 @@ const Wheel = ({ teams, onResult, label, side, isLocked }) => {
 
       <div className="flex items-center gap-3">
         <Shield className={cn(side === 'BU' ? "text-ucl-neon" : "text-ucl-blue")} size={24} />
-        <h3 className="text-xl sm:text-2xl font-black italic tracking-tighter uppercase">{label}</h3>
+        <h3 className="text-xl sm:text-2xl font-black italic tracking-tighter uppercase font-bebas">{label}</h3>
       </div>
 
       <div className="relative">
@@ -170,7 +208,7 @@ const Wheel = ({ teams, onResult, label, side, isLocked }) => {
           ref={canvasRef} 
           width={canvasSize} 
           height={canvasSize} 
-          className="drop-shadow-[0_0_30px_rgba(0,0,0,0.5)] transition-transform duration-500 hover:scale-105 cursor-pointer"
+          className="drop-shadow-[0_0_30px_rgba(0,0,0,0.6)] transition-transform duration-500 hover:scale-105 cursor-pointer"
           onClick={spin}
         />
         <div className="absolute right-[-10px] top-1/2 -translate-y-1/2 z-20">
@@ -189,8 +227,8 @@ const Wheel = ({ teams, onResult, label, side, isLocked }) => {
           isSpinning || availableTeams.length === 0 || isLocked
             ? "bg-white/5 text-ucl-silver cursor-not-allowed"
             : side === 'BU'
-              ? "bg-ucl-neon text-ucl-dark hover:shadow-ucl-neon/40 hover:scale-[1.02]"
-              : "bg-ucl-blue text-white hover:shadow-ucl-blue/40 hover:scale-[1.02]"
+              ? "bg-ucl-neon text-white hover:shadow-ucl-neon/40 hover:scale-[1.02]"
+              : "bg-ucl-blue text-black hover:shadow-ucl-blue/40 hover:scale-[1.02]"
         )}
       >
         {isSpinning ? <RotateCw className="animate-spin" size={24} /> : <Zap size={24} className="fill-current" />}
@@ -199,7 +237,7 @@ const Wheel = ({ teams, onResult, label, side, isLocked }) => {
 
       <AnimatePresence>
         {selectedTeam && (
-          <motion.div initial={{ opacity: 0, scale: 0.8, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} className="text-center">
+          <motion.div initial={{ opacity: 0, scale: 0.8, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} className="text-center font-montserrat">
             <p className="text-[10px] font-bold text-ucl-silver uppercase tracking-[0.3em] mb-1">Kết quả</p>
             <h4 className="text-lg sm:text-xl font-black italic text-white tracking-tight">{selectedTeam.name}</h4>
           </motion.div>
@@ -249,12 +287,12 @@ const AdvancedWheel = ({ onMatchCreated }) => {
   return (
     <div className="space-y-12 pb-32">
       <div className="text-center space-y-4 px-4">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-black italic tracking-tighter uppercase text-white leading-tight">
-          AUTOMATIC <span className="text-ucl-neon">PAIRING SYSTEM</span>
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-black italic tracking-tighter uppercase text-white leading-tight font-bebas">
+          HỆ THỐNG <span className="text-ucl-neon">BỐC THĂM TỰ ĐỘNG</span>
         </h2>
         <div className="flex flex-wrap items-center justify-center gap-4">
-          <span className="px-4 py-1 bg-ucl-neon/20 border border-ucl-neon/40 rounded-full text-[10px] font-black text-ucl-neon uppercase tracking-widest">ROUND OF 16</span>
-          <button className="text-ucl-silver text-[10px] font-bold uppercase tracking-widest hover:text-white transition-colors">RESET ALL</button>
+          <span className="px-4 py-1 bg-ucl-neon/20 border border-ucl-neon/40 rounded-full text-[10px] font-black text-ucl-neon uppercase tracking-widest font-montserrat">ROUND OF 16</span>
+          <button className="text-ucl-silver text-[10px] font-bold uppercase tracking-widest hover:text-white transition-colors font-montserrat">RESET ALL</button>
         </div>
       </div>
 
@@ -262,7 +300,7 @@ const AdvancedWheel = ({ onMatchCreated }) => {
         <div className="relative">
           <Wheel side="BU" label="BỐC THĂM BU" teams={TEAMS_BU} onResult={setResultBU} isLocked={!!resultBU} />
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="w-16 h-16 rounded-full bg-ucl-dark border-4 border-ucl-neon shadow-[0_0_20px_rgba(0,242,255,0.5)] flex items-center justify-center z-20 overflow-hidden">
+            <div className="w-16 h-16 rounded-full bg-ucl-dark border-4 border-ucl-neon shadow-[0_0_20px_rgba(255,42,95,0.5)] flex items-center justify-center z-20 overflow-hidden">
                {resultBU ? (
                  <motion.img 
                    initial={{ scale: 0 }}
@@ -272,15 +310,15 @@ const AdvancedWheel = ({ onMatchCreated }) => {
                    className="w-10 h-10 object-contain" 
                  />
                ) : (
-                 <span className="text-[10px] font-black text-ucl-neon uppercase tracking-tighter">BU</span>
+                 <span className="text-[10px] font-black text-ucl-neon uppercase tracking-tighter font-bebas">BU</span>
                )}
             </div>
           </div>
         </div>
         
         <div className="flex lg:flex-col items-center gap-4">
-          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-ucl-dark border-4 border-ucl-neon/30 flex items-center justify-center shadow-[0_0_30px_rgba(0,242,255,0.2)]">
-            <span className="text-xl sm:text-2xl font-black italic text-ucl-neon">VS</span>
+          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-ucl-dark border-4 border-ucl-neon/30 flex items-center justify-center shadow-[0_0_30px_rgba(255,42,95,0.2)]">
+            <span className="text-xl sm:text-2xl font-black italic text-ucl-neon font-bebas">VS</span>
           </div>
           <div className="hidden lg:block w-px h-32 bg-gradient-to-b from-ucl-neon/50 to-transparent" />
           <div className="lg:hidden w-16 h-px bg-gradient-to-r from-ucl-neon/50 to-transparent" />
@@ -289,7 +327,7 @@ const AdvancedWheel = ({ onMatchCreated }) => {
         <div className="relative">
           <Wheel side="THỊNH" label="BỐC THĂM THỊNH" teams={TEAMS_THINH} onResult={setResultThinh} isLocked={!!resultThinh} />
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="w-16 h-16 rounded-full bg-ucl-dark border-4 border-ucl-neon shadow-[0_0_20px_rgba(0,242,255,0.5)] flex items-center justify-center z-20 overflow-hidden">
+            <div className="w-16 h-16 rounded-full bg-ucl-dark border-4 border-ucl-neon shadow-[0_0_20px_rgba(255,42,95,0.5)] flex items-center justify-center z-20 overflow-hidden">
                {resultThinh ? (
                  <motion.img 
                    initial={{ scale: 0 }}
@@ -299,7 +337,7 @@ const AdvancedWheel = ({ onMatchCreated }) => {
                    className="w-10 h-10 object-contain" 
                  />
                ) : (
-                 <span className="text-[10px] font-black text-ucl-neon uppercase tracking-tighter">THỊNH</span>
+                 <span className="text-[10px] font-black text-ucl-neon uppercase tracking-tighter font-bebas">THỊNH</span>
                )}
             </div>
           </div>
@@ -311,13 +349,13 @@ const AdvancedWheel = ({ onMatchCreated }) => {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-ucl-dark/90 backdrop-blur-md">
             <motion.div initial={{ scale: 0.5 }} animate={{ scale: 1 }} className="relative glass-card p-8 md:p-12 border-4 border-ucl-neon max-w-2xl w-full text-center space-y-6">
                <button onClick={() => { setResultBU(null); setResultThinh(null); }} className="absolute top-4 right-4 text-ucl-silver"><X size={24} /></button>
-               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-12">
+               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-12 font-bebas">
                   <div className="text-2xl sm:text-4xl font-black italic text-white uppercase">{resultBU.name}</div>
                   <div className="text-5xl font-black italic text-ucl-neon">VS</div>
                   <div className="text-2xl sm:text-4xl font-black italic text-white uppercase">{resultThinh.name}</div>
                </div>
-               <h3 className="text-xl sm:text-2xl font-black italic uppercase tracking-widest text-ucl-neon animate-pulse">MATCH CREATED!</h3>
-               <p className="text-ucl-silver font-bold uppercase tracking-widest text-[10px]">Adding to schedule...</p>
+               <h3 className="text-xl sm:text-2xl font-black italic uppercase tracking-widest text-ucl-neon animate-pulse font-bebas">MATCH CREATED!</h3>
+               <p className="text-ucl-silver font-bold uppercase tracking-widest text-[10px] font-montserrat">Adding to schedule...</p>
             </motion.div>
           </motion.div>
         )}
@@ -327,7 +365,7 @@ const AdvancedWheel = ({ onMatchCreated }) => {
         <div className="flex items-center justify-between">
            <div className="flex items-center gap-3">
               <History className="text-ucl-neon" size={24} />
-              <h3 className="text-xl sm:text-2xl font-black italic uppercase tracking-tighter text-white">LỊCH THI ĐẤU <span className="text-ucl-neon">CHỜ ĐÁ</span></h3>
+              <h3 className="text-xl sm:text-2xl font-black italic uppercase tracking-tighter text-white font-bebas">LỊCH THI ĐẤU <span className="text-ucl-neon font-bebas">CHỜ ĐÁ</span></h3>
            </div>
         </div>
         
@@ -337,17 +375,17 @@ const AdvancedWheel = ({ onMatchCreated }) => {
               <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
                 <div className="flex items-center gap-4 sm:gap-12 flex-1 justify-center">
                   <div className="text-center min-w-[80px] sm:min-w-[120px]">
-                      <span className="text-[8px] font-black text-ucl-neon block mb-1">BU</span>
-                      <span className="text-lg sm:text-xl font-black italic text-white uppercase">{match.teamA}</span>
+                      <span className="text-[8px] font-black text-ucl-neon block mb-1 font-montserrat">BU</span>
+                      <span className="text-lg sm:text-xl font-black italic text-white uppercase font-bebas">{match.teamA}</span>
                   </div>
-                  <div className="text-lg font-black italic text-ucl-neon opacity-30">VS</div>
+                  <div className="text-lg font-black italic text-ucl-neon opacity-30 font-bebas">VS</div>
                   <div className="text-center min-w-[80px] sm:min-w-[120px]">
-                      <span className="text-[8px] font-black text-ucl-blue block mb-1">THỊNH</span>
-                      <span className="text-lg sm:text-xl font-black italic text-white uppercase">{match.teamB}</span>
+                      <span className="text-[8px] font-black text-ucl-blue block mb-1 font-montserrat">THỊNH</span>
+                      <span className="text-lg sm:text-xl font-black italic text-white uppercase font-bebas">{match.teamB}</span>
                   </div>
                 </div>
                 <div className="flex sm:flex-col items-center gap-3 sm:pl-8 sm:border-l border-white/5">
-                   <div className="px-3 py-1 bg-ucl-neon/10 border border-ucl-neon/30 rounded-lg whitespace-nowrap"><span className="text-[8px] font-black text-ucl-neon uppercase tracking-widest">MATCH {history.length - idx}</span></div>
+                   <div className="px-3 py-1 bg-ucl-neon/10 border border-ucl-neon/30 rounded-lg whitespace-nowrap"><span className="text-[8px] font-black text-ucl-neon uppercase tracking-widest font-montserrat">MATCH {history.length - idx}</span></div>
                    <button onClick={() => window.dispatchEvent(new CustomEvent('changeTab', { detail: 'tourney' }))} className="p-2 bg-white/5 rounded-lg text-ucl-neon hover:bg-ucl-neon hover:text-ucl-dark transition-all"><ChevronRight size={16} /></button>
                 </div>
               </div>
