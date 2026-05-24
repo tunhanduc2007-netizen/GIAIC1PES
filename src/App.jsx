@@ -39,10 +39,10 @@ import { supabase } from './lib/supabase';
 // --- COMPONENTS ---
 import Dashboard from './components/Dashboard';
 import Standings from './components/Standings';
+import GroupStage from './components/GroupStage';
 import Players from './components/Players';
 import MatchEntry from './components/MatchEntry';
 import AdvancedWheel from './components/AdvancedWheel';
-import TournamentManager from './components/TournamentManager';
 import MatchHistory from './components/MatchHistory';
 import Rewards from './components/Rewards';
 import CustomTable from './components/CustomTable';
@@ -88,7 +88,7 @@ const INITIAL_PLAYERS = [
   { id: '33', name: 'Haiti', team: 'Haiti', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
   { id: '34', name: 'Mỹ', team: 'Mỹ', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
   { id: '35', name: 'Canada', team: 'Canada', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '36', name: 'Đức', team: 'Đức', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  { id: '36', name: 'Đức', team: 'Đức', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
   { id: '37', name: 'CH Séc', team: 'CH Séc', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
   { id: '38', name: 'Hà Lan', team: 'Hà Lan', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
   { id: '39', name: 'Pháp', team: 'Pháp', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
@@ -310,10 +310,10 @@ const App = () => {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'standings', label: 'Bảng xếp hạng', icon: Trophy },
+    { id: 'groupStage', label: 'Vòng bảng', icon: Users },
     { id: 'players', label: 'Đội tuyển', icon: Shield },
     { id: 'match-entry', label: 'Nhập kết quả', icon: Edit },
     { id: 'wheel', label: 'Vòng quay bốc thăm', icon: RotateCw },
-    { id: 'tournament', label: 'Cặp đấu & Nhánh', icon: Swords },
     { id: 'history', label: 'Lịch sử đấu', icon: History },
     { id: 'rewards', label: 'Vinh danh', icon: Award },
     { id: 'backup', label: 'Sao lưu & Khôi phục', icon: Settings },
@@ -478,20 +478,17 @@ const App = () => {
                   topCards={standings.topCards}
                 />
               )}
+              {activeTab === 'groupStage' && (
+                <GroupStage 
+                  players={standings.standings} 
+                />
+              )}
               {activeTab === 'players' && <Players players={players} setPlayers={setPlayers} />}
               {activeTab === 'match-entry' && <MatchEntry players={players} matches={matches} setMatches={setMatches} />}
               {activeTab === 'wheel' && (
                 <AdvancedWheel 
+                  players={standings.standings}
                   onMatchCreated={(newMatch) => setTourneyMatches(prev => [newMatch, ...prev])} 
-                />
-              )}
-              {activeTab === 'tournament' && (
-                <TournamentManager 
-                  tourneyMatches={tourneyMatches} 
-                  setTourneyMatches={setTourneyMatches}
-                  matches={matches}
-                  setMatches={setMatches}
-                  players={players}
                 />
               )}
               {activeTab === 'history' && <MatchHistory matches={matches} setMatches={setMatches} players={players} />}

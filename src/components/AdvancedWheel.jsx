@@ -66,6 +66,11 @@ const Wheel = ({ teams, onResult, label, side, isLocked }) => {
   const [canvasSize, setCanvasSize] = useState(350);
 
   useEffect(() => {
+    setAvailableTeams(teams);
+    setSelectedTeam(null);
+  }, [teams]);
+
+  useEffect(() => {
     const updateSize = () => {
       const width = window.innerWidth;
       if (width < 640) setCanvasSize(280);
@@ -247,11 +252,69 @@ const Wheel = ({ teams, onResult, label, side, isLocked }) => {
   );
 };
 
-const AdvancedWheel = ({ onMatchCreated }) => {
+const AdvancedWheel = ({ players = [], onMatchCreated }) => {
+  const [drawMode, setDrawMode] = useState('all'); // 'all' or 'qualified'
   const [resultBU, setResultBU] = useState(null);
   const [resultThinh, setResultThinh] = useState(null);
   const [history, setHistory] = useState([]);
   const processedPairRef = useRef(null);
+
+  // 12 Groups definition to map qualified teams
+  const groups = {
+    'A': ['Iran', 'Ai Cập', 'Bỉ', 'Saudi Arabia'],
+    'B': ['Jordan', 'Iraq', 'Tây Ban Nha', 'Pháp'],
+    'C': ['Thổ Nhĩ Kỳ', 'Hà Lan', 'Brazil', 'Argentina'],
+    'D': ['Croatia', 'Colombia', 'Senegal', 'Thụy Sĩ'],
+    'E': ['Uruguay', 'Haiti', 'Qatar', 'Bồ Đào Nha'],
+    'F': ['Uzbekistan', 'New Zealand', 'Algeria', 'Hàn Quốc'],
+    'G': ['Bosnia & Herzegovina', 'Paraguay', 'Áo', 'Scotland'],
+    'H': ['Tunisia', 'Na Uy', 'DR Congo', 'Australia'],
+    'I': ['Curaçao', 'Cape Verde', 'Canada', 'Đức'],
+    'J': ['Mexico', 'CH Séc', 'Ecuador', 'Maroc'],
+    'K': ['Nhật Bản', 'Ghana', 'Nam Phi', 'Thụy Điển'],
+    'L': ['Anh', 'Mỹ', 'Bờ Biển Ngà', 'Panama'],
+  };
+
+  // Compute qualified teams (Top 2 from each group) dynamically
+  const { thinhQualified, buQualified } = React.useMemo(() => {
+    const thinhList = [];
+    const buList = [];
+
+    // Map of colors for easy lookup
+    const colorsMap = {};
+    TEAMS_THINH.forEach(t => { colorsMap[t.name] = t.color; });
+    TEAMS_BU.forEach(t => { colorsMap[t.name] = t.color; });
+
+    Object.entries(groups).forEach(([groupName, teams]) => {
+      const sorted = teams
+        .map(name => {
+          const found = players.find(p => p.name.trim().toLowerCase() === name.trim().toLowerCase());
+          return found || { name, owner: 'Chưa rõ', points: 0, gd: 0, gf: 0 };
+        })
+        .sort((a, b) => {
+          if (b.points !== a.points) return b.points - a.points;
+          if (b.gd !== a.gd) return b.gd - a.gd;
+          return b.gf - a.gf;
+        });
+
+      // Top 2 qualify
+      sorted.slice(0, 2).forEach(team => {
+        const owner = String(team.owner).toUpperCase().trim();
+        const color = colorsMap[team.name] || '#15803d'; // fallback green
+        
+        if (owner === 'THỊNH') {
+          thinhList.push({ name: team.name, color });
+        } else if (owner === 'BU') {
+          buList.push({ name: team.name, color });
+        }
+      });
+    });
+
+    return { thinhQualified: thinhList, buQualified: buList };
+  }, [players]);
+
+  const thinhTeamsList = drawMode === 'qualified' ? thinhQualified : TEAMS_THINH;
+  const buTeamsList = drawMode === 'qualified' ? buQualified : TEAMS_BU;
 
   useEffect(() => {
     if (resultBU && resultThinh) {
@@ -290,15 +353,68 @@ const AdvancedWheel = ({ onMatchCreated }) => {
         <h2 className="text-3xl sm:text-4xl md:text-5xl font-black italic tracking-tighter uppercase text-white leading-tight font-bebas">
           HỆ THỐNG <span className="text-ucl-neon">BỐC THĂM TỰ ĐỘNG</span>
         </h2>
-        <div className="flex flex-wrap items-center justify-center gap-4">
-          <span className="px-4 py-1 bg-ucl-neon/20 border border-ucl-neon/40 rounded-full text-[10px] font-black text-ucl-neon uppercase tracking-widest font-montserrat">ROUND OF 16</span>
-          <button className="text-ucl-silver text-[10px] font-bold uppercase tracking-widest hover:text-white transition-colors font-montserrat">RESET ALL</button>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <button 
+            onClick={() => setDrawMode('all')}
+            className={cn(
+              "px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all",
+              drawMode === 'all' 
+                ? "bg-ucl-neon text-white shadow-[0_0_15px_rgba(255,42,95,0.4)]" 
+                : "bg-white/5 text-ucl-silver hover:bg-white/10"
+            )}
+          >
+            Tất cả 48 đội
+          </button>
+          <button 
+            onClick={() => setDrawMode('qualified')}
+            className={cn(
+              "px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2",
+              drawMode === 'qualified' 
+                ? "bg-ucl-neon text-white shadow-[0_0_15px_rgba(255,42,95,0.4)]" 
+                : "bg-white/5 text-ucl-silver hover:bg-white/10"
+            )}
+          >
+            <Trophy size={12} className="text-yellow-400" /> Đội đi tiếp (Top 2)
+          </button>
         </div>
       </div>
 
+      {/* Qualified Teams Section */}
+      {drawMode === 'qualified' && (
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-4xl mx-auto p-6 glass-card border-white/5 text-center space-y-4"
+        >
+          <div className="flex items-center justify-center gap-2">
+            <Trophy className="text-yellow-400 animate-pulse" size={18} />
+            <h4 className="text-xs font-black uppercase tracking-widest text-white">24 Đội tuyển Vượt Qua Vòng Bảng</h4>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3 text-[10px] font-montserrat">
+            {thinhQualified.map(t => (
+              <div key={t.name} className="flex items-center gap-1.5 p-2 bg-ucl-neon/5 border border-ucl-neon/10 rounded-xl justify-center">
+                <div className="w-4 h-4 rounded bg-white/5 flex items-center justify-center overflow-hidden shrink-0"><img src={getTeamLogo(t.name)} alt="" className="w-3 h-3 object-contain" /></div>
+                <span className="font-bold text-white uppercase truncate">{t.name}</span>
+                <span className="text-[7px] text-ucl-neon font-black">T</span>
+              </div>
+            ))}
+            {buQualified.map(t => (
+              <div key={t.name} className="flex items-center gap-1.5 p-2 bg-ucl-blue/5 border border-ucl-blue/10 rounded-xl justify-center">
+                <div className="w-4 h-4 rounded bg-white/5 flex items-center justify-center overflow-hidden shrink-0"><img src={getTeamLogo(t.name)} alt="" className="w-3 h-3 object-contain" /></div>
+                <span className="font-bold text-white uppercase truncate">{t.name}</span>
+                <span className="text-[7px] text-ucl-blue font-black">B</span>
+              </div>
+            ))}
+          </div>
+          {thinhQualified.length === 0 && buQualified.length === 0 && (
+            <p className="text-ucl-silver italic text-xs py-4">Chưa có kết quả vòng bảng. Hãy hoàn thành các trận đấu để lấy danh sách.</p>
+          )}
+        </motion.div>
+      )}
+
       <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16 max-w-6xl mx-auto px-4">
         <div className="relative">
-          <Wheel side="BU" label="BỐC THĂM BU" teams={TEAMS_BU} onResult={setResultBU} isLocked={!!resultBU} />
+          <Wheel side="BU" label="BỐC THĂM BU" teams={buTeamsList} onResult={setResultBU} isLocked={!!resultBU} />
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="w-16 h-16 rounded-full bg-ucl-dark border-4 border-ucl-neon shadow-[0_0_20px_rgba(255,42,95,0.5)] flex items-center justify-center z-20 overflow-hidden">
                {resultBU ? (
@@ -325,7 +441,7 @@ const AdvancedWheel = ({ onMatchCreated }) => {
         </div>
 
         <div className="relative">
-          <Wheel side="THỊNH" label="BỐC THĂM THỊNH" teams={TEAMS_THINH} onResult={setResultThinh} isLocked={!!resultThinh} />
+          <Wheel side="THỊNH" label="BỐC THĂM THỊNH" teams={thinhTeamsList} onResult={setResultThinh} isLocked={!!resultThinh} />
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="w-16 h-16 rounded-full bg-ucl-dark border-4 border-ucl-neon shadow-[0_0_20px_rgba(255,42,95,0.5)] flex items-center justify-center z-20 overflow-hidden">
                {resultThinh ? (

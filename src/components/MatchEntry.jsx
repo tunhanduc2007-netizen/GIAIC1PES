@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sword, Save, User as UserIcon, Shield, Award, Clock, Flame, ShieldAlert, ChevronRight, Search, X } from 'lucide-react';
 import { cn, getTeamLogo } from '../lib/utils';
+import confetti from 'canvas-confetti';
 
 const SearchableSelect = ({ value, onChange, players, placeholder, side }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -107,6 +108,52 @@ const MatchEntry = ({ players, matches, setMatches }) => {
   const [redB, setRedB] = useState('');
   const [mvpId, setMvpId] = useState('');
 
+  const playWhistleSound = () => {
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+      const ctx = new AudioContext();
+      
+      const playTone = (time, duration, freq) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, time);
+        
+        // Fast vibrato to mimic whistle pea rattle
+        const fm = ctx.createOscillator();
+        const fmGain = ctx.createGain();
+        fm.frequency.value = 35;
+        fmGain.gain.value = 60;
+        
+        fm.connect(fmGain.gain);
+        fmGain.connect(osc.frequency);
+        
+        // Envelope
+        gain.gain.setValueAtTime(0, time);
+        gain.gain.linearRampToValueAtTime(0.4, time + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
+        
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        
+        fm.start(time);
+        osc.start(time);
+        
+        fm.stop(time + duration);
+        osc.stop(time + duration);
+      };
+
+      const now = ctx.currentTime;
+      // Double whistle: Toot Toot!
+      playTone(now, 0.2, 1800);
+      playTone(now + 0.28, 0.4, 1800);
+    } catch (e) {
+      console.log('Web Audio Context error:', e);
+    }
+  };
+
   const handleSaveMatch = (e) => {
     e.preventDefault();
     if (!playerAId || !playerBId || playerAId === playerBId) {
@@ -133,6 +180,17 @@ const MatchEntry = ({ players, matches, setMatches }) => {
     };
 
     setMatches([...matches, newMatch]);
+    
+    // Play referee whistle sound
+    playWhistleSound();
+
+    // Trigger visual confetti fireworks!
+    confetti({
+      particleCount: 150,
+      spread: 80,
+      origin: { y: 0.6 },
+      colors: ['#ff2a5f', '#ffd700', '#00b8ff', '#ffffff']
+    });
     
     // Reset form
     setPlayerAId('');

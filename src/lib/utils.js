@@ -3,20 +3,24 @@ export const cn = (...inputs) => {
 };
 
 export const calculateStandings = (players, matches) => {
-  // Khởi tạo bảng thống kê sạch
+  // Khởi tạo bảng thống kê sạch với mảng phong độ rỗng
   const stats = {};
   players.forEach(p => {
     stats[String(p.id)] = { 
       ...p, 
       matches: 0, wins: 0, draws: 0, losses: 0, 
-      gf: 0, ga: 0, gd: 0, points: 0 
+      gf: 0, ga: 0, gd: 0, points: 0,
+      form: [] // Mảng phong độ gần đây
     };
   });
 
   const scorers = {};
   const cards = {};
 
-  matches.forEach(m => {
+  // Sắp xếp trận đấu theo thời gian để tính toán chuỗi phong độ chính xác
+  const sortedMatches = [...matches].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  sortedMatches.forEach(m => {
     const pAId = String(m.playerAId);
     const pBId = String(m.playerBId);
     
@@ -34,21 +38,34 @@ export const calculateStandings = (players, matches) => {
     stats[pBId].gf += sB;
     stats[pBId].ga += sA;
 
-    // Tính điểm và Thắng/Hòa/Thua
+    // Tính điểm và Thắng/Hòa/Thua + Cập nhật Phong độ
     if (sA > sB) {
       stats[pAId].wins++;
       stats[pAId].points += 3;
+      stats[pAId].form.push('W');
+
       stats[pBId].losses++;
+      stats[pBId].form.push('L');
     } else if (sA < sB) {
       stats[pBId].wins++;
       stats[pBId].points += 3;
+      stats[pBId].form.push('W');
+
       stats[pAId].losses++;
+      stats[pAId].form.push('L');
     } else {
       stats[pAId].draws++;
-      stats[pBId].draws++;
       stats[pAId].points += 1;
+      stats[pAId].form.push('D');
+
+      stats[pBId].draws++;
       stats[pBId].points += 1;
+      stats[pBId].form.push('D');
     }
+
+    // Giới hạn phong độ trong 5 trận gần nhất
+    if (stats[pAId].form.length > 5) stats[pAId].form.shift();
+    if (stats[pBId].form.length > 5) stats[pBId].form.shift();
 
     // Xử lý Vua phá lưới
     const processScorers = (scorerStr, teamName) => {

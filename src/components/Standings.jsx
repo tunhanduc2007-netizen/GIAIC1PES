@@ -2,7 +2,6 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Trophy, Medal, Award, ChevronUp, ChevronDown, Minus, Flame, ShieldAlert } from 'lucide-react';
 import { cn, getTeamLogo } from '../lib/utils';
-import GroupStage from './GroupStage';
 
 const Standings = ({ standings = [], topScorers = [], topCards = [] }) => {
   const [showAllScorers, setShowAllScorers] = React.useState(false);
@@ -31,10 +30,11 @@ const Standings = ({ standings = [], topScorers = [], topCards = [] }) => {
               <th className="px-4 md:px-6 py-4">Hạng</th>
               <th className="px-4 md:px-6 py-4">Đội tuyển quốc gia</th>
               <th className="px-2 md:px-4 py-4 text-center">T</th>
-              <th className="px-2 md:px-4 py-4 text-center">W</th>
-              <th className="px-2 md:px-4 py-4 text-center">D</th>
-              <th className="px-2 md:px-4 py-4 text-center">L</th>
+              <th className="px-2 md:px-4 py-4 text-center text-green-400">W</th>
+              <th className="px-2 md:px-4 py-4 text-center text-yellow-400">D</th>
+              <th className="px-2 md:px-4 py-4 text-center text-red-400">L</th>
               <th className="px-2 md:px-4 py-4 text-center">HS</th>
+              <th className="px-2 md:px-4 py-4 text-center w-28">Phong độ</th>
               <th className="px-4 md:px-6 py-4 text-center bg-ucl-neon/10 text-ucl-neon">Điểm</th>
             </tr>
           </thead>
@@ -88,6 +88,28 @@ const Standings = ({ standings = [], topScorers = [], topCards = [] }) => {
                     <span className={cn(player.gd > 0 ? "text-ucl-neon font-bold" : player.gd < 0 ? "text-red-400 font-bold" : "text-ucl-silver")}>
                       {player.gd > 0 ? `+${player.gd}` : player.gd}
                     </span>
+                  </td>
+                  <td className="px-2 md:px-4 py-4">
+                    <div className="flex items-center justify-center gap-1">
+                      {player.form && player.form.length > 0 ? (
+                        player.form.map((f, i) => (
+                          <span 
+                            key={i} 
+                            className={cn(
+                              "w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-black text-white shrink-0 shadow-sm",
+                              f === 'W' ? "bg-green-500 shadow-green-500/20" :
+                              f === 'D' ? "bg-yellow-500 shadow-yellow-500/20 text-ucl-dark" :
+                              "bg-red-500 shadow-red-500/20"
+                            )}
+                            title={f === 'W' ? 'Thắng' : f === 'D' ? 'Hòa' : 'Thua'}
+                          >
+                            {f}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="text-[10px] text-ucl-silver opacity-30 font-bold uppercase tracking-wider">Mới</span>
+                      )}
+                    </div>
                   </td>
                   <td className="px-4 md:px-6 py-4 text-center bg-ucl-neon/5">
                     <span className="text-base md:text-xl font-black italic text-ucl-neon tracking-tighter leading-none font-bebas">{player.points}</span>
