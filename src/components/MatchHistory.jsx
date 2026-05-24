@@ -2,14 +2,25 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Sword, Clock, Award, Shield, ChevronRight, Search, Trash2, Edit2, Save, X } from 'lucide-react';
 import { cn, getTeamLogo } from '../lib/utils';
+import { supabase } from '../lib/supabase';
 
 const MatchHistory = ({ matches, setMatches, players }) => {
   const [editingId, setEditingId] = useState(null);
   const [editValues, setEditValues] = useState({});
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Bạn có chắc chắn muốn xóa trận đấu này khỏi lịch sử không? Hành động này không thể hoàn tác.')) {
-      setMatches(prev => prev.filter(m => m.id !== id));
+      try {
+        const { error } = await supabase.from('matches').delete().eq('id', id);
+        if (error) {
+          console.error('Lỗi khi xóa trận đấu khỏi Supabase:', error);
+          alert('Lỗi khi xóa trận đấu từ Cloud: ' + error.message);
+          return;
+        }
+        setMatches(prev => prev.filter(m => m.id !== id));
+      } catch (error) {
+        console.error('Lỗi xử lý xóa trận đấu:', error);
+      }
     }
   };
 

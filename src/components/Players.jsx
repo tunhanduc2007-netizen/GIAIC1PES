@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, UserPlus, Trash2, Edit, Save, X, Search, Star, ShieldAlert } from 'lucide-react';
 import { cn, getTeamLogo } from '../lib/utils';
+import { supabase } from '../lib/supabase';
 
 const Players = ({ players, setPlayers }) => {
   const [isAdding, setIsAdding] = useState(false);
@@ -31,9 +32,19 @@ const Players = ({ players, setPlayers }) => {
     setIsAdding(false);
   };
 
-  const handleDeletePlayer = (id) => {
+  const handleDeletePlayer = async (id) => {
     if (window.confirm('Bạn có chắc chắn muốn loại đội tuyển này khỏi World Cup?')) {
-      setPlayers(players.filter(p => p.id !== id));
+      try {
+        const { error } = await supabase.from('players').delete().eq('id', id);
+        if (error) {
+          console.error('Lỗi khi xóa đội tuyển khỏi Supabase:', error);
+          alert('Lỗi khi xóa đội tuyển từ Cloud: ' + error.message);
+          return;
+        }
+        setPlayers(players.filter(p => p.id !== id));
+      } catch (error) {
+        console.error('Lỗi xử lý xóa đội tuyển:', error);
+      }
     }
   };
 

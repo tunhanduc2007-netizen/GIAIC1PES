@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Trash2, LayoutGrid, Type, Table as TableIcon, Trash, RotateCcw } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { supabase } from '../lib/supabase';
 
 const CustomTable = ({ customTables, setCustomTables }) => {
   const [activeTableId, setActiveTableId] = useState(null);
@@ -20,10 +21,20 @@ const CustomTable = ({ customTables, setCustomTables }) => {
     setActiveTableId(newTable.id);
   };
 
-  const deleteTable = (id) => {
+  const deleteTable = async (id) => {
     if (confirm('Xóa bảng này?')) {
-      setCustomTables(customTables.filter(t => t.id !== id));
-      if (activeTableId === id) setActiveTableId(null);
+      try {
+        const { error } = await supabase.from('custom_tables').delete().eq('id', id);
+        if (error) {
+          console.error('Lỗi khi xóa bảng khỏi Supabase:', error);
+          alert('Lỗi khi xóa bảng từ Cloud: ' + error.message);
+          return;
+        }
+        setCustomTables(customTables.filter(t => t.id !== id));
+        if (activeTableId === id) setActiveTableId(null);
+      } catch (error) {
+        console.error('Lỗi xử lý xóa bảng:', error);
+      }
     }
   };
 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Swords, Award, ChevronRight, Save, Trash2, Trophy } from 'lucide-react';
 import { cn, getTeamLogo, calculateStandings } from '../lib/utils';
+import { supabase } from '../lib/supabase';
 
 const TournamentManager = ({ tourneyMatches, setTourneyMatches, matches, setMatches, players }) => {
   const [editingId, setEditingId] = useState(null);
@@ -61,8 +62,18 @@ const TournamentManager = ({ tourneyMatches, setTourneyMatches, matches, setMatc
     setEditRedA(''); setEditRedB('');
   };
 
-  const removeTourneyMatch = (id) => {
-    setTourneyMatches(tourneyMatches.filter(m => m.id !== id));
+  const removeTourneyMatch = async (id) => {
+    try {
+      const { error } = await supabase.from('tourney_matches').delete().eq('id', id);
+      if (error) {
+        console.error('Lỗi khi xóa trận đấu đấu vòng loại khỏi Supabase:', error);
+        alert('Lỗi khi xóa trận đấu từ Cloud: ' + error.message);
+        return;
+      }
+      setTourneyMatches(tourneyMatches.filter(m => m.id !== id));
+    } catch (error) {
+      console.error('Lỗi xử lý xóa trận đấu vòng loại:', error);
+    }
   };
 
   return (
