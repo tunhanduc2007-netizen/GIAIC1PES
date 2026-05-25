@@ -28,7 +28,8 @@ import {
   Clock,
   History,
   Award,
-  Shield
+  Shield,
+  Film
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as XLSX from 'xlsx';
@@ -48,6 +49,7 @@ import Rewards from './components/Rewards';
 import CustomTable from './components/CustomTable';
 import BackupRestore from './components/BackupRestore';
 import ParticlesBackground from './components/ParticlesBackground';
+import Highlights from './components/Highlights';
 
 const INITIAL_PLAYERS = [
   // 24 đội của THỊNH
@@ -316,6 +318,7 @@ const App = () => {
     { id: 'wheel', label: 'Vòng quay bốc thăm', icon: RotateCw },
     { id: 'history', label: 'Lịch sử đấu', icon: History },
     { id: 'rewards', label: 'Vinh danh', icon: Award },
+    { id: 'highlights', label: 'Kỷ niệm PES', icon: Film },
     { id: 'backup', label: 'Sao lưu & Khôi phục', icon: Settings },
   ];
 
@@ -501,6 +504,7 @@ const App = () => {
                   customTables={customTables} setCustomTables={setCustomTables}
                 />
               )}
+              {activeTab === 'highlights' && <Highlights />}
             </motion.div>
           </AnimatePresence>
         </div>
