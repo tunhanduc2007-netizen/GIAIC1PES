@@ -29,7 +29,11 @@ import {
   History,
   Award,
   Shield,
-  Film
+  Film,
+  Play,
+  Pause,
+  SkipBack,
+  SkipForward
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as XLSX from 'xlsx';
@@ -50,6 +54,7 @@ import CustomTable from './components/CustomTable';
 import BackupRestore from './components/BackupRestore';
 import ParticlesBackground from './components/ParticlesBackground';
 import Highlights from './components/Highlights';
+import Jukebox from './components/Jukebox';
 
 const INITIAL_PLAYERS = [
   // 24 đội của THỊNH
@@ -107,101 +112,157 @@ const INITIAL_PLAYERS = [
 
 const INITIAL_MATCHES = [];
 
-const MusicPlayer = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTrack, setCurrentTrack] = useState(0);
-  const audioRef = useRef(null);
-  
-  const playlist = [
-    { name: 'Magic in the Air', file: '/anthem.mp3' },
-    { name: 'Raindance', file: '/raindance.mp3' }
-  ];
+const App = () => {
+  const [youtubePlaylist, setYoutubePlaylist] = useState([]);
+  const [currentTrackIdx, setCurrentTrackIdx] = useState(0);
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const globalAudioRef = useRef(null);
 
-  // Auto-play khi component mount
-  useEffect(() => {
-    const playAudio = async () => {
-      try {
-        if (audioRef.current) {
-          await audioRef.current.play();
-          setIsPlaying(true);
-        }
-      } catch (error) {
-        console.log('Autoplay prevented. User interaction required.');
+  const fetchYoutubePlaylist = async () => {
+    try {
+      const response = await fetch('/api/playlist');
+      if (response.ok) {
+        const data = await response.json();
+        setYoutubePlaylist(data);
       }
-    };
-    
-    setTimeout(playAudio, 1000);
+    } catch (e) {
+      console.error("Error fetching jukebox playlist:", e);
+    }
+  };
+
+  useEffect(() => {
+    fetchYoutubePlaylist();
   }, []);
 
-  // Chuyển bài khi hết
-  const handleTrackEnd = () => {
-    const nextTrack = (currentTrack + 1) % playlist.length;
-    setCurrentTrack(nextTrack);
+  const activePlaylist = useMemo(() => {
+    const staticTracks = [
+      { id: 'static-1', title: 'Magic in the Air', artist: 'Magic System', file: '/anthem.mp3', duration: 234, thumbnail: '/worldcup-bg.jpg' },
+      { id: 'static-2', title: 'Raindance', artist: 'PES Raindance', file: '/raindance.mp3', duration: 247, thumbnail: '/worldcup-bg.jpg' }
+    ];
+
+    const downloadedTracks = youtubePlaylist.map(t => ({
+      id: t.id,
+      title: t.title,
+      artist: t.artist,
+      file: t.audioUrl,
+      duration: t.duration,
+      thumbnail: t.thumbnail
+    }));
+
+    return [...staticTracks, ...downloadedTracks];
+  }, [youtubePlaylist]);
+
+  const handlePlayTrackById = (trackId) => {
+    const idx = activePlaylist.findIndex(t => t.id === trackId);
+    if (idx !== -1) {
+      setCurrentTrackIdx(idx);
+      setIsAudioPlaying(true);
+      if (globalAudioRef.current) {
+        setTimeout(() => {
+          if (globalAudioRef.current) {
+            globalAudioRef.current.load();
+            globalAudioRef.current.play().catch(err => console.log("Play error:", err));
+          }
+        }, 100);
+      }
+    }
   };
 
-  // Load bài mới khi currentTrack thay đổi
+  const handleDeleteYoutubeTrack = async (id, title) => {
+    if (id.startsWith('static-')) return;
+    if (!confirm(`Bạn có chắc chắn muốn xóa bài hát "${title}" khỏi danh sách?`)) return;
+    try {
+      const response = await fetch(`/api/playlist/${id}`, {
+        method: 'DELETE'
+      });
+      if (response.ok) {
+        await fetchYoutubePlaylist();
+        setCurrentTrackIdx(0);
+        setIsAudioPlaying(false);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  // Sync times
   useEffect(() => {
-    if (audioRef.current && isPlaying) {
-      audioRef.current.load();
-      audioRef.current.play().catch(err => console.log('Play error:', err));
-    }
-  }, [currentTrack]);
+    const audio = globalAudioRef.current;
+    if (!audio) return;
 
-  const togglePlay = () => {
-    if (isPlaying) {
-      audioRef.current.pause();
-    } else {
-      audioRef.current.play();
+    const handleTimeUpdate = () => {
+      setCurrentTime(audio.currentTime);
+    };
+
+    const handleLoadedMetadata = () => {
+      setDuration(audio.duration || 0);
+    };
+
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+
+    return () => {
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+    };
+  }, [globalAudioRef.current, currentTrackIdx]);
+
+  // Load new source when track index changes
+  useEffect(() => {
+    if (globalAudioRef.current && isAudioPlaying) {
+      globalAudioRef.current.load();
+      globalAudioRef.current.play().catch(err => console.log('Play error:', err));
     }
-    setIsPlaying(!isPlaying);
+  }, [currentTrackIdx]);
+
+  const handleTogglePlay = () => {
+    if (!globalAudioRef.current) return;
+    if (isAudioPlaying) {
+      globalAudioRef.current.pause();
+      setIsAudioPlaying(false);
+    } else {
+      globalAudioRef.current.play().then(() => {
+        setIsAudioPlaying(true);
+      }).catch(err => console.log(err));
+    }
   };
 
-  return (
-    <div className="fixed bottom-6 left-6 z-[60]">
-      <audio ref={audioRef} src={playlist[currentTrack].file} onEnded={handleTrackEnd} />
-      <motion.button
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        onClick={togglePlay}
-        className={cn(
-          "flex items-center gap-3 px-5 py-3 rounded-2xl border-2 transition-all shadow-2xl backdrop-blur-md",
-          isPlaying 
-            ? "bg-ucl-neon border-ucl-neon text-white" 
-            : "bg-ucl-dark/80 border-white/10 text-white"
-        )}
-      >
-        <div className="relative">
-          {isPlaying ? <Volume2 size={18} /> : <VolumeX size={18} />}
-          {isPlaying && (
-            <motion.div
-              animate={{ scale: [1, 1.5, 1], opacity: [1, 0, 1] }}
-              transition={{ repeat: Infinity, duration: 1.5 }}
-              className="absolute inset-0 bg-ucl-neon rounded-full -z-10"
-            />
-          )}
-        </div>
-        <div className="flex flex-col items-start leading-none">
-          <span className="text-[8px] font-black uppercase tracking-widest opacity-60">Now Playing</span>
-          <span className="text-[10px] font-black uppercase tracking-tight">{playlist[currentTrack].name}</span>
-        </div>
-      </motion.button>
-    </div>
-  );
-};
+  const handleSeek = (val) => {
+    setCurrentTime(val);
+    if (globalAudioRef.current) {
+      globalAudioRef.current.currentTime = val;
+    }
+  };
 
-const App = () => {
-    // Hiệu ứng confetti World Cup khi load trang
-    useEffect(() => {
-      setTimeout(() => {
-        confetti({
-          particleCount: 200,
-          spread: 120,
-          origin: { y: 0.6 },
-          colors: ['#ffd700', '#ff2a5f', '#00b8ff', '#ffffff', '#00ff7f'],
-          shapes: ['circle', 'square'],
-        });
-      }, 800);
-    }, []);
+  const handlePlayNext = () => {
+    const nextIdx = (currentTrackIdx + 1) % activePlaylist.length;
+    setCurrentTrackIdx(nextIdx);
+  };
+
+  const handlePlayPrev = () => {
+    const prevIdx = currentTrackIdx === 0 ? activePlaylist.length - 1 : currentTrackIdx - 1;
+    setCurrentTrackIdx(prevIdx);
+  };
+
+  const handleTrackEnd = () => {
+    handlePlayNext();
+  };
+
+  // Hiệu ứng confetti World Cup khi load trang
+  useEffect(() => {
+    setTimeout(() => {
+      confetti({
+        particleCount: 200,
+        spread: 120,
+        origin: { y: 0.6 },
+        colors: ['#ffd700', '#ff2a5f', '#00b8ff', '#ffffff', '#00ff7f'],
+        shapes: ['circle', 'square'],
+      });
+    }, 800);
+  }, []);
+
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -319,6 +380,7 @@ const App = () => {
     { id: 'history', label: 'Lịch sử đấu', icon: History },
     { id: 'rewards', label: 'Vinh danh', icon: Award },
     { id: 'highlights', label: 'Kỷ niệm PES', icon: Film },
+    { id: 'jukebox', label: 'Nhạc YouTube', icon: Music },
     { id: 'backup', label: 'Sao lưu & Khôi phục', icon: Settings },
   ];
 
@@ -344,7 +406,7 @@ const App = () => {
   return (
     <div className="min-h-screen text-white font-poppins selection:bg-ucl-neon selection:text-white overflow-x-hidden relative">
       <ParticlesBackground />
-      <MusicPlayer />
+      <audio ref={globalAudioRef} src={activePlaylist[currentTrackIdx]?.file} onEnded={handleTrackEnd} />
       
       {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-ucl-dark/80 backdrop-blur-xl border-b border-white/5 z-[40] flex items-center justify-between px-6">
@@ -505,6 +567,22 @@ const App = () => {
                 />
               )}
               {activeTab === 'highlights' && <Highlights />}
+              {activeTab === 'jukebox' && (
+                <Jukebox 
+                  playlist={activePlaylist}
+                  currentTrackIndex={currentTrackIdx}
+                  isPlaying={isAudioPlaying}
+                  currentTime={currentTime}
+                  duration={duration}
+                  onPlayTrack={handlePlayTrackById}
+                  onDeleteTrack={handleDeleteYoutubeTrack}
+                  onPlaylistUpdated={fetchYoutubePlaylist}
+                  onTogglePlay={handleTogglePlay}
+                  onSeek={handleSeek}
+                  onNext={handlePlayNext}
+                  onPrev={handlePlayPrev}
+                />
+              )}
             </motion.div>
           </AnimatePresence>
         </div>
