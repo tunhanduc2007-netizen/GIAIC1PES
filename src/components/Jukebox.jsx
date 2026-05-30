@@ -73,6 +73,10 @@ export default function Jukebox({
       });
 
       clearInterval(statusInterval);
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Không thể kết nối đến máy chủ Jukebox chạy ngầm. Vui lòng tắt server hiện tại đi và khởi động lại dự án bằng tệp 'start.bat'!");
+      }
       const data = await response.json();
 
       if (!response.ok) {
@@ -475,18 +479,16 @@ export default function Jukebox({
                         <span className="flex items-center gap-1"><Clock size={10} /> {formatTime(track.duration)}</span>
                         
                         {/* Delete Trash Action */}
-                        {!track.id.startsWith('static-') && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onDeleteTrack(track.id, track.title);
-                            }}
-                            className="p-2 rounded-xl text-white/20 hover:text-ucl-neon hover:bg-ucl-neon/10 transition-all shrink-0"
-                            title="Xóa bài hát"
-                          >
-                            <Trash2 size={13} />
-                          </button>
-                        )}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDeleteTrack(track.id, track.title);
+                          }}
+                          className="p-2 rounded-xl text-white/20 hover:text-ucl-neon hover:bg-ucl-neon/10 transition-all shrink-0"
+                          title="Xóa bài hát"
+                        >
+                          <Trash2 size={13} />
+                        </button>
                       </div>
 
                     </motion.div>

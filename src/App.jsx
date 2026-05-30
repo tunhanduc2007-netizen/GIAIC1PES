@@ -55,6 +55,7 @@ import BackupRestore from './components/BackupRestore';
 import ParticlesBackground from './components/ParticlesBackground';
 import Highlights from './components/Highlights';
 import Jukebox from './components/Jukebox';
+import Qualifiers from './components/Qualifiers';
 
 const INITIAL_PLAYERS = [
   // 24 đội của THỊNH
@@ -113,6 +114,15 @@ const INITIAL_PLAYERS = [
 const INITIAL_MATCHES = [];
 
 const App = () => {
+  const [deletedStaticTracks, setDeletedStaticTracks] = useState(() => {
+    try {
+      const saved = localStorage.getItem('deleted_static_tracks');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+
   const [youtubePlaylist, setYoutubePlaylist] = useState([]);
   const [currentTrackIdx, setCurrentTrackIdx] = useState(0);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
@@ -140,7 +150,7 @@ const App = () => {
     const staticTracks = [
       { id: 'static-1', title: 'Magic in the Air', artist: 'Magic System', file: '/anthem.mp3', duration: 234, thumbnail: '/worldcup-bg.jpg' },
       { id: 'static-2', title: 'Raindance', artist: 'PES Raindance', file: '/raindance.mp3', duration: 247, thumbnail: '/worldcup-bg.jpg' }
-    ];
+    ].filter(t => !deletedStaticTracks.includes(t.id));
 
     const downloadedTracks = youtubePlaylist.map(t => ({
       id: t.id,
@@ -152,7 +162,7 @@ const App = () => {
     }));
 
     return [...staticTracks, ...downloadedTracks];
-  }, [youtubePlaylist]);
+  }, [youtubePlaylist, deletedStaticTracks]);
 
   const handlePlayTrackById = (trackId) => {
     const idx = activePlaylist.findIndex(t => t.id === trackId);
@@ -171,7 +181,16 @@ const App = () => {
   };
 
   const handleDeleteYoutubeTrack = async (id, title) => {
-    if (id.startsWith('static-')) return;
+    if (id.startsWith('static-')) {
+      if (!confirm(`Bạn có chắc chắn muốn xóa bài hát mặc định "${title}" khỏi danh sách phát?`)) return;
+      const updated = [...deletedStaticTracks, id];
+      setDeletedStaticTracks(updated);
+      localStorage.setItem('deleted_static_tracks', JSON.stringify(updated));
+      setCurrentTrackIdx(0);
+      setIsAudioPlaying(false);
+      return;
+    }
+
     if (!confirm(`Bạn có chắc chắn muốn xóa bài hát "${title}" khỏi danh sách?`)) return;
     try {
       const response = await fetch(`/api/playlist/${id}`, {
@@ -370,18 +389,44 @@ const App = () => {
     return { standings: s, topScorers, topCards };
   }, [players, matches]);
 
-  const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'standings', label: 'Bảng xếp hạng', icon: Trophy },
-    { id: 'groupStage', label: 'Vòng bảng', icon: Users },
-    { id: 'players', label: 'Đội tuyển', icon: Shield },
-    { id: 'match-entry', label: 'Nhập kết quả', icon: Edit },
-    { id: 'wheel', label: 'Vòng quay bốc thăm', icon: RotateCw },
-    { id: 'history', label: 'Lịch sử đấu', icon: History },
-    { id: 'rewards', label: 'Vinh danh', icon: Award },
-    { id: 'highlights', label: 'Kỷ niệm PES', icon: Film },
-    { id: 'jukebox', label: 'Nhạc YouTube', icon: Music },
-    { id: 'backup', label: 'Sao lưu & Khôi phục', icon: Settings },
+  const menuSections = [
+    {
+      title: "Tổng quan",
+      items: [
+        { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      ]
+    },
+    {
+      title: "Giải đấu",
+      items: [
+        { id: 'qualifiers', label: 'Vòng loại', icon: Swords },
+        { id: 'groupStage', label: 'Vòng bảng', icon: Users },
+        { id: 'standings', label: 'Bảng xếp hạng', icon: Trophy },
+        { id: 'history', label: 'Lịch sử đấu', icon: History },
+      ]
+    },
+    {
+      title: "Điều hành",
+      items: [
+        { id: 'match-entry', label: 'Nhập kết quả', icon: Edit },
+        { id: 'players', label: 'Đội tuyển', icon: Shield },
+        { id: 'wheel', label: 'Vòng quay bốc thăm', icon: RotateCw },
+      ]
+    },
+    {
+      title: "Giải trí & Kỷ niệm",
+      items: [
+        { id: 'rewards', label: 'Vinh danh', icon: Award },
+        { id: 'highlights', label: 'Kỷ niệm PES', icon: Film },
+        { id: 'jukebox', label: 'Nhạc YouTube', icon: Music },
+      ]
+    },
+    {
+      title: "Hệ thống",
+      items: [
+        { id: 'backup', label: 'Sao lưu & Khôi phục', icon: Settings },
+      ]
+    }
   ];
 
   if (isLoading && !hasLoadedFromCloud) {
@@ -444,24 +489,40 @@ const App = () => {
             )}
           </div>
 
-          <nav className="flex-1 space-y-2 overflow-y-auto custom-scrollbar pr-1">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => setActiveTab(item.id)}
-                className={cn(
-                  "w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-300 relative group font-montserrat",
-                  activeTab === item.id 
-                    ? "bg-ucl-neon text-white shadow-[0_0_20px_rgba(255,42,95,0.3)] font-bold" 
-                    : "text-ucl-silver hover:text-white hover:bg-white/5"
+          <nav className="flex-1 space-y-4 overflow-y-auto custom-scrollbar pr-1">
+            {menuSections.map((section, sectionIdx) => (
+              <div key={section.title} className="space-y-1">
+                {isSidebarOpen ? (
+                  <div className={cn(
+                    "text-[10px] font-black text-ucl-neon/60 uppercase tracking-[0.2em] px-4 mb-2 select-none",
+                    sectionIdx > 0 ? "mt-5" : "mt-1"
+                  )}>
+                    {section.title}
+                  </div>
+                ) : (
+                  sectionIdx > 0 && <div className="h-[1px] bg-white/5 my-3 mx-4" />
                 )}
-              >
-                <item.icon size={20} className={cn("shrink-0", activeTab === item.id ? "scale-110 text-white" : "group-hover:scale-110 group-hover:text-ucl-neon transition-transform")} />
-                {isSidebarOpen && <span className="text-xs uppercase tracking-wider font-bold">{item.label}</span>}
-                {activeTab === item.id && (
-                  <motion.div layoutId="nav-pill" className="absolute left-0 w-1 h-8 bg-ucl-blue rounded-full" />
-                )}
-              </button>
+                <div className="space-y-0.5">
+                  {section.items.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => setActiveTab(item.id)}
+                      className={cn(
+                        "w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 relative group font-montserrat",
+                        activeTab === item.id 
+                          ? "bg-ucl-neon text-white shadow-[0_0_15px_rgba(255,42,95,0.25)] font-bold" 
+                          : "text-ucl-silver hover:text-white hover:bg-white/5"
+                      )}
+                    >
+                      <item.icon size={18} className={cn("shrink-0", activeTab === item.id ? "scale-110 text-white" : "group-hover:scale-110 group-hover:text-ucl-neon transition-transform")} />
+                      {isSidebarOpen && <span className="text-[11px] uppercase tracking-wider font-bold">{item.label}</span>}
+                      {activeTab === item.id && (
+                        <motion.div layoutId="nav-pill" className="absolute left-0 w-1 h-6 bg-ucl-blue rounded-full" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
             ))}
           </nav>
 
@@ -494,19 +555,28 @@ const App = () => {
                   <X size={24} />
                 </button>
              </div>
-             <nav className="flex-1 space-y-4 overflow-y-auto">
-                {navItems.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => { setActiveTab(item.id); setIsMobileMenuOpen(false); }}
-                    className={cn(
-                      "w-full flex items-center gap-6 px-6 py-5 rounded-2xl transition-all font-montserrat",
-                      activeTab === item.id ? "bg-ucl-neon text-white" : "text-ucl-silver"
-                    )}
-                  >
-                    <item.icon size={24} />
-                    <span className="font-black text-xs uppercase tracking-widest">{item.label}</span>
-                  </button>
+             <nav className="flex-1 space-y-6 overflow-y-auto pr-1">
+                {menuSections.map((section) => (
+                  <div key={section.title} className="space-y-2">
+                    <div className="text-[10px] font-black text-ucl-neon/60 uppercase tracking-[0.2em] px-4 select-none">
+                      {section.title}
+                    </div>
+                    <div className="space-y-1">
+                      {section.items.map((item) => (
+                        <button
+                          key={item.id}
+                          onClick={() => { setActiveTab(item.id); setIsMobileMenuOpen(false); }}
+                          className={cn(
+                            "w-full flex items-center gap-6 px-6 py-4 rounded-xl transition-all font-montserrat",
+                            activeTab === item.id ? "bg-ucl-neon text-white shadow-[0_0_15px_rgba(255,42,95,0.25)] font-bold" : "text-ucl-silver hover:bg-white/5"
+                          )}
+                        >
+                          <item.icon size={20} />
+                          <span className="font-black text-[11px] uppercase tracking-widest">{item.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 ))}
              </nav>
           </motion.div>
@@ -534,6 +604,15 @@ const App = () => {
                   standings={standings.standings}
                   topScorers={standings.topScorers}
                   onViewAllMatches={() => setActiveTab('history')}
+                />
+              )}
+              {activeTab === 'qualifiers' && (
+                <Qualifiers 
+                  players={players}
+                  setPlayers={setPlayers}
+                  matches={matches}
+                  setMatches={setMatches}
+                  setActiveTab={setActiveTab}
                 />
               )}
               {activeTab === 'standings' && (

@@ -21,7 +21,7 @@ export default {
         }
       },
       fontFamily: {
-        bebas: ['"Bebas Neue"', 'sans-serif'],
+        bebas: ['"Oswald"', 'sans-serif'],
         poppins: ['"Poppins"', 'sans-serif'],
         montserrat: ['"Montserrat"', 'sans-serif'],
       },
