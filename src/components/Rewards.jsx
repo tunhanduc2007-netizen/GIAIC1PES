@@ -90,7 +90,7 @@ const Rewards = ({ standings }) => {
           CÔNG BỐ <span className="text-ucl-neon">KẾT QUẢ VINH DANH</span>
         </h2>
         <p className="text-ucl-silver max-w-xl mx-auto uppercase tracking-[0.2em] text-xs font-montserrat">
-          Chúc mừng các nhà vô địch xuất sắc giải đấu FIFA World Cup 2026
+          Chúc mừng các nhà vô địch xuất sắc giải đấu UEFA Champions League C1 2026
         </p>
       </div>
 
@@ -122,7 +122,7 @@ const Rewards = ({ standings }) => {
            className="glass-card p-12 border-ucl-blue/30 flex flex-col items-center gap-6 shadow-[0_0_50px_rgba(212,175,55,0.15)] max-w-md w-full"
          >
             <Trophy className="text-ucl-blue filter drop-shadow-[0_0_15px_rgba(212,175,55,0.5)]" size={80} />
-            <h4 className="text-3xl font-black italic text-center font-bebas text-white">FIFA WORLD CUP GOLDEN TROPHY</h4>
+            <h4 className="text-3xl font-black italic text-center font-bebas text-white">UEFA CHAMPIONS LEAGUE TROPHY</h4>
             <div className="h-1 w-32 bg-gradient-to-r from-transparent via-ucl-blue to-transparent" />
             <p className="text-ucl-silver text-sm italic font-montserrat">The ultimate pride of PES 2021 community</p>
          </motion.div>

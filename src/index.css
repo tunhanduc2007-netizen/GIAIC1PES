@@ -3,14 +3,17 @@
 @tailwind utilities;
 
 :root {
-  --ucl-neon: #FF2A5F;    /* World Cup Neon Pink */
-  --ucl-blue: #D4AF37;    /* Trophy Gold */
-  --ucl-dark: #0a0b0d;    /* Deep Dark */
-  --ucl-star: #FFD700;    /* Bright Gold */
-  --ucl-silver: #a3a3c2;  /* Silver */
-  --wc-red: #8B1538;      /* World Cup Red */
-  --wc-purple: #4A1942;   /* World Cup Purple */
-  --wc-cyan: #00B8FF;     /* Bright Cyan */
+  /* Official UEFA Champions League Color Tokens */
+  --ucl-dark: #020713;         /* Deep Midnight Space */
+  --ucl-navy: #05142b;         /* Champions League Pitch Blue */
+  --ucl-blue: #0084ff;         /* Starball Royal Blue */
+  --ucl-cyan: #00f2ff;         /* Electric Starball Cyan */
+  --ucl-neon: #ff2a5f;         /* High-energy Neon Accent */
+  --ucl-star: #ffd700;         /* Champions League Bright Gold */
+  --ucl-gold: #e5b338;         /* Trophy Gold Metallic */
+  --ucl-silver: #b8c9dc;       /* UEFA Broadcast Metallic Silver */
+  --ucl-glow-cyan: rgba(0, 242, 255, 0.45);
+  --ucl-glow-gold: rgba(255, 215, 0, 0.45);
   
   /* Responsive Typography */
   --font-xs: clamp(0.7rem, 0.6rem + 0.5vw, 0.8rem);
@@ -29,19 +32,25 @@
 }
 
 @layer base {
+  ::selection {
+    background-color: #00f2ff;
+    color: #000000;
+  }
+
   body {
-    @apply text-white selection:bg-ucl-neon selection:text-white overflow-x-hidden;
+    @apply text-white overflow-x-hidden;
     font-family: 'Poppins', sans-serif;
     background-image: 
-      radial-gradient(circle at 20% 50%, rgba(139, 21, 56, 0.3) 0%, transparent 50%),
-      radial-gradient(circle at 80% 80%, rgba(74, 25, 66, 0.3) 0%, transparent 50%),
-      linear-gradient(135deg, rgba(139, 21, 56, 0.4) 0%, rgba(74, 25, 66, 0.6) 50%, rgba(10, 11, 13, 0.8) 100%),
-      url('/world_cup.jpg');
+      radial-gradient(circle at 50% 15%, rgba(0, 184, 255, 0.16) 0%, transparent 60%),
+      radial-gradient(circle at 10% 45%, rgba(5, 40, 95, 0.35) 0%, transparent 50%),
+      radial-gradient(circle at 90% 55%, rgba(2, 20, 50, 0.45) 0%, transparent 50%),
+      linear-gradient(180deg, rgba(2, 7, 18, 0.7) 0%, rgba(4, 18, 38, 0.82) 45%, rgba(2, 7, 18, 0.94) 100%),
+      url('/ucl-bg.jpg');
     background-size: cover;
-    background-position: center;
+    background-position: center top;
     background-attachment: fixed;
     background-repeat: no-repeat;
-    background-color: #0a0b0d;
+    background-color: #020713;
     padding-top: var(--safe-top);
     padding-bottom: var(--safe-bottom);
     padding-left: var(--safe-left);
@@ -73,7 +82,7 @@
     font-size: clamp(2rem, 6vw + 1.5rem, 5.5rem);
     font-family: 'Oswald', sans-serif;
     @apply font-black tracking-wide leading-none uppercase text-white;
-    text-shadow: 0 0 30px rgba(255, 42, 95, 0.3);
+    text-shadow: 0 0 35px rgba(0, 242, 255, 0.4);
   }
 
   .responsive-subtitle {
@@ -82,44 +91,45 @@
     @apply font-bold uppercase tracking-[0.3em] text-ucl-silver;
   }
 
+  /* UEFA Champions League Premium Midnight Glass */
   .glass-card {
-    @apply bg-black/40 backdrop-blur-3xl border border-white/10 rounded-[2rem] shadow-2xl;
+    @apply bg-black/50 backdrop-blur-3xl border border-white/10 rounded-[2rem] shadow-2xl;
     box-shadow: 
-      0 25px 50px -12px rgba(139, 21, 56, 0.4), 
-      0 0 0 1px rgba(212, 175, 55, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    background-image: linear-gradient(135deg, rgba(139, 21, 56, 0.1) 0%, rgba(74, 25, 66, 0.1) 100%);
+      0 25px 50px -12px rgba(2, 14, 38, 0.7), 
+      0 0 0 1px rgba(0, 242, 255, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    background-image: linear-gradient(135deg, rgba(6, 25, 56, 0.5) 0%, rgba(2, 10, 24, 0.7) 100%);
   }
 
   .neon-border {
-    border-color: rgba(255, 42, 95, 0.6);
+    border-color: rgba(0, 242, 255, 0.6);
     box-shadow: 
-      0 0 30px rgba(255, 42, 95, 0.4),
-      inset 0 0 20px rgba(255, 42, 95, 0.1);
+      0 0 30px rgba(0, 242, 255, 0.35),
+      inset 0 0 20px rgba(0, 242, 255, 0.1);
   }
 
   .neon-border-gold {
-    border-color: rgba(212, 175, 55, 0.6);
+    border-color: rgba(255, 215, 0, 0.6);
     box-shadow: 
-      0 0 30px rgba(212, 175, 55, 0.4),
-      inset 0 0 20px rgba(212, 175, 55, 0.1);
+      0 0 30px rgba(255, 215, 0, 0.4),
+      inset 0 0 20px rgba(255, 215, 0, 0.1);
   }
 
   .ucl-button {
-    @apply px-8 py-3 text-white rounded-full font-black text-xs uppercase tracking-[0.2em] 
+    @apply px-8 py-3 text-black rounded-full font-black text-xs uppercase tracking-[0.2em] 
     hover:scale-105 active:scale-95 transition-all;
-    background: linear-gradient(135deg, #FF2A5F 0%, #8B1538 100%);
+    background: linear-gradient(135deg, #00f2ff 0%, #0084ff 100%);
     box-shadow: 
-      0 0 20px rgba(255, 42, 95, 0.5),
-      0 10px 30px rgba(139, 21, 56, 0.3);
+      0 0 20px rgba(0, 242, 255, 0.5),
+      0 10px 30px rgba(0, 132, 255, 0.3);
     font-family: 'Montserrat', sans-serif;
   }
   
   .ucl-button:hover {
-    background: linear-gradient(135deg, #D4AF37 0%, #FFD700 100%);
+    background: linear-gradient(135deg, #ffd700 0%, #ffae00 100%);
     box-shadow: 
-      0 0 30px rgba(212, 175, 55, 0.6),
-      0 15px 40px rgba(255, 215, 0, 0.4);
+      0 0 30px rgba(255, 215, 0, 0.6),
+      0 15px 40px rgba(255, 174, 0, 0.4);
     color: #000;
   }
 
@@ -133,11 +143,19 @@
     height: 6px;
   }
   .custom-scrollbar::-webkit-scrollbar-track {
-    background: rgba(10, 11, 13, 0.8);
+    background: rgba(3, 8, 20, 0.9);
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: var(--ucl-neon);
+    background: linear-gradient(to bottom, #00f2ff, #0084ff);
     border-radius: 10px;
+  }
+
+  /* UEFA Broadcast Scoreboard Graphic Styles */
+  .ucl-broadcast-badge {
+    position: relative;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 100%, 10px 100%);
+    background: linear-gradient(90deg, #051838 0%, #092659 100%);
+    border-top: 2px solid #00f2ff;
   }
 }
 
@@ -154,37 +172,39 @@
 
 /* Typography Helpers */
 .text-ucl-neon { color: var(--ucl-neon); }
+.text-ucl-cyan { color: var(--ucl-cyan); }
 .text-ucl-silver { color: var(--ucl-silver); }
 .bg-ucl-dark { background-color: var(--ucl-dark); }
 .border-ucl-neon { border-color: var(--ucl-neon); }
+.border-ucl-cyan { border-color: var(--ucl-cyan); }
 .border-ucl-blue { border-color: var(--ucl-blue); }
-.text-ucl-blue { color: var(--ucl-blue); }
+.text-ucl-blue { color: var(--ucl-cyan); }
 
-/* World Cup Gradient Backgrounds */
-.bg-wc-gradient {
-  background: linear-gradient(135deg, var(--wc-red) 0%, var(--wc-purple) 100%);
+/* Champions League Midnight Gradients */
+.bg-ucl-midnight {
+  background: linear-gradient(135deg, #020713 0%, #061938 50%, #00224d 100%);
 }
 
-.bg-wc-gradient-gold {
-  background: linear-gradient(135deg, var(--ucl-blue) 0%, var(--ucl-star) 100%);
+.bg-ucl-gradient-gold {
+  background: linear-gradient(135deg, #ffd700 0%, #ffae00 100%);
 }
 
-/* World Cup Glow Effects */
-.wc-glow-red {
-  box-shadow: 0 0 30px rgba(139, 21, 56, 0.6);
+/* Champions League Glow Effects */
+.ucl-glow-cyan {
+  box-shadow: 0 0 35px rgba(0, 242, 255, 0.45);
 }
 
-.wc-glow-gold {
-  box-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
+.ucl-glow-gold {
+  box-shadow: 0 0 35px rgba(255, 215, 0, 0.5);
 }
 
-/* Animated Gradient Border */
-.wc-border-animated {
+/* Animated Starball Gradient Border */
+.ucl-border-animated {
   position: relative;
   border: 2px solid transparent;
   background: linear-gradient(var(--ucl-dark), var(--ucl-dark)) padding-box,
-              linear-gradient(135deg, var(--ucl-neon), var(--ucl-blue), var(--wc-cyan)) border-box;
-  animation: borderRotate 3s linear infinite;
+              linear-gradient(135deg, #00f2ff, #0084ff, #ffd700) border-box;
+  animation: borderRotate 4s linear infinite;
 }
 
 @keyframes borderRotate {
@@ -195,11 +215,11 @@
 /* EA Sports Player Card Styles */
 .fut-card {
   position: relative;
-  background: linear-gradient(135deg, rgba(139, 21, 56, 0.3) 0%, rgba(74, 25, 66, 0.3) 100%);
-  border: 2px solid var(--ucl-blue);
+  background: linear-gradient(135deg, rgba(6, 25, 56, 0.7) 0%, rgba(2, 10, 24, 0.85) 100%);
+  border: 2px solid #ffd700;
   box-shadow: 
-    0 0 30px rgba(212, 175, 55, 0.3), 
-    0 10px 40px rgba(139, 21, 56, 0.4),
+    0 0 30px rgba(255, 215, 0, 0.25), 
+    0 10px 40px rgba(0, 132, 255, 0.3),
     inset 0 0 20px rgba(255, 255, 255, 0.05);
   border-radius: 1.5rem;
   overflow: hidden;
@@ -208,10 +228,10 @@
 
 .fut-card:hover {
   transform: translateY(-12px) scale(1.03);
-  border-color: var(--ucl-neon);
+  border-color: #00f2ff;
   box-shadow: 
-    0 0 40px rgba(255, 42, 95, 0.5),
-    0 20px 60px rgba(139, 21, 56, 0.6);
+    0 0 40px rgba(0, 242, 255, 0.5),
+    0 20px 60px rgba(2, 14, 38, 0.8);
 }
 
 .fut-card::after {
@@ -221,7 +241,7 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 60%);
+  background: radial-gradient(circle, rgba(0, 242, 255, 0.15) 0%, transparent 60%);
   pointer-events: none;
   animation: shimmer 3s infinite;
 }

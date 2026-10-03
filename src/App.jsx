@@ -33,11 +33,11 @@ import {
   Play,
   Pause,
   SkipBack,
-  SkipForward
+  SkipForward,
+  GitFork
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as XLSX from 'xlsx';
-import confetti from 'canvas-confetti';
 import { cn, calculateStandings } from './lib/utils';
 import { supabase } from './lib/supabase';
 
@@ -45,6 +45,7 @@ import { supabase } from './lib/supabase';
 import Dashboard from './components/Dashboard';
 import Standings from './components/Standings';
 import GroupStage from './components/GroupStage';
+import KnockoutBracket from './components/KnockoutBracket';
 import Players from './components/Players';
 import MatchEntry from './components/MatchEntry';
 import AdvancedWheel from './components/AdvancedWheel';
@@ -56,59 +57,40 @@ import ParticlesBackground from './components/ParticlesBackground';
 import Highlights from './components/Highlights';
 import Jukebox from './components/Jukebox';
 import Qualifiers from './components/Qualifiers';
+import LoadingScreen from './components/LoadingScreen';
 
 const INITIAL_PLAYERS = [
-  // 24 đội của THỊNH
-  { id: '1', name: 'Qatar', team: 'Qatar', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '2', name: 'Jordan', team: 'Jordan', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '3', name: 'Uzbekistan', team: 'Uzbekistan', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '4', name: 'Iran', team: 'Iran', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '5', name: 'Nhật Bản', team: 'Nhật Bản', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '6', name: 'DR Congo', team: 'DR Congo', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '7', name: 'Tunisia', team: 'Tunisia', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '8', name: 'Senegal', team: 'Senegal', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '9', name: 'Algeria', team: 'Algeria', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '10', name: 'Nam Phi', team: 'Nam Phi', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '11', name: 'Curaçao', team: 'Curaçao', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '12', name: 'Mexico', team: 'Mexico', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '13', name: 'Panama', team: 'Panama', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '14', name: 'Uruguay', team: 'Uruguay', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '15', name: 'Brazil', team: 'Brazil', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '16', name: 'Ecuador', team: 'Ecuador', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '17', name: 'Tây Ban Nha', team: 'Tây Ban Nha', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '18', name: 'Anh', team: 'Anh', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '19', name: 'Scotland', team: 'Scotland', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '20', name: 'Bỉ', team: 'Bỉ', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '21', name: 'Thổ Nhĩ Kỳ', team: 'Thổ Nhĩ Kỳ', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '22', name: 'Bosnia & Herzegovina', team: 'Bosnia & Herzegovina', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '23', name: 'Croatia', team: 'Croatia', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  
-  // 24 đội của BU
-  { id: '24', name: 'Iraq', team: 'Iraq', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '25', name: 'Australia', team: 'Australia', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '26', name: 'Saudi Arabia', team: 'Saudi Arabia', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '27', name: 'Hàn Quốc', team: 'Hàn Quốc', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '28', name: 'Ghana', team: 'Ghana', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '29', name: 'Cape Verde', team: 'Cape Verde', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '30', name: 'Bờ Biển Ngà', team: 'Bờ Biển Ngà', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '31', name: 'Maroc', team: 'Maroc', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '32', name: 'Ai Cập', team: 'Ai Cập', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '33', name: 'Haiti', team: 'Haiti', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '34', name: 'Mỹ', team: 'Mỹ', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '35', name: 'Canada', team: 'Canada', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '36', name: 'Đức', team: 'Đức', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '37', name: 'CH Séc', team: 'CH Séc', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '38', name: 'Hà Lan', team: 'Hà Lan', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '39', name: 'Pháp', team: 'Pháp', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '40', name: 'Thụy Sĩ', team: 'Thụy Sĩ', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '41', name: 'Áo', team: 'Áo', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '42', name: 'Na Uy', team: 'Na Uy', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '43', name: 'New Zealand', team: 'New Zealand', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '44', name: 'Bồ Đào Nha', team: 'Bồ Đào Nha', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '45', name: 'Colombia', team: 'Colombia', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '46', name: 'Thụy Điển', team: 'Thụy Điển', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '47', name: 'Paraguay', team: 'Paraguay', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
-  { id: '48', name: 'Argentina', team: 'Argentina', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  // 🔴 14 đội của THỊNH
+  { id: '1', name: 'Arsenal', team: 'Arsenal', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  { id: '2', name: 'Chelsea', team: 'Chelsea', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  { id: '3', name: 'Manchester City', team: 'Manchester City', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  { id: '4', name: 'Barcelona', team: 'Barcelona', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  { id: '5', name: 'Real Madrid', team: 'Real Madrid', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  { id: '6', name: 'Atlético Madrid', team: 'Atlético Madrid', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  { id: '7', name: 'Roma', team: 'Roma', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  { id: '8', name: 'Inter Milan', team: 'Inter Milan', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  { id: '9', name: 'Stuttgart', team: 'Stuttgart', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  { id: '10', name: 'Borussia Dortmund', team: 'Borussia Dortmund', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  { id: '11', name: 'Paris Saint-Germain', team: 'Paris Saint-Germain', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  { id: '12', name: 'Lens', team: 'Lens', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  { id: '13', name: 'Galatasaray', team: 'Galatasaray', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  { id: '14', name: 'Fenerbahçe', team: 'Fenerbahçe', owner: 'THỊNH', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+
+  // 🔵 14 đội của BU
+  { id: '15', name: 'Manchester United', team: 'Manchester United', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  { id: '16', name: 'Liverpool', team: 'Liverpool', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  { id: '17', name: 'Aston Villa', team: 'Aston Villa', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  { id: '18', name: 'Athletic Bilbao', team: 'Athletic Bilbao', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  { id: '19', name: 'Real Betis', team: 'Real Betis', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  { id: '20', name: 'Villarreal', team: 'Villarreal', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  { id: '21', name: 'Como', team: 'Como', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  { id: '22', name: 'Napoli', team: 'Napoli', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  { id: '23', name: 'RB Leipzig', team: 'RB Leipzig', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  { id: '24', name: 'Bayern Munich', team: 'Bayern Munich', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  { id: '25', name: 'Lyon', team: 'Lyon', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  { id: '26', name: 'Lille', team: 'Lille', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  { id: '27', name: 'Porto', team: 'Porto', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
+  { id: '28', name: 'Sporting CP', team: 'Sporting CP', owner: 'BU', matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 },
 ];
 
 const INITIAL_MATCHES = [];
@@ -269,19 +251,6 @@ const App = () => {
     handlePlayNext();
   };
 
-  // Hiệu ứng confetti World Cup khi load trang
-  useEffect(() => {
-    setTimeout(() => {
-      confetti({
-        particleCount: 200,
-        spread: 120,
-        origin: { y: 0.6 },
-        colors: ['#ffd700', '#ff2a5f', '#00b8ff', '#ffffff', '#00ff7f'],
-        shapes: ['circle', 'square'],
-      });
-    }, 800);
-  }, []);
-
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -303,19 +272,26 @@ const App = () => {
       
       try {
         if (!isLoading) {
-          // Lưu vào LocalStorage làm dự phòng
+          // Lưu vào LocalStorage
+          localStorage.setItem('pes_players', JSON.stringify(players));
           localStorage.setItem('pes_tourney_matches', JSON.stringify(tourneyMatches));
           localStorage.setItem('pes_matches', JSON.stringify(matches));
+          localStorage.setItem('pes_custom_tables', JSON.stringify(customTables));
+          localStorage.setItem('pes_tourney_edition', 'c1_pes_28');
           
-          await Promise.all([
-            supabase.from('players').upsert(players),
-            supabase.from('matches').upsert(matches),
-            supabase.from('tourney_matches').upsert(tourneyMatches),
-            supabase.from('custom_tables').upsert(customTables)
-          ]);
+          try {
+            await Promise.allSettled([
+              supabase.from('players').upsert(players),
+              supabase.from('matches').upsert(matches),
+              supabase.from('tourney_matches').upsert(tourneyMatches),
+              supabase.from('custom_tables').upsert(customTables)
+            ]);
+          } catch (cloudErr) {
+            // Cloud sync fails silently, local is preserved
+          }
         }
       } catch (error) {
-        console.error('DEBUG SUPABASE Sync Error:', error);
+        console.error('DEBUG Sync Error:', error);
       }
     };
 
@@ -327,48 +303,138 @@ const App = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const [
-          { data: pData },
-          { data: mData },
-          { data: tData },
-          { data: cData }
-        ] = await Promise.all([
-          supabase.from('players').select('*'),
-          supabase.from('matches').select('*'),
-          supabase.from('tourney_matches').select('*'),
-          supabase.from('custom_tables').select('*')
-        ]);
 
-        if (pData && pData.length > 0) {
-          setPlayers(pData);
+        // Kiểm tra phiên bản giải đấu: nếu chưa được làm sạch, xóa sạch dữ liệu mẫu
+        const currentEdition = localStorage.getItem('pes_tourney_edition');
+        const needsReset = currentEdition !== 'c1_pes_28_clean_v4';
+
+        if (needsReset) {
+          localStorage.removeItem('pes_players');
+          localStorage.removeItem('pes_matches');
+          localStorage.removeItem('pes_tourney_matches');
+          localStorage.removeItem('pes_custom_tables');
+          localStorage.removeItem('pes_c1_league_fixtures');
+          localStorage.removeItem('pes_c1_knockout_bracket');
+          localStorage.setItem('pes_tourney_edition', 'c1_pes_28_clean_v4');
+          localStorage.setItem('pes_players', JSON.stringify(INITIAL_PLAYERS));
+          localStorage.setItem('pes_matches', JSON.stringify([]));
+          localStorage.setItem('pes_tourney_matches', JSON.stringify([]));
+
+          setPlayers(INITIAL_PLAYERS);
+          setMatches([]);
+          setTourneyMatches([]);
+          setCustomTables([]);
+          setHasLoadedFromCloud(true);
+
+          // Cố gắng dọn sạch trên Cloud nếu có kết nối
+          try {
+            await Promise.race([
+              Promise.allSettled([
+                supabase.from('matches').delete().neq('id', 'clear_all_wc'),
+                supabase.from('tourney_matches').delete().neq('id', 'clear_all_wc'),
+                supabase.from('players').delete().neq('id', 'clear_all_wc'),
+                supabase.from('players').upsert(INITIAL_PLAYERS)
+              ]),
+              new Promise((res) => setTimeout(res, 500))
+            ]);
+          } catch (e) {
+            // ignore cloud error
+          }
+          return;
+        }
+
+        // Tải từ LocalStorage TRƯỚC TIÊN NGAY LẬP TỨC (0ms)
+        const isOldData = (list) => Array.isArray(list) && list.some(item => 
+          ['qatar', 'jordan', 'uzbekistan', 'iran', 'brazil', 'haiti', 'curaçao', 'dr congo'].includes((item.name || '').toLowerCase())
+        );
+
+        const localP = localStorage.getItem('pes_players');
+        if (localP) {
+          try {
+            const parsed = JSON.parse(localP);
+            setPlayers(isOldData(parsed) ? INITIAL_PLAYERS : parsed);
+          } catch (e) {
+            setPlayers(INITIAL_PLAYERS);
+          }
         } else {
           setPlayers(INITIAL_PLAYERS);
-          await supabase.from('players').upsert(INITIAL_PLAYERS);
         }
 
-        if (mData && mData.length > 0) {
-          setMatches(mData);
+        const localM = localStorage.getItem('pes_matches');
+        if (localM) {
+          try {
+            setMatches(JSON.parse(localM));
+          } catch (e) {
+            setMatches(INITIAL_MATCHES);
+          }
         } else {
           setMatches(INITIAL_MATCHES);
-          await supabase.from('matches').upsert(INITIAL_MATCHES);
         }
         
-        if (tData && tData.length > 0) setTourneyMatches(tData);
-        else {
-          const localTourney = localStorage.getItem('pes_tourney_matches');
-          if (localTourney) setTourneyMatches(JSON.parse(localTourney));
+        const localTourney = localStorage.getItem('pes_tourney_matches');
+        if (localTourney) {
+          try {
+            setTourneyMatches(JSON.parse(localTourney));
+          } catch (e) {
+            setTourneyMatches([]);
+          }
+        } else {
+          setTourneyMatches([]);
         }
         
-        if (cData && cData.length > 0) setCustomTables(cData);
-        
+        const localC = localStorage.getItem('pes_custom_tables');
+        if (localC) {
+          try {
+            setCustomTables(JSON.parse(localC));
+          } catch (e) {
+            setCustomTables([]);
+          }
+        } else {
+          setCustomTables([]);
+        }
+
+        // Đồng bộ ngầm với Supabase với timeout 500ms, không bao giờ chặn hay gây treo ứng dụng
+        try {
+          const cloudPromise = Promise.allSettled([
+            supabase.from('players').select('*'),
+            supabase.from('matches').select('*'),
+            supabase.from('tourney_matches').select('*'),
+            supabase.from('custom_tables').select('*')
+          ]);
+          const timeoutPromise = new Promise((resolve) => setTimeout(() => resolve('TIMEOUT'), 500));
+          const result = await Promise.race([cloudPromise, timeoutPromise]);
+          
+          if (result !== 'TIMEOUT' && Array.isArray(result)) {
+            if (result[0].status === 'fulfilled' && result[0].value?.data?.length > 0 && !isOldData(result[0].value.data)) {
+              setPlayers(result[0].value.data);
+            }
+            if (result[1].status === 'fulfilled' && result[1].value?.data?.length > 0 && !isOldData(result[1].value.data)) {
+              setMatches(result[1].value.data);
+            }
+            if (result[2].status === 'fulfilled' && result[2].value?.data?.length > 0) {
+              setTourneyMatches(result[2].value.data);
+            }
+            if (result[3].status === 'fulfilled' && result[3].value?.data?.length > 0) {
+              setCustomTables(result[3].value.data);
+            }
+          }
+        } catch (cloudFetchErr) {
+          console.warn('Supabase offline or unreachable, using local storage mode');
+        }
+
         setHasLoadedFromCloud(true);
       } catch (error) {
-        console.error('Error fetching from Supabase:', error);
-      } finally {
-        setIsLoading(false);
+        console.error('Error fetching data:', error);
+        setPlayers(INITIAL_PLAYERS);
       }
     };
     fetchData();
+
+    // Fallback safeguard: đảm bảo trang không bao giờ bị kẹt loading quá 2.2 giây
+    const fallbackTimer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2200);
+    return () => clearTimeout(fallbackTimer);
   }, []);
 
   useEffect(() => {
@@ -401,6 +467,7 @@ const App = () => {
       items: [
         { id: 'qualifiers', label: 'Vòng loại', icon: Swords },
         { id: 'groupStage', label: 'Vòng bảng', icon: Users },
+        { id: 'knockout', label: 'Nhánh Knock-out', icon: GitFork },
         { id: 'standings', label: 'Bảng xếp hạng', icon: Trophy },
         { id: 'history', label: 'Lịch sử đấu', icon: History },
       ]
@@ -429,23 +496,8 @@ const App = () => {
     }
   ];
 
-  if (isLoading && !hasLoadedFromCloud) {
-    return (
-      <div className="min-h-screen bg-ucl-dark flex items-center justify-center relative overflow-hidden">
-        <ParticlesBackground />
-        <div className="flex flex-col items-center gap-6 relative z-10">
-          <div className="relative">
-            <div className="w-24 h-24 border-4 border-ucl-neon/20 rounded-full" />
-            <div className="absolute top-0 left-0 w-24 h-24 border-4 border-ucl-neon rounded-full border-t-transparent animate-spin" />
-            <Trophy className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-ucl-blue" size={32} />
-          </div>
-          <div className="flex flex-col items-center">
-            <h2 className="text-ucl-neon font-black italic tracking-widest text-xl uppercase">Full System Override</h2>
-            <p className="text-ucl-silver text-[10px] font-bold uppercase tracking-widest mt-2 animate-pulse">Đang đồng bộ dữ liệu World Cup Tournament...</p>
-          </div>
-        </div>
-      </div>
-    );
+  if (isLoading) {
+    return <LoadingScreen onComplete={() => setIsLoading(false)} />;
   }
 
   return (
@@ -454,37 +506,37 @@ const App = () => {
       <audio ref={globalAudioRef} src={activePlaylist[currentTrackIdx]?.file} onEnded={handleTrackEnd} />
       
       {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-ucl-dark/80 backdrop-blur-xl border-b border-white/5 z-[40] flex items-center justify-between px-6">
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[#030814]/90 backdrop-blur-2xl border-b border-white/10 z-[40] flex items-center justify-between px-6 shadow-xl">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-ucl-neon rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(255,42,95,0.4)]">
-             <Trophy className="text-white" size={18} />
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#0056b3] via-[#00f2ff] to-[#ffd700] flex items-center justify-center shadow-[0_0_15px_rgba(0,242,255,0.5)]">
+             <Trophy className="text-black" size={16} />
           </div>
-          <span className="font-black italic text-lg tracking-tighter uppercase font-bebas">WORLD CUP <span className="text-ucl-neon">PES</span></span>
+          <span className="font-black italic text-lg tracking-tighter uppercase font-bebas text-white">CHAMPIONS LEAGUE <span className="text-[#00f2ff]">C1</span></span>
         </div>
-        <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 bg-white/5 rounded-xl text-ucl-neon">
+        <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 bg-white/5 rounded-xl text-[#00f2ff] hover:bg-white/10 transition-colors">
           {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
       {/* Sidebar Navigation */}
       <aside className={cn(
-        "fixed left-0 top-0 h-full bg-black/20 backdrop-blur-3xl border-r border-white/5 z-[50] transition-all duration-500",
+        "fixed left-0 top-0 h-full bg-[#020713]/85 backdrop-blur-3xl border-r border-white/10 z-[50] transition-all duration-500 shadow-2xl",
         isSidebarOpen ? "w-72" : "w-24",
         "hidden lg:block"
       )}>
         <div className="p-8 h-full flex flex-col">
-          <div className="flex items-center gap-4 mb-12">
+          <div className="flex items-center gap-4 mb-10">
             <motion.div 
               whileHover={{ rotate: 360, scale: 1.1 }}
-              transition={{ duration: 0.5 }}
-              className="w-12 h-12 bg-ucl-neon rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(255,42,95,0.5)] cursor-pointer"
+              transition={{ duration: 0.6 }}
+              className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#003d80] via-[#00f2ff] to-[#ffd700] flex items-center justify-center shadow-[0_0_30px_rgba(0,242,255,0.55)] cursor-pointer shrink-0 border border-white/20"
             >
-              <Trophy className="text-white" size={24} />
+              <Trophy className="text-black" size={24} />
             </motion.div>
             {isSidebarOpen && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col">
-                <span className="font-black italic text-2xl tracking-tighter leading-none font-bebas text-white">FIFA WORLD CUP PES 2021</span>
-                <span className="text-ucl-blue text-[10px] font-black uppercase tracking-[0.2em] mt-1 font-montserrat">Official Tournament</span>
+                <span className="font-black italic text-2xl tracking-tighter leading-none font-bebas text-white">UEFA CHAMPIONS LEAGUE</span>
+                <span className="text-[#00f2ff] text-[10px] font-black uppercase tracking-[0.2em] mt-1 font-montserrat">PES 2021 C1 TOURNAMENT</span>
               </motion.div>
             )}
           </div>
@@ -494,15 +546,15 @@ const App = () => {
               <div key={section.title} className="space-y-1">
                 {isSidebarOpen ? (
                   <div className={cn(
-                    "text-[10px] font-black text-ucl-neon/60 uppercase tracking-[0.2em] px-4 mb-2 select-none",
+                    "text-[10px] font-black text-[#00f2ff]/70 uppercase tracking-[0.25em] px-4 mb-2 select-none font-mono",
                     sectionIdx > 0 ? "mt-5" : "mt-1"
                   )}>
                     {section.title}
                   </div>
                 ) : (
-                  sectionIdx > 0 && <div className="h-[1px] bg-white/5 my-3 mx-4" />
+                  sectionIdx > 0 && <div className="h-[1px] bg-white/10 my-3 mx-4" />
                 )}
-                <div className="space-y-0.5">
+                <div className="space-y-1">
                   {section.items.map((item) => (
                     <button
                       key={item.id}
@@ -510,14 +562,14 @@ const App = () => {
                       className={cn(
                         "w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 relative group font-montserrat",
                         activeTab === item.id 
-                          ? "bg-ucl-neon text-white shadow-[0_0_15px_rgba(255,42,95,0.25)] font-bold" 
+                          ? "bg-gradient-to-r from-[#00f2ff] to-[#0084ff] text-black shadow-[0_0_20px_rgba(0,242,255,0.45)] font-black" 
                           : "text-ucl-silver hover:text-white hover:bg-white/5"
                       )}
                     >
-                      <item.icon size={18} className={cn("shrink-0", activeTab === item.id ? "scale-110 text-white" : "group-hover:scale-110 group-hover:text-ucl-neon transition-transform")} />
-                      {isSidebarOpen && <span className="text-[11px] uppercase tracking-wider font-bold">{item.label}</span>}
+                      <item.icon size={18} className={cn("shrink-0 transition-transform", activeTab === item.id ? "scale-110 text-black" : "group-hover:scale-110 group-hover:text-[#00f2ff]")} />
+                      {isSidebarOpen && <span className="text-[11px] uppercase tracking-wider font-bold truncate">{item.label}</span>}
                       {activeTab === item.id && (
-                        <motion.div layoutId="nav-pill" className="absolute left-0 w-1 h-6 bg-ucl-blue rounded-full" />
+                        <motion.div layoutId="nav-pill" className="absolute left-0 w-1.5 h-6 bg-[#ffd700] rounded-full shadow-[0_0_10px_#ffd700]" />
                       )}
                     </button>
                   ))}
@@ -542,43 +594,45 @@ const App = () => {
             initial={{ opacity: 0, x: -100 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -100 }}
-            className="fixed inset-0 bg-ucl-dark/95 backdrop-blur-xl z-[60] lg:hidden p-8 flex flex-col"
+            className="fixed inset-0 bg-[#020713]/95 backdrop-blur-2xl z-[60] lg:hidden p-8 flex flex-col"
           >
-             <div className="flex items-between justify-between mb-12">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-ucl-neon rounded-xl flex items-center justify-center">
-                    <Trophy className="text-white" size={20} />
-                  </div>
-                  <span className="font-black italic text-xl font-bebas">WORLD CUP PES</span>
+            <div className="flex items-center justify-between mb-10">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 bg-gradient-to-tr from-[#0056b3] via-[#00f2ff] to-[#ffd700] rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(0,242,255,0.4)]">
+                  <Trophy className="text-black" size={20} />
                 </div>
-                <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 bg-white/5 rounded-xl text-ucl-neon">
-                  <X size={24} />
-                </button>
-             </div>
-             <nav className="flex-1 space-y-6 overflow-y-auto pr-1">
-                {menuSections.map((section) => (
-                  <div key={section.title} className="space-y-2">
-                    <div className="text-[10px] font-black text-ucl-neon/60 uppercase tracking-[0.2em] px-4 select-none">
-                      {section.title}
-                    </div>
-                    <div className="space-y-1">
-                      {section.items.map((item) => (
-                        <button
-                          key={item.id}
-                          onClick={() => { setActiveTab(item.id); setIsMobileMenuOpen(false); }}
-                          className={cn(
-                            "w-full flex items-center gap-6 px-6 py-4 rounded-xl transition-all font-montserrat",
-                            activeTab === item.id ? "bg-ucl-neon text-white shadow-[0_0_15px_rgba(255,42,95,0.25)] font-bold" : "text-ucl-silver hover:bg-white/5"
-                          )}
-                        >
-                          <item.icon size={20} />
-                          <span className="font-black text-[11px] uppercase tracking-widest">{item.label}</span>
-                        </button>
-                      ))}
-                    </div>
+                <span className="font-black italic text-xl font-bebas text-white">CHAMPIONS LEAGUE <span className="text-[#00f2ff]">C1</span></span>
+              </div>
+              <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 bg-white/5 rounded-xl text-[#00f2ff]">
+                <X size={24} />
+              </button>
+            </div>
+            <nav className="flex-1 space-y-6 overflow-y-auto pr-1">
+              {menuSections.map((section) => (
+                <div key={section.title} className="space-y-2">
+                  <div className="text-[10px] font-black text-[#00f2ff]/70 uppercase tracking-[0.25em] px-4 select-none font-mono">
+                    {section.title}
                   </div>
-                ))}
-             </nav>
+                  <div className="space-y-1">
+                    {section.items.map((item) => (
+                      <button
+                        key={item.id}
+                        onClick={() => { setActiveTab(item.id); setIsMobileMenuOpen(false); }}
+                        className={cn(
+                          "w-full flex items-center gap-5 px-5 py-3.5 rounded-xl transition-all font-montserrat",
+                          activeTab === item.id 
+                            ? "bg-gradient-to-r from-[#00f2ff] to-[#0084ff] text-black shadow-[0_0_20px_rgba(0,242,255,0.4)] font-black" 
+                            : "text-ucl-silver hover:bg-white/5 hover:text-white"
+                        )}
+                      >
+                        <item.icon size={20} className={activeTab === item.id ? "text-black" : "text-[#00f2ff]"} />
+                        <span className="font-black text-xs uppercase tracking-widest">{item.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </nav>
           </motion.div>
         )}
       </AnimatePresence>
@@ -625,6 +679,19 @@ const App = () => {
               {activeTab === 'groupStage' && (
                 <GroupStage 
                   players={standings.standings} 
+                  rawPlayers={players}
+                  matches={matches}
+                  setMatches={setMatches}
+                  setActiveTab={setActiveTab}
+                />
+              )}
+              {activeTab === 'knockout' && (
+                <KnockoutBracket 
+                  players={standings.standings} 
+                  rawPlayers={players}
+                  matches={matches} 
+                  setMatches={setMatches}
+                  setActiveTab={setActiveTab}
                 />
               )}
               {activeTab === 'players' && <Players players={players} setPlayers={setPlayers} />}
@@ -676,7 +743,7 @@ const App = () => {
           <div className="flex items-center gap-4">
              <Trophy className="text-ucl-blue animate-bounce" size={24} />
              <div className="flex flex-col">
-                <span className="font-black italic text-lg tracking-tighter uppercase leading-none font-bebas">WORLD CUP <span className="text-ucl-neon">MANAGER</span></span>
+                <span className="font-black italic text-lg tracking-tighter uppercase leading-none font-bebas">UEFA CHAMPIONS LEAGUE <span className="text-ucl-neon">MANAGER</span></span>
                 <span className="text-[8px] font-bold uppercase tracking-[0.3em] mt-1 font-montserrat">Official Tournament System</span>
              </div>
           </div>

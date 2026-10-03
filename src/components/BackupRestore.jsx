@@ -197,6 +197,28 @@ const BackupRestore = ({ players, matches, tourneyMatches, customTables, setPlay
             <Trash2 size={14} className="inline mr-2" /> Reset Local
           </button>
         </div>
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 p-6 bg-ucl-neon/5 rounded-2xl border border-ucl-neon/20">
+          <div>
+            <p className="font-bold text-white text-sm">Khởi tạo lại 28 đội C1 (Thịnh 14 - Bu 14)</p>
+            <p className="text-ucl-silver text-xs mt-1">Làm mới danh sách 28 câu lạc bộ C1 chuẩn và xóa toàn bộ trận đấu cũ.</p>
+          </div>
+          <button 
+            onClick={() => {
+              if (window.confirm('Xác nhận đặt lại về 28 câu lạc bộ C1 chuẩn (Thịnh 14 - Bu 14) và xóa sạch lịch sử World Cup cũ?')) {
+                localStorage.removeItem('pes_players');
+                localStorage.removeItem('pes_matches');
+                localStorage.removeItem('pes_tourney_matches');
+                localStorage.removeItem('pes_custom_tables');
+                localStorage.setItem('pes_tourney_edition', 'c1_pes_28');
+                window.location.reload();
+              }
+            }}
+            className="px-6 py-3 bg-ucl-neon text-white rounded-xl font-black uppercase tracking-widest text-[10px] border border-ucl-neon/40 hover:bg-ucl-neon/80 transition-all shadow-[0_0_15px_rgba(255,42,95,0.3)]"
+          >
+            <RotateCw size={14} className="inline mr-2" /> Khởi tạo lại 28 đội C1
+          </button>
+        </div>
       </div>
     </div>
   );

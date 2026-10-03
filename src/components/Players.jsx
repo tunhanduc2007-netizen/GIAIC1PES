@@ -22,7 +22,7 @@ const Players = ({ players, setPlayers }) => {
     const newPlayer = {
       id: Date.now().toString(),
       name: formData.name,
-      team: formData.name, // In World Cup, team and name can be aligned
+      team: formData.name, // In C1 Tournament, team and name are aligned
       owner: formData.owner || 'BU',
       matches: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0
     };
@@ -33,7 +33,7 @@ const Players = ({ players, setPlayers }) => {
   };
 
   const handleDeletePlayer = async (id) => {
-    if (window.confirm('Bạn có chắc chắn muốn loại đội tuyển này khỏi World Cup?')) {
+    if (window.confirm('Bạn có chắc chắn muốn loại câu lạc bộ này khỏi giải C1?')) {
       try {
         const { error } = await supabase.from('players').delete().eq('id', id);
         if (error) {
@@ -78,7 +78,7 @@ const Players = ({ players, setPlayers }) => {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-ucl-silver" size={18} />
           <input 
             type="text" 
-            placeholder="Tìm đội tuyển hoặc người chơi..." 
+            placeholder="Tìm câu lạc bộ hoặc người chơi..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 py-3.5 focus:outline-none focus:border-ucl-neon transition-all text-sm tracking-wide font-montserrat"
@@ -89,7 +89,7 @@ const Players = ({ players, setPlayers }) => {
           className="ucl-button flex items-center gap-2 self-start sm:self-center"
         >
           {isAdding ? <X size={18} /> : <UserPlus size={18} />}
-          {isAdding ? "HỦY BỎ" : "THÊM ĐỘI TUYỂN"}
+          {isAdding ? "HỦY BỎ" : "THÊM CÂU LẠC BỘ"}
         </button>
       </div>
 
@@ -104,14 +104,14 @@ const Players = ({ players, setPlayers }) => {
           >
             <form onSubmit={handleAddPlayer} className="glass-card p-6 md:p-8 grid grid-cols-1 md:grid-cols-3 gap-6 items-end border-ucl-neon/30">
               <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-ucl-silver font-montserrat">Tên Quốc Gia / Đội tuyển</label>
+                <label className="text-xs font-black uppercase tracking-widest text-ucl-silver font-montserrat">Tên Câu Lạc Bộ</label>
                 <input 
                   autoFocus
                   type="text" 
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
                   className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:outline-none focus:border-ucl-neon transition-all"
-                  placeholder="VD: Brazil, France..."
+                  placeholder="VD: Real Madrid, Arsenal..."
                 />
               </div>
               <div className="space-y-2">

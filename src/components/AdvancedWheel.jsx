@@ -4,57 +4,37 @@ import { Shield, Trophy, RotateCw, Sword, Zap, AlertCircle, History, ChevronRigh
 import { cn, getTeamLogo } from '../lib/utils';
 
 const TEAMS_THINH = [
-  { name: 'Qatar', color: '#7c2d12' },
-  { name: 'Jordan', color: '#dc2626' },
-  { name: 'Uzbekistan', color: '#38bdf8' },
-  { name: 'Iran', color: '#15803d' },
-  { name: 'Nhật Bản', color: '#1e40af' },
-  { name: 'DR Congo', color: '#38bdf8' },
-  { name: 'Tunisia', color: '#dc2626' },
-  { name: 'Senegal', color: '#15803d' },
-  { name: 'Algeria', color: '#15803d' },
-  { name: 'Nam Phi', color: '#15803d' },
-  { name: 'Curaçao', color: '#1e40af' },
-  { name: 'Mexico', color: '#15803d' },
-  { name: 'Panama', color: '#dc2626' },
-  { name: 'Uruguay', color: '#38bdf8' },
-  { name: 'Brazil', color: '#fbbf24' },
-  { name: 'Ecuador', color: '#fbbf24' },
-  { name: 'Tây Ban Nha', color: '#facc15' },
-  { name: 'Anh', color: '#1e3a8a' },
-  { name: 'Scotland', color: '#1e3a8a' },
-  { name: 'Bỉ', color: '#be123c' },
-  { name: 'Thổ Nhĩ Kỳ', color: '#dc2626' },
-  { name: 'Bosnia & Herzegovina', color: '#1e40af' },
-  { name: 'Croatia', color: '#dc2626' },
+  { name: 'Arsenal', color: '#EF0107' },
+  { name: 'Chelsea', color: '#034694' },
+  { name: 'Manchester City', color: '#6CABDD' },
+  { name: 'Barcelona', color: '#A50044' },
+  { name: 'Real Madrid', color: '#FEBE10' },
+  { name: 'Atlético Madrid', color: '#CB3524' },
+  { name: 'Roma', color: '#8E1F2F' },
+  { name: 'Inter Milan', color: '#001489' },
+  { name: 'Stuttgart', color: '#E32219' },
+  { name: 'Borussia Dortmund', color: '#FDE100' },
+  { name: 'Paris Saint-Germain', color: '#004170' },
+  { name: 'Lens', color: '#ED1C24' },
+  { name: 'Galatasaray', color: '#A90432' },
+  { name: 'Fenerbahçe', color: '#002D72' },
 ];
 
 const TEAMS_BU = [
-  { name: 'Iraq', color: '#111827' },
-  { name: 'Australia', color: '#fbbf24' },
-  { name: 'Saudi Arabia', color: '#15803d' },
-  { name: 'Hàn Quốc', color: '#dc2626' },
-  { name: 'Ghana', color: '#fbbf24' },
-  { name: 'Cape Verde', color: '#1e40af' },
-  { name: 'Bờ Biển Ngà', color: '#f97316' },
-  { name: 'Maroc', color: '#0f766e' },
-  { name: 'Ai Cập', color: '#dc2626' },
-  { name: 'Haiti', color: '#1e40af' },
-  { name: 'Mỹ', color: '#b91c1c' },
-  { name: 'Canada', color: '#dc2626' },
-  { name: 'Đức', color: '#111827' },
-  { name: 'CH Séc', color: '#1e40af' },
-  { name: 'Hà Lan', color: '#f97316' },
-  { name: 'Pháp', color: '#1e3a8a' },
-  { name: 'Thụy Sĩ', color: '#dc2626' },
-  { name: 'Áo', color: '#dc2626' },
-  { name: 'Na Uy', color: '#1e40af' },
-  { name: 'New Zealand', color: '#111827' },
-  { name: 'Bồ Đào Nha', color: '#15803d' },
-  { name: 'Colombia', color: '#fbbf24' },
-  { name: 'Thụy Điển', color: '#1e40af' },
-  { name: 'Paraguay', color: '#dc2626' },
-  { name: 'Argentina', color: '#60a5fa' },
+  { name: 'Manchester United', color: '#DA291C' },
+  { name: 'Liverpool', color: '#C8102E' },
+  { name: 'Aston Villa', color: '#670E36' },
+  { name: 'Athletic Bilbao', color: '#EE2524' },
+  { name: 'Real Betis', color: '#0BB364' },
+  { name: 'Villarreal', color: '#F5E200' },
+  { name: 'Como', color: '#003399' },
+  { name: 'Napoli', color: '#0080FF' },
+  { name: 'RB Leipzig', color: '#D10034' },
+  { name: 'Bayern Munich', color: '#DC052D' },
+  { name: 'Lyon', color: '#1E3F78' },
+  { name: 'Lille', color: '#EE2737' },
+  { name: 'Porto', color: '#003882' },
+  { name: 'Sporting CP', color: '#008057' },
 ];
 
 const Wheel = ({ teams, onResult, label, side, isLocked }) => {
@@ -259,20 +239,15 @@ const AdvancedWheel = ({ players = [], onMatchCreated }) => {
   const [history, setHistory] = useState([]);
   const processedPairRef = useRef(null);
 
-  // 12 Groups definition to map qualified teams
+  // 7 Groups definition to map qualified teams (28 teams, 4 per group: 2 Thịnh, 2 Bu)
   const groups = {
-    'A': ['Iran', 'Ai Cập', 'Bỉ', 'Saudi Arabia'],
-    'B': ['Jordan', 'Iraq', 'Tây Ban Nha', 'Pháp'],
-    'C': ['Thổ Nhĩ Kỳ', 'Hà Lan', 'Brazil', 'Argentina'],
-    'D': ['Croatia', 'Colombia', 'Senegal', 'Thụy Sĩ'],
-    'E': ['Uruguay', 'Haiti', 'Qatar', 'Bồ Đào Nha'],
-    'F': ['Uzbekistan', 'New Zealand', 'Algeria', 'Hàn Quốc'],
-    'G': ['Bosnia & Herzegovina', 'Paraguay', 'Áo', 'Scotland'],
-    'H': ['Tunisia', 'Na Uy', 'DR Congo', 'Australia'],
-    'I': ['Curaçao', 'Cape Verde', 'Canada', 'Đức'],
-    'J': ['Mexico', 'CH Séc', 'Ecuador', 'Maroc'],
-    'K': ['Nhật Bản', 'Ghana', 'Nam Phi', 'Thụy Điển'],
-    'L': ['Anh', 'Mỹ', 'Bờ Biển Ngà', 'Panama'],
+    'A': ['Arsenal', 'Porto', 'Chelsea', 'Villarreal'],
+    'B': ['Manchester City', 'Lyon', 'Barcelona', 'Manchester United'],
+    'C': ['Real Madrid', 'Sporting CP', 'Atlético Madrid', 'Liverpool'],
+    'D': ['Roma', 'Aston Villa', 'Inter Milan', 'Bayern Munich'],
+    'E': ['Stuttgart', 'Napoli', 'Borussia Dortmund', 'Real Betis'],
+    'F': ['Paris Saint-Germain', 'RB Leipzig', 'Lens', 'Lille'],
+    'G': ['Galatasaray', 'Como', 'Fenerbahçe', 'Athletic Bilbao'],
   };
 
   // Compute qualified teams (Top 2 from each group) dynamically
@@ -288,7 +263,11 @@ const AdvancedWheel = ({ players = [], onMatchCreated }) => {
     Object.entries(groups).forEach(([groupName, teams]) => {
       const sorted = teams
         .map(name => {
-          const found = players.find(p => p.name.trim().toLowerCase() === name.trim().toLowerCase());
+          const tClean = name.trim().toLowerCase();
+          const found = players.find(p => {
+            const pClean = (p.name || '').trim().toLowerCase();
+            return pClean === tClean || (tClean === 'psg' && pClean.includes('paris')) || (pClean === 'psg' && tClean.includes('paris'));
+          });
           return found || { name, owner: 'Chưa rõ', points: 0, gd: 0, gf: 0 };
         })
         .sort((a, b) => {
@@ -363,7 +342,7 @@ const AdvancedWheel = ({ players = [], onMatchCreated }) => {
                 : "bg-white/5 text-ucl-silver hover:bg-white/10"
             )}
           >
-            Tất cả 48 đội
+            Tất cả 28 đội (Thịnh 14 - Bu 14)
           </button>
           <button 
             onClick={() => setDrawMode('qualified')}

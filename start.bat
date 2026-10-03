@@ -1,7 +1,7 @@
 @echo off
-title FIFA World Cup Manager - UCL Jukebox
+title UEFA Champions League Manager - C1 PES 2021
 echo ========================================================
-echo   KHOI DONG TOURNAMENT MANAGER + YOUTUBE JUKEBOX
+echo   KHOI DONG C1 CHAMPIONS LEAGUE MANAGER + JUKEBOX
 echo ========================================================
 echo.
 
@@ -38,7 +38,7 @@ echo [INFO] Dang khoi dong May chu Jukebox (Port 3000) chay ngam...
 :: Start server.cjs concurrently in the background
 start /b node server.cjs
 
-echo [INFO] Dang khoi dong Trinh phat World Cup Manager (Vite dev)...
+echo [INFO] Dang khoi dong Trinh phat C1 Manager (Vite dev)...
 echo.
 :: Open Vite in this window
 call npm run dev

@@ -15,7 +15,7 @@ const Standings = ({ standings = [], topScorers = [], topCards = [] }) => {
       <div className="p-4 md:p-6 border-b border-white/5 bg-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <Trophy className="text-ucl-neon shrink-0" size={24} />
-          <h3 className="text-base md:text-xl font-bold italic tracking-tighter uppercase font-bebas">BẢNG XẾP HẠNG <span className="text-ucl-neon font-bebas">FIFA WORLD CUP</span></h3>
+          <h3 className="text-base md:text-xl font-bold italic tracking-tighter uppercase font-bebas">BẢNG XẾP HẠNG <span className="text-ucl-neon font-bebas">UEFA CHAMPIONS LEAGUE C1</span></h3>
         </div>
         <div className="flex items-center gap-4 text-[8px] md:text-xs font-bold text-ucl-silver uppercase tracking-widest font-montserrat">
           <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-green-500" /> Thắng +3đ</span>
@@ -28,7 +28,7 @@ const Standings = ({ standings = [], topScorers = [], topCards = [] }) => {
           <thead>
             <tr className="bg-ucl-blue/20 text-ucl-silver text-[10px] md:text-xs uppercase tracking-widest font-bold">
               <th className="px-4 md:px-6 py-4">Hạng</th>
-              <th className="px-4 md:px-6 py-4">Đội tuyển quốc gia</th>
+              <th className="px-4 md:px-6 py-4">Câu Lạc Bộ</th>
               <th className="px-2 md:px-4 py-4 text-center">T</th>
               <th className="px-2 md:px-4 py-4 text-center text-green-400">W</th>
               <th className="px-2 md:px-4 py-4 text-center text-yellow-400">D</th>
@@ -214,7 +214,7 @@ const Standings = ({ standings = [], topScorers = [], topCards = [] }) => {
 
       {/* Footer Info */}
       <div className="p-4 bg-white/5 text-[10px] text-ucl-silver flex items-center justify-center gap-6 uppercase tracking-widest mt-8 font-montserrat">
-        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-ucl-neon" /> FIFA World Cup Tournament 2026</div>
+        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-ucl-neon" /> UEFA Champions League C1 PES 2026</div>
       </div>
     </div>
   );

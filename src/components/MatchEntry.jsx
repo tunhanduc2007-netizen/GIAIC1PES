@@ -397,7 +397,7 @@ const MatchEntry = ({ players, matches, setMatches }) => {
                  </div>
                  <div className="text-xs space-y-1">
                     <p className="flex justify-between"><span>Thời gian:</span> <span className="text-white">{new Date().toLocaleTimeString()}</span></p>
-                    <p className="flex justify-between"><span>Giải đấu:</span> <span className="text-ucl-neon font-bold">FIFA World Cup</span></p>
+                    <p className="flex justify-between"><span>Giải đấu:</span> <span className="text-ucl-neon font-bold">UEFA Champions League C1</span></p>
                  </div>
               </div>
 

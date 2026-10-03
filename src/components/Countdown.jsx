@@ -12,8 +12,8 @@ const Countdown = () => {
   });
 
   useEffect(() => {
-    // FIFA World Cup 2026 Kickoff: June 11, 2026
-    const targetDate = new Date('2026-06-11T00:00:00').getTime();
+    // UEFA Champions League Final 2026 (Puskás Aréna, Budapest)
+    const targetDate = new Date('2026-05-30T20:00:00').getTime();
 
     const interval = setInterval(() => {
       const now = new Date().getTime();
@@ -39,7 +39,7 @@ const Countdown = () => {
     return (
       <div className="glass-card px-6 py-3 border-ucl-blue/30 text-ucl-blue font-black tracking-widest text-xs uppercase animate-pulse flex items-center gap-2">
         <Trophy size={16} className="text-yellow-400" />
-        <span>THE WORLD CUP HAS BEGUN!</span>
+        <span>THE CHAMPIONS LEAGUE HAS BEGUN!</span>
       </div>
     );
   }
@@ -55,7 +55,7 @@ const Countdown = () => {
     <div className="flex flex-col sm:flex-row items-center gap-3 md:gap-4 bg-black/40 backdrop-blur-md px-5 py-3 rounded-3xl border border-white/10 w-fit shadow-2xl">
       <div className="flex items-center gap-2 text-ucl-silver shrink-0">
         <Clock size={14} className="text-ucl-neon animate-pulse" />
-        <span className="text-[9px] font-black uppercase tracking-widest leading-none">ROAD TO<br/><span className="text-ucl-blue font-bold">WORLD CUP 2026</span></span>
+        <span className="text-[9px] font-black uppercase tracking-widest leading-none">ROAD TO<br/><span className="text-ucl-blue font-bold">UCL FINAL 2026</span></span>
       </div>
       
       <div className="h-px sm:w-px sm:h-8 bg-white/10 w-full sm:w-auto" />

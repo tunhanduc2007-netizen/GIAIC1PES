@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Trophy, Sword, Swords, TrendingUp, DollarSign, Target, Activity, Zap, Star } from 'lucide-react';
+import { Trophy, Sword, Swords, TrendingUp, DollarSign, Target, Activity, Zap, Star, ChevronRight, Sparkles } from 'lucide-react';
 import { cn, getTeamLogo } from '../lib/utils';
 
 const StatCard = ({ title, value, icon: Icon, color, delay, subValue }) => (
@@ -8,7 +8,7 @@ const StatCard = ({ title, value, icon: Icon, color, delay, subValue }) => (
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay }}
-    className="glass-card p-4 md:p-8 flex items-center gap-4 md:gap-6 overflow-hidden relative group hover:border-ucl-neon/40 hover:scale-[1.02] transition-all duration-300"
+    className="glass-card p-4 md:p-8 flex items-center gap-4 md:gap-6 overflow-hidden relative group hover:border-[#00f2ff]/40 hover:scale-[1.02] transition-all duration-300"
   >
     <div className={cn("w-12 h-12 md:w-16 md:h-16 rounded-2xl flex items-center justify-center bg-opacity-20 shadow-lg shrink-0", color)}>
       <Icon className={cn("transition-all", color.replace('bg-', 'text-').replace('bg-opacity-20', ''), "w-6 h-6 md:w-8 md:h-8")} />
@@ -16,7 +16,7 @@ const StatCard = ({ title, value, icon: Icon, color, delay, subValue }) => (
     <div className="z-10">
       <p className="text-ucl-silver text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em]">{title}</p>
       <h3 className="text-xl md:text-3xl font-black mt-1 italic tracking-tighter text-white">{value}</h3>
-      {subValue && <p className="text-[8px] md:text-[10px] text-ucl-neon font-bold uppercase mt-1">{subValue}</p>}
+      {subValue && <p className="text-[8px] md:text-[10px] text-[#00f2ff] font-bold uppercase mt-1">{subValue}</p>}
     </div>
     <div className={cn("absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-all duration-500 scale-90 group-hover:scale-110", color)}>
       <Icon size={120} />
@@ -77,17 +77,67 @@ const Dashboard = ({ players, matches, standings, topScorers = [], onViewAllMatc
   const buPercent = totalDecisive > 0 ? Math.round((derbyStats.buWins / totalDecisive) * 100) : 50;
 
   return (
-    <div className="space-y-6 md:space-y-10 pb-20">
+    <div className="space-y-6 md:space-y-8 pb-20">
+      {/* UEFA Champions League Official TV Broadcast Scorebug Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -15 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="glass-card p-3 sm:p-4 border border-[#00f2ff]/30 shadow-[0_0_35px_rgba(0,242,255,0.18)] flex flex-wrap items-center justify-between gap-4 relative overflow-hidden"
+      >
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#00f2ff] to-transparent" />
+
+        {/* Left: UCL Brand Badge */}
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#003d80] via-[#00f2ff] to-[#ffd700] p-0.5 shadow-[0_0_15px_rgba(0,242,255,0.4)] flex items-center justify-center shrink-0">
+            <Trophy size={20} className="text-black" />
+          </div>
+          <div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#00f2ff] font-mono">UEFA CHAMPIONS LEAGUE</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#00f2ff] animate-ping" />
+            </div>
+            <p className="text-white font-black italic text-sm tracking-tight font-bebas uppercase">PES 2021 OFFICIAL BROADCAST</p>
+          </div>
+        </div>
+
+        {/* Center: Live Derby Scorebug */}
+        <div className="flex items-center gap-2 sm:gap-4 bg-black/60 px-4 py-2 rounded-2xl border border-white/10 shadow-inner">
+          <div className="flex items-center gap-2">
+            <span className="w-6 h-6 rounded-lg bg-[#ff2a5f]/20 border border-[#ff2a5f]/50 text-[#ff2a5f] flex items-center justify-center text-xs font-black italic font-mono">T</span>
+            <span className="text-xs sm:text-sm font-black italic text-white uppercase tracking-wider">THỊNH</span>
+            <span className="text-base sm:text-lg font-black font-mono text-[#ff2a5f] ml-1">{derbyStats.thinhWins}</span>
+          </div>
+
+          <div className="px-2 py-0.5 rounded bg-white/5 text-[9px] font-mono font-bold text-ucl-silver uppercase">
+            HÒA {derbyStats.draws}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-base sm:text-lg font-black font-mono text-[#00f2ff] mr-1">{derbyStats.buWins}</span>
+            <span className="text-xs sm:text-sm font-black italic text-white uppercase tracking-wider">BU</span>
+            <span className="w-6 h-6 rounded-lg bg-[#00f2ff]/20 border border-[#00f2ff]/50 text-[#00f2ff] flex items-center justify-center text-xs font-black italic font-mono">B</span>
+          </div>
+        </div>
+
+        {/* Right: Live On Air Pill */}
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/10 border border-red-500/30">
+          <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+          <span className="text-[10px] font-black text-red-400 uppercase tracking-widest font-mono">ON AIR • 28 CLB</span>
+        </div>
+      </motion.div>
+
       {/* Hero Section */}
-      <div className="relative rounded-[2rem] overflow-hidden min-h-[260px] flex flex-col lg:flex-row lg:items-center justify-between p-6 md:p-12 bg-ucl-gradient border border-white/10 shadow-2xl gap-6">
-        <div className="relative z-10 space-y-4 md:space-y-6 py-2">
+      <div className="relative rounded-[2rem] overflow-hidden min-h-[280px] flex flex-col lg:flex-row lg:items-center justify-between p-6 md:p-12 bg-gradient-to-r from-[#030814]/95 via-[#061938]/90 to-[#001f4d]/90 border border-white/10 shadow-2xl gap-8">
+        <div className="relative z-10 space-y-4 md:space-y-6 py-2 max-w-2xl">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-2 md:gap-3 px-3 md:px-4 py-1 bg-ucl-neon/20 border border-ucl-neon/40 rounded-full w-fit"
+            className="flex items-center gap-2 md:gap-3 px-3 md:px-4 py-1.5 bg-[#00f2ff]/15 border border-[#00f2ff]/40 rounded-full w-fit backdrop-blur-md shadow-[0_0_15px_rgba(0,242,255,0.2)]"
           >
-            <Zap size={12} className="text-ucl-neon fill-ucl-neon animate-pulse" />
-            <span className="text-ucl-neon text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] font-montserrat">FIFA World Cup Session 2026</span>
+            <Sparkles size={12} className="text-[#ffd700] animate-spin" />
+            <span className="text-[#00f2ff] text-[9px] md:text-[10px] font-black uppercase tracking-[0.25em] font-montserrat">
+              UEFA Champions League 2026 Season
+            </span>
           </motion.div>
           
           <div className="space-y-1 md:space-y-2">
@@ -97,32 +147,79 @@ const Dashboard = ({ players, matches, standings, topScorers = [], onViewAllMatc
               transition={{ delay: 0.1 }}
               className="responsive-title"
             >
-              FIFA WORLD CUP <span className="text-ucl-neon">PES 2021</span><br/>
-              <span className="text-ucl-blue">CHAMPIONSHIP</span>
+              UEFA CHAMPIONS LEAGUE <span className="text-[#00f2ff]">C1</span><br/>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffd700] via-[#ffea79] to-[#00f2ff]">PES 2021 TOURNAMENT</span>
             </motion.h1>
+            <p className="text-ucl-silver text-xs sm:text-sm font-montserrat max-w-xl">
+              Đại chiến 28 Câu Lạc Bộ hàng đầu châu Âu giữa <strong className="text-[#ff2a5f]">🔴 THỊNH (14 đội)</strong> và <strong className="text-[#00f2ff]">🔵 BU (14 đội)</strong> tranh đoạt Cúp Tai Voi danh giá.
+            </p>
           </div>
 
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
-            className="flex items-center gap-4 md:gap-8 pt-2 md:pt-4"
+            className="flex items-center gap-4 md:gap-8 pt-2"
           >
              <div className="flex flex-col">
-                <span className="text-2xl md:text-3xl font-black text-white italic leading-none">{totalMatches}</span>
-                <span className="text-[8px] md:text-[10px] text-ucl-silver font-bold uppercase tracking-widest mt-1 font-montserrat">Matches Played</span>
+                <span className="text-2xl md:text-4xl font-black text-white italic leading-none font-bebas">{totalMatches}</span>
+                <span className="text-[9px] md:text-[10px] text-ucl-silver font-bold uppercase tracking-widest mt-1 font-montserrat">Trận Đã Đấu</span>
              </div>
              <div className="w-px h-8 md:h-10 bg-white/10" />
              <div className="flex flex-col">
-                <span className="text-2xl md:text-3xl font-black text-ucl-neon italic leading-none">{players.length}</span>
-                <span className="text-[8px] md:text-[10px] text-ucl-silver font-bold uppercase tracking-widest mt-1 font-montserrat">Active Teams</span>
+                <span className="text-2xl md:text-4xl font-black text-[#00f2ff] italic leading-none font-bebas">{players.length}</span>
+                <span className="text-[9px] md:text-[10px] text-ucl-silver font-bold uppercase tracking-widest mt-1 font-montserrat">28 CLB Tham Gia</span>
+             </div>
+             <div className="w-px h-8 md:h-10 bg-white/10" />
+             <div className="flex flex-col">
+                <span className="text-2xl md:text-4xl font-black text-[#ffd700] italic leading-none font-bebas">7 BẢNG</span>
+                <span className="text-[9px] md:text-[10px] text-ucl-silver font-bold uppercase tracking-widest mt-1 font-montserrat">Vòng Bảng + Knockout</span>
              </div>
           </motion.div>
         </div>
 
-        {/* Cinematic Golden Glow Overlay instead of UCL logo */}
-        <div className="absolute right-0 top-0 w-1/2 h-full opacity-35 pointer-events-none bg-gold-glow mix-blend-screen" />
-        <div className="absolute inset-0 bg-neon-glow opacity-30 pointer-events-none" />
+        {/* 3D Champions League Trophy Display on the Right */}
+        <div className="relative z-10 hidden lg:flex flex-col items-center justify-center p-6 shrink-0">
+          <div className="w-44 h-44 rounded-full bg-gradient-to-tr from-[#00f2ff]/25 via-[#ffd700]/25 to-transparent blur-3xl absolute animate-pulse" />
+          <motion.div
+            animate={{ y: [-6, 6, -6], rotateY: [0, 180, 360] }}
+            transition={{ y: { duration: 3, repeat: Infinity, ease: 'easeInOut' }, rotateY: { duration: 8, repeat: Infinity, ease: 'linear' } }}
+            className="relative z-10 flex flex-col items-center [transform-style:preserve-3d]"
+          >
+            <div className="w-32 h-32 rounded-3xl bg-black/60 border-2 border-[#ffd700]/60 p-4 shadow-[0_0_40px_rgba(255,215,0,0.5)] flex items-center justify-center backdrop-blur-xl">
+              <Trophy size={68} className="text-[#ffd700] filter drop-shadow-[0_0_20px_#ffd700]" />
+            </div>
+            <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#ffd700] mt-3 font-mono">
+              THE HOLY GRAIL
+            </span>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Knockout Stage Banner Shortcut */}
+      <div 
+        onClick={() => window.dispatchEvent(new CustomEvent('changeTab', { detail: 'knockout' }))}
+        className="glass-card p-4 md:p-6 border-l-4 border-l-[#ffd700] hover:border-[#ffd700] cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all duration-300 group hover:scale-[1.01] bg-gradient-to-r from-[#ffd700]/10 via-black/40 to-transparent"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-[#ffd700]/20 border border-[#ffd700]/40 flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(255,215,0,0.3)]">
+            <Trophy size={24} className="text-[#ffd700] group-hover:scale-110 transition-transform" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-black uppercase tracking-widest text-[#ffd700] font-mono">GIAI ĐOẠN KNOCK-OUT</span>
+              <span className="text-[9px] bg-red-500/20 text-red-400 border border-red-500/30 px-1.5 py-0.2 rounded font-mono font-bold">MỚI</span>
+            </div>
+            <h4 className="text-lg md:text-xl font-black italic uppercase font-bebas text-white">
+              SƠ ĐỒ PHÂN NHÁNH TRỰC TIẾP (KNOCK-OUT BRACKETS)
+            </h4>
+            <p className="text-ucl-silver text-xs">Xem & điều hành các nhánh đấu Tứ kết ➔ Bán kết ➔ Chung kết cúp C1</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 text-[#ffd700] font-black text-xs uppercase tracking-wider group-hover:translate-x-1 transition-transform shrink-0">
+          <span>Xem nhánh đấu</span>
+          <ChevronRight size={18} />
+        </div>
       </div>
 
       {/* Stats Grid */}

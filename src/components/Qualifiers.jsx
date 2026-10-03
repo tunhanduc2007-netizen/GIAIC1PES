@@ -4,32 +4,46 @@ import { Swords, Trophy, Edit, Activity, Zap, PlayCircle, CheckCircle2 } from 'l
 import { cn, getTeamLogo } from '../lib/utils';
 
 const QUALIFIER_PAIRINGS = [
-  { id: 1, teamA: 'Đức', teamB: 'Haiti', ownerA: 'THỊNH', ownerB: 'BU' },
-  { id: 2, teamA: 'Thổ Nhĩ Kỳ', teamB: 'Thụy Điển', ownerA: 'THỊNH', ownerB: 'BU' },
-  { id: 3, teamA: 'Brazil', teamB: 'Pháp', ownerA: 'THỊNH', ownerB: 'BU' },
-  { id: 4, teamA: 'Uzbekistan', teamB: 'Áo', ownerA: 'THỊNH', ownerB: 'BU' },
-  { id: 5, teamA: 'Bỉ', teamB: 'Mỹ', ownerA: 'THỊNH', ownerB: 'BU' },
-  { id: 6, teamA: 'Algeria', teamB: 'Ghana', ownerA: 'THỊNH', ownerB: 'BU' },
-  { id: 7, teamA: 'DR Congo', teamB: 'Maroc', ownerA: 'THỊNH', ownerB: 'BU' },
-  { id: 8, teamA: 'Croatia', teamB: 'Bồ Đào Nha', ownerA: 'THỊNH', ownerB: 'BU' },
-  { id: 9, teamA: 'Panama', teamB: 'Ai Cập', ownerA: 'THỊNH', ownerB: 'BU' },
-  { id: 10, teamA: 'Tây Ban Nha', teamB: 'CH Séc', ownerA: 'THỊNH', ownerB: 'BU' }
+  { id: 1, teamA: 'Arsenal', teamB: 'Porto', ownerA: 'THỊNH', ownerB: 'BU' },
+  { id: 2, teamA: 'Chelsea', teamB: 'Villarreal', ownerA: 'THỊNH', ownerB: 'BU' },
+  { id: 3, teamA: 'Manchester City', teamB: 'Lyon', ownerA: 'THỊNH', ownerB: 'BU' },
+  { id: 4, teamA: 'Barcelona', teamB: 'Manchester United', ownerA: 'THỊNH', ownerB: 'BU' },
+  { id: 5, teamA: 'Real Madrid', teamB: 'Sporting CP', ownerA: 'THỊNH', ownerB: 'BU' },
+  { id: 6, teamA: 'Atlético Madrid', teamB: 'Liverpool', ownerA: 'THỊNH', ownerB: 'BU' },
+  { id: 7, teamA: 'Roma', teamB: 'Aston Villa', ownerA: 'THỊNH', ownerB: 'BU' },
+  { id: 8, teamA: 'Inter Milan', teamB: 'Bayern Munich', ownerA: 'THỊNH', ownerB: 'BU' },
+  { id: 9, teamA: 'Stuttgart', teamB: 'Napoli', ownerA: 'THỊNH', ownerB: 'BU' },
+  { id: 10, teamA: 'Borussia Dortmund', teamB: 'Real Betis', ownerA: 'THỊNH', ownerB: 'BU' },
+  { id: 11, teamA: 'Paris Saint-Germain', teamB: 'RB Leipzig', ownerA: 'THỊNH', ownerB: 'BU' },
+  { id: 12, teamA: 'Lens', teamB: 'Lille', ownerA: 'THỊNH', ownerB: 'BU' },
+  { id: 13, teamA: 'Galatasaray', teamB: 'Como', ownerA: 'THỊNH', ownerB: 'BU' },
+  { id: 14, teamA: 'Fenerbahçe', teamB: 'Athletic Bilbao', ownerA: 'THỊNH', ownerB: 'BU' }
 ];
 
 const Qualifiers = ({ matches = [], setActiveTab }) => {
+  const norm = (name) => {
+    const s = (name || '').toLowerCase().trim();
+    if (s === 'psg' || s.includes('paris')) return 'paris';
+    return s;
+  };
   
   // Find match result from global matches state
   const getQualifierResult = (pairing) => {
+    const normA = norm(pairing.teamA);
+    const normB = norm(pairing.teamB);
+
     // Search matches list for this specific pairing (order-independent)
-    const found = [...matches].reverse().find(m => 
-      (m.teamA === pairing.teamA && m.teamB === pairing.teamB) || 
-      (m.teamA === pairing.teamB && m.teamB === pairing.teamA)
-    );
+    const found = [...matches].reverse().find(m => {
+      const mA = norm(m.teamA);
+      const mB = norm(m.teamB);
+      return (mA === normA && mB === normB) || (mA === normB && mB === normA);
+    });
 
     if (!found) return null;
 
-    const scoreA = found.teamA === pairing.teamA ? parseInt(found.scoreA) : parseInt(found.scoreB);
-    const scoreB = found.teamA === pairing.teamB ? parseInt(found.scoreA) : parseInt(found.scoreB);
+    const isDirectOrder = norm(found.teamA) === normA;
+    const scoreA = isDirectOrder ? parseInt(found.scoreA) : parseInt(found.scoreB);
+    const scoreB = isDirectOrder ? parseInt(found.scoreB) : parseInt(found.scoreA);
     const winner = scoreA > scoreB ? pairing.teamA : (scoreA < scoreB ? pairing.teamB : null);
 
     return {
@@ -53,9 +67,9 @@ const Qualifiers = ({ matches = [], setActiveTab }) => {
   });
 
   const totalPlayed = results.filter(r => r.played).length;
-  const progressPercent = Math.round((totalPlayed / 10) * 100);
+  const progressPercent = Math.round((totalPlayed / QUALIFIER_PAIRINGS.length) * 100);
 
-  // Derby stats specifically for the 10 qualifiers
+  // Derby stats specifically for the 14 qualifiers
   const stats = {
     thinhWins: 0,
     buWins: 0,
@@ -106,7 +120,7 @@ const Qualifiers = ({ matches = [], setActiveTab }) => {
           </div>
           <div className="space-y-3 z-10">
              <div className="flex justify-between items-end">
-                <span className="text-2xl md:text-3xl font-black italic tracking-tighter text-white">{totalPlayed} / 10</span>
+                <span className="text-2xl md:text-3xl font-black italic tracking-tighter text-white">{totalPlayed} / {QUALIFIER_PAIRINGS.length}</span>
                 <span className="text-xs font-bold text-ucl-neon">{progressPercent}% Hoàn thành</span>
              </div>
              <div className="h-2 w-full rounded-full bg-white/5 overflow-hidden flex border border-white/10">
@@ -157,7 +171,7 @@ const Qualifiers = ({ matches = [], setActiveTab }) => {
       <div className="glass-card overflow-hidden border border-white/5">
         <div className="p-4 md:p-6 border-b border-white/5 bg-white/5 flex items-center gap-3">
           <Swords className="text-ucl-neon shrink-0" size={20} />
-          <h3 className="text-xs md:text-sm font-black uppercase tracking-widest text-white">Danh sách 10 trận đấu Vòng Loại</h3>
+          <h3 className="text-xs md:text-sm font-black uppercase tracking-widest text-white">Danh sách 14 trận đại chiến Vòng Loại (THỊNH vs BU)</h3>
         </div>
 
         <div className="table-responsive">
@@ -165,9 +179,9 @@ const Qualifiers = ({ matches = [], setActiveTab }) => {
             <thead>
               <tr className="bg-ucl-blue/20 text-ucl-silver text-[9px] md:text-[10px] uppercase tracking-widest font-black border-b border-white/5">
                 <th className="px-4 md:px-6 py-4 text-center w-16">Trận</th>
-                <th className="px-4 md:px-6 py-4 text-right w-[35%]">Đội Tuyển A (THỊNH)</th>
+                <th className="px-4 md:px-6 py-4 text-right w-[35%]">CLB A (THỊNH)</th>
                 <th className="px-4 py-4 text-center w-32">Tỉ số</th>
-                <th className="px-4 md:px-6 py-4 text-left w-[35%]">Đội Tuyển B (BU)</th>
+                <th className="px-4 md:px-6 py-4 text-left w-[35%]">CLB B (BU)</th>
                 <th className="px-4 py-4 text-center w-28">Trạng thái</th>
                 <th className="px-4 py-4 text-center w-36">Kết quả</th>
               </tr>
