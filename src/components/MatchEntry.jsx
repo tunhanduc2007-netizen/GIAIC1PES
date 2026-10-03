@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sword, Save, User as UserIcon, Shield, Award, Clock, Flame, ShieldAlert, ChevronRight, Search, X } from 'lucide-react';
 import { cn, getTeamLogo } from '../lib/utils';
+import { supabase } from '../lib/supabase';
 import confetti from 'canvas-confetti';
 
 const SearchableSelect = ({ value, onChange, players, placeholder, side }) => {
@@ -181,6 +182,48 @@ const MatchEntry = ({ players, matches, setMatches }) => {
 
     setMatches([...matches, newMatch]);
     
+    // Đồng bộ kết quả vào pes_c1_league_fixtures_official_v5 nếu trận này trùng với cặp đấu trong lịch vòng bảng
+    try {
+      const savedFixtures = localStorage.getItem('pes_c1_league_fixtures_official_v5');
+      if (savedFixtures) {
+        const list = JSON.parse(savedFixtures);
+        let updated = false;
+        const nextList = list.map(f => {
+          if (!f.played && (
+            (f.teamA === (pA?.name || '') && f.teamB === (pB?.name || '')) ||
+            (f.teamA === (pB?.name || '') && f.teamB === (pA?.name || ''))
+          )) {
+            updated = true;
+            const isDirect = f.teamA === (pA?.name || '');
+            return {
+              ...f,
+              played: true,
+              scoreA: isDirect ? parseInt(scoreA) : parseInt(scoreB),
+              scoreB: isDirect ? parseInt(scoreB) : parseInt(scoreA),
+              scorersA: isDirect ? scorersA : scorersB,
+              scorersB: isDirect ? scorersB : scorersA,
+              yellowA: isDirect ? yellowA : yellowB,
+              yellowB: isDirect ? yellowB : yellowA,
+              redA: isDirect ? redA : redB,
+              redB: isDirect ? redB : redA,
+            };
+          }
+          return f;
+        });
+        if (updated) {
+          localStorage.setItem('pes_c1_league_fixtures_official_v5', JSON.stringify(nextList));
+          supabase.from('custom_tables').upsert({
+            id: 'pes_c1_league_fixtures_sync',
+            name: 'Lịch Thi Đấu Vòng Bảng C1',
+            headers: ['fixtures_json'],
+            rows: [[JSON.stringify(nextList)]]
+          }).catch(console.warn);
+        }
+      }
+    } catch(e) {
+      console.warn('Lỗi đồng bộ match entry với fixtures:', e);
+    }
+
     // Play referee whistle sound
     playWhistleSound();
 

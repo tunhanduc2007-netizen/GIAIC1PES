@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { cn, getTeamLogo } from '../lib/utils';
+import { supabase } from '../lib/supabase';
 
 // Danh sách đội Thịnh & Bu
 const THINH_TEAMS = [
@@ -177,10 +178,81 @@ const KnockoutBracket = ({ players = [], matches = [], setMatches, onMatchHistor
     }
   }, [format]);
 
-  // Persist to local storage
+  // Đẩy cây Knock-out lên Supabase Cloud để các máy khác cập nhật
+  const pushBracketToCloud = async (dataToPush) => {
+    if (!dataToPush || !dataToPush.matches) return;
+    try {
+      await supabase.from('custom_tables').upsert({
+        id: 'pes_c1_knockout_bracket_sync',
+        name: 'Cây Knock-out C1 20 Đội',
+        headers: ['bracket_json'],
+        rows: [[JSON.stringify(dataToPush)]]
+      });
+    } catch (e) {
+      console.warn('Lỗi push cloud bracket:', e);
+    }
+  };
+
+  // Đồng bộ Realtime Cây Knock-out từ Cloud giữa các máy
+  useEffect(() => {
+    const fetchCloudBracket = async () => {
+      try {
+        const { data } = await supabase.from('custom_tables').select('*').eq('id', 'pes_c1_knockout_bracket_sync');
+        if (data && data[0]?.rows?.[0]?.[0]) {
+          const remote = JSON.parse(data[0].rows[0][0]);
+          if (remote?.matches && remote.matches.length > 0) {
+            setBracketData(local => {
+              const localPlayed = local.matches.filter(m => m.winner).length;
+              const remotePlayed = remote.matches.filter(m => m.winner).length;
+              if (remotePlayed > localPlayed || JSON.stringify(local) !== JSON.stringify(remote)) {
+                localStorage.setItem('pes_c1_knockout_bracket', JSON.stringify(remote));
+                return remote;
+              }
+              return local;
+            });
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    fetchCloudBracket();
+
+    const channel = supabase
+      .channel('realtime_knockout_bracket_v2')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'custom_tables',
+        filter: 'id=eq.pes_c1_knockout_bracket_sync'
+      }, (payload) => {
+        if (payload.new && payload.new.rows?.[0]?.[0]) {
+          try {
+            const remote = JSON.parse(payload.new.rows[0][0]);
+            if (remote?.matches) {
+              setBracketData(remote);
+              localStorage.setItem('pes_c1_knockout_bracket', JSON.stringify(remote));
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      })
+      .subscribe();
+
+    const timer = setInterval(fetchCloudBracket, 4000);
+
+    return () => {
+      supabase.removeChannel(channel);
+      clearInterval(timer);
+    };
+  }, []);
+
+  // Persist to local storage and push to cloud
   useEffect(() => {
     if (bracketData && bracketData.matches) {
       localStorage.setItem('pes_c1_knockout_bracket', JSON.stringify(bracketData));
+      pushBracketToCloud(bracketData);
     }
   }, [bracketData]);
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Trophy, 
@@ -21,9 +21,12 @@ import {
   Filter,
   Plus,
   Minus,
-  Layers
+  Layers,
+  Cloud,
+  RefreshCw
 } from 'lucide-react';
 import { cn, getTeamLogo } from '../lib/utils';
+import { supabase } from '../lib/supabase';
 import { getClubSquad, addTransferPlayer, removeTransferPlayer } from '../lib/squads';
 
 const THINH_TEAMS = [
@@ -89,6 +92,17 @@ const GroupStage = ({ players = [], matches = [], setMatches, rawPlayers = [], s
   const [showAddPlayerB, setShowAddPlayerB] = useState(false);
   const [squadRefreshKey, setSquadRefreshKey] = useState(0);
 
+  // Thông báo toast thành công
+  const [toastMsg, setToastMsg] = useState(null);
+  const lastLocalSaveTimeRef = useRef(0);
+  const editingFixtureRef = useRef(null);
+  editingFixtureRef.current = editingFixture;
+
+  // Định danh lưu lịch thi đấu C1 trên Supabase Cloud
+  const FIXTURES_SYNC_TABLE_ID = 'pes_c1_league_fixtures_sync';
+  const [isSyncingCloud, setIsSyncingCloud] = useState(false);
+  const [lastSyncedTime, setLastSyncedTime] = useState(null);
+
   // Lịch thi đấu vòng bảng League Phase
   const [fixtures, setFixtures] = useState(() => {
     try {
@@ -103,16 +117,125 @@ const GroupStage = ({ players = [], matches = [], setMatches, rawPlayers = [], s
     return DEFAULT_ROUND_1_FIXTURES;
   });
 
-  // Tự động lưu lịch đấu
+  // Tự động lưu lịch đấu vào LocalStorage
   useEffect(() => {
     localStorage.setItem('pes_c1_league_fixtures_official_v5', JSON.stringify(fixtures));
   }, [fixtures]);
+
+  // Đẩy lịch thi đấu lên Supabase Cloud Database để máy khác nhận được ngay lập tức
+  const pushFixturesToCloud = async (dataToPush) => {
+    if (!dataToPush || dataToPush.length === 0) return;
+    try {
+      setIsSyncingCloud(true);
+      await supabase.from('custom_tables').upsert({
+        id: FIXTURES_SYNC_TABLE_ID,
+        name: 'Lịch Thi Đấu Vòng Bảng C1',
+        headers: ['fixtures_json'],
+        rows: [[JSON.stringify(dataToPush)]]
+      });
+      setLastSyncedTime(new Date().toLocaleTimeString());
+    } catch (e) {
+      console.warn('Lỗi push cloud fixtures:', e);
+    } finally {
+      setIsSyncingCloud(false);
+    }
+  };
+
+  // Kéo lịch thi đấu từ Cloud về (tự động phân giải khi có vòng mới từ máy khác)
+  const fetchCloudFixtures = async () => {
+    // Không đè dữ liệu khi vừa bấm lưu cục bộ trong vòng 5 giây hoặc người dùng đang mở modal nhập tỷ số
+    if (Date.now() - lastLocalSaveTimeRef.current < 5000 || editingFixtureRef.current) {
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('custom_tables')
+        .select('*')
+        .eq('id', FIXTURES_SYNC_TABLE_ID);
+
+      if (data && data.length > 0 && data[0].rows?.[0]?.[0]) {
+        const remote = JSON.parse(data[0].rows[0][0]);
+        if (Array.isArray(remote) && remote.length > 0) {
+          setFixtures(currentLocal => {
+            const localMaxRound = Math.max(...currentLocal.map(f => f.roundNumber || 1), 0);
+            const remoteMaxRound = Math.max(...remote.map(f => f.roundNumber || 1), 0);
+            const localPlayed = currentLocal.filter(f => f.played).length;
+            const remotePlayed = remote.filter(f => f.played).length;
+
+            // Nếu máy hiện tại đang có nhiều vòng hơn hoặc nhiều trận đã hoàn tất hơn -> push lên cloud
+            if (localMaxRound > remoteMaxRound || (localMaxRound === remoteMaxRound && localPlayed > remotePlayed)) {
+              pushFixturesToCloud(currentLocal);
+              return currentLocal;
+            } else if (
+              remoteMaxRound > localMaxRound || 
+              (remoteMaxRound === localMaxRound && remotePlayed > localPlayed) || 
+              (JSON.stringify(currentLocal) !== JSON.stringify(remote) && Date.now() - lastLocalSaveTimeRef.current >= 5000)
+            ) {
+              localStorage.setItem('pes_c1_league_fixtures_official_v5', JSON.stringify(remote));
+              return remote;
+            }
+            return currentLocal;
+          });
+          setLastSyncedTime(new Date().toLocaleTimeString());
+        }
+      } else {
+        // Nếu cloud chưa có, đẩy dữ liệu hiện tại lên
+        setFixtures(currentLocal => {
+          if (currentLocal && currentLocal.length > 0) {
+            pushFixturesToCloud(currentLocal);
+          }
+          return currentLocal;
+        });
+      }
+    } catch (err) {
+      console.warn('Lỗi fetch cloud fixtures:', err);
+    }
+  };
+
+  // Đồng bộ Realtime và tự động kiểm tra giữa các thiết bị
+  useEffect(() => {
+    fetchCloudFixtures();
+
+    const channel = supabase
+      .channel('realtime_group_fixtures_v5')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'custom_tables',
+        filter: `id=eq.${FIXTURES_SYNC_TABLE_ID}`
+      }, (payload) => {
+        if (payload.new && payload.new.rows?.[0]?.[0]) {
+          try {
+            const remote = JSON.parse(payload.new.rows[0][0]);
+            if (Array.isArray(remote) && remote.length > 0) {
+              setFixtures(remote);
+              localStorage.setItem('pes_c1_league_fixtures_official_v5', JSON.stringify(remote));
+              setLastSyncedTime(new Date().toLocaleTimeString());
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      })
+      .subscribe();
+
+    const timer = setInterval(fetchCloudFixtures, 3000);
+    window.addEventListener('focus', fetchCloudFixtures);
+
+    return () => {
+      supabase.removeChannel(channel);
+      clearInterval(timer);
+      window.removeEventListener('focus', fetchCloudFixtures);
+    };
+  }, []);
 
   // Danh sách các số vòng đấu hiện có (Vòng 1, Vòng 2...)
   const roundNumbers = useMemo(() => {
     const list = [...new Set(fixtures.map(f => f.roundNumber || 1))];
     return list.sort((a, b) => a - b);
   }, [fixtures]);
+
 
   // Lấy danh sách đội hình cho 2 đội đang được mở modal (tự động cập nhật khi thêm chuyển nhượng)
   const squadA = useMemo(() => {
@@ -177,6 +300,11 @@ const GroupStage = ({ players = [], matches = [], setMatches, rawPlayers = [], s
     const isA = teamSide === 'A';
     const currentStr = isA ? scorersA : scorersB;
     const setFn = isA ? setScorersA : setScorersB;
+    const currentScore = parseInt(isA ? scoreA : scoreB, 10) || 0;
+    const setScoreFn = isA ? setScoreA : setScoreB;
+
+    // Tự động tăng tỷ số đội lên nếu người dùng thêm người ghi bàn
+    setScoreFn(String(currentScore + 1));
 
     if (!currentStr.trim()) {
       setFn(playerName);
@@ -307,8 +435,10 @@ const GroupStage = ({ players = [], matches = [], setMatches, rawPlayers = [], s
       redB: '',
     }));
 
-    setFixtures(prev => [...prev, ...returnLegMatches]);
+    const nextFixtures = [...fixtures, ...returnLegMatches];
+    setFixtures(nextFixtures);
     setSelectedRoundTab(nextRound);
+    pushFixturesToCloud(nextFixtures);
   };
 
   // Sinh thêm vòng đấu ngẫu nhiên mới
@@ -343,18 +473,22 @@ const GroupStage = ({ players = [], matches = [], setMatches, rawPlayers = [], s
       });
     }
 
-    setFixtures(prev => [...prev, ...newMatches]);
+    const nextFixtures = [...fixtures, ...newMatches];
+    setFixtures(nextFixtures);
     setSelectedRoundTab(nextRound);
+    pushFixturesToCloud(nextFixtures);
   };
 
   // Mở modal nhập tỷ số cho một trận đấu trong lịch
   const openScoreModal = (fixture) => {
     setEditingFixture(fixture);
-    setScoreA(fixture.scoreA !== '' && fixture.scoreA !== undefined ? String(fixture.scoreA) : '');
-    setScoreB(fixture.scoreB !== '' && fixture.scoreB !== undefined ? String(fixture.scoreB) : '');
+    editingFixtureRef.current = fixture;
+    setScoreA(fixture.scoreA !== '' && fixture.scoreA !== undefined && fixture.scoreA !== null ? String(fixture.scoreA) : '0');
+    setScoreB(fixture.scoreB !== '' && fixture.scoreB !== undefined && fixture.scoreB !== null ? String(fixture.scoreB) : '0');
 
     // Kiểm tra xem trận này đã có thông tin bàn thắng / thẻ phạt trước đó chưa
     const existingMatch = matches.find(m => 
+      m.fixtureId === fixture.id ||
       (m.teamA === fixture.teamA && m.teamB === fixture.teamB) ||
       (m.teamA === fixture.teamB && m.teamB === fixture.teamA)
     );
@@ -387,10 +521,13 @@ const GroupStage = ({ players = [], matches = [], setMatches, rawPlayers = [], s
 
   // Lưu tỷ số trận đấu & Cập nhật thẳng vào matches để recalculate bảng xếp hạng
   const handleSaveScore = () => {
-    if (!editingFixture || scoreA === '' || scoreB === '') return;
+    if (!editingFixture) return;
 
-    const sA = parseInt(scoreA, 10);
-    const sB = parseInt(scoreB, 10);
+    // Chuyển đổi an toàn: nếu để trống hoặc không hợp lệ thì mặc định là 0 bàn
+    const sA = isNaN(parseInt(scoreA, 10)) ? 0 : Math.max(0, parseInt(scoreA, 10));
+    const sB = isNaN(parseInt(scoreB, 10)) ? 0 : Math.max(0, parseInt(scoreB, 10));
+
+    lastLocalSaveTimeRef.current = Date.now();
 
     // Cập nhật trạng thái trận đấu trong fixtures
     const updatedFixtures = fixtures.map(f => {
@@ -400,17 +537,19 @@ const GroupStage = ({ players = [], matches = [], setMatches, rawPlayers = [], s
           played: true,
           scoreA: sA,
           scoreB: sB,
-          scorersA: scorersA.trim(),
-          scorersB: scorersB.trim(),
-          yellowA: yellowA.trim(),
-          yellowB: yellowB.trim(),
-          redA: redA.trim(),
-          redB: redB.trim()
+          scorersA: (scorersA || '').trim(),
+          scorersB: (scorersB || '').trim(),
+          yellowA: (yellowA || '').trim(),
+          yellowB: (yellowB || '').trim(),
+          redA: (redA || '').trim(),
+          redB: (redB || '').trim()
         };
       }
       return f;
     });
     setFixtures(updatedFixtures);
+    localStorage.setItem('pes_c1_league_fixtures_official_v5', JSON.stringify(updatedFixtures));
+    pushFixturesToCloud(updatedFixtures);
 
     // Tìm id player tương ứng
     const pA = (rawPlayers.length > 0 ? rawPlayers : players).find(p => p.name === editingFixture.teamA || p.team === editingFixture.teamA);
@@ -418,34 +557,40 @@ const GroupStage = ({ players = [], matches = [], setMatches, rawPlayers = [], s
 
     const matchRecord = {
       id: `match_${editingFixture.id}_${Date.now()}`,
+      fixtureId: editingFixture.id,
       playerAId: pA?.id || editingFixture.ownerA.toLowerCase(),
       playerBId: pB?.id || editingFixture.ownerB.toLowerCase(),
       teamA: editingFixture.teamA,
       teamB: editingFixture.teamB,
       scoreA: sA,
       scoreB: sB,
-      scorersA: scorersA.trim(),
-      scorersB: scorersB.trim(),
-      yellowA: yellowA.trim(),
-      yellowB: yellowB.trim(),
-      redA: redA.trim(),
-      redB: redB.trim(),
+      scorersA: (scorersA || '').trim(),
+      scorersB: (scorersB || '').trim(),
+      yellowA: (yellowA || '').trim(),
+      yellowB: (yellowB || '').trim(),
+      redA: (redA || '').trim(),
+      redB: (redB || '').trim(),
       date: new Date().toISOString(),
       type: 'league'
     };
 
     if (setMatches) {
       setMatches(prev => {
-        // Xóa kết quả cũ của trận này nếu đã từng nhập
-        const filtered = prev.filter(m => !(
-          (m.teamA === editingFixture.teamA && m.teamB === editingFixture.teamB) ||
-          (m.teamA === editingFixture.teamB && m.teamB === editingFixture.teamA)
-        ));
-        return [matchRecord, ...filtered];
+        // Xóa kết quả cũ của trận có cùng fixtureId nếu đã từng nhập
+        const filtered = prev.filter(m => (m.fixtureId ? m.fixtureId !== editingFixture.id : m.id !== `match_${editingFixture.id}`));
+        const nextMatches = [matchRecord, ...filtered];
+        try {
+          localStorage.setItem('pes_matches', JSON.stringify(nextMatches));
+        } catch (e) {}
+        return nextMatches;
       });
     }
 
+    setToastMsg(`⚽ Đã ghi nhận: ${editingFixture.teamA} ${sA} - ${sB} ${editingFixture.teamB} thành công!`);
+    setTimeout(() => setToastMsg(null), 3500);
+
     setEditingFixture(null);
+    editingFixtureRef.current = null;
   };
 
 
@@ -529,6 +674,12 @@ const GroupStage = ({ players = [], matches = [], setMatches, rawPlayers = [], s
     };
 
     localStorage.setItem('pes_c1_knockout_bracket', JSON.stringify(knockoutSetup));
+    supabase.from('custom_tables').upsert({
+      id: 'pes_c1_knockout_bracket_sync',
+      name: 'Cây Knock-out C1 20 Đội',
+      headers: ['bracket_json'],
+      rows: [[JSON.stringify(knockoutSetup)]]
+    }).catch(e => console.error(e));
 
     // Chuyển hướng sang tab Knock-out
     if (setActiveTab) {
@@ -545,7 +696,9 @@ const GroupStage = ({ players = [], matches = [], setMatches, rawPlayers = [], s
     setFixtures(DEFAULT_ROUND_1_FIXTURES);
     setSelectedRoundTab('all');
     localStorage.setItem('pes_c1_league_fixtures_official_v5', JSON.stringify(DEFAULT_ROUND_1_FIXTURES));
+    pushFixturesToCloud(DEFAULT_ROUND_1_FIXTURES);
     localStorage.removeItem('pes_c1_knockout_bracket');
+    supabase.from('custom_tables').delete().eq('id', 'pes_c1_knockout_bracket_sync').catch(e => console.error(e));
     localStorage.setItem('pes_matches', JSON.stringify([]));
     localStorage.setItem('pes_tourney_matches', JSON.stringify([]));
 
@@ -587,6 +740,21 @@ const GroupStage = ({ players = [], matches = [], setMatches, rawPlayers = [], s
 
   return (
     <div className="space-y-6 md:space-y-8">
+      {/* Toast thông báo lưu kết quả thành công */}
+      <AnimatePresence>
+        {toastMsg && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            className="fixed top-20 right-6 z-[100] px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-green-600 text-white font-black text-xs sm:text-sm shadow-[0_0_30px_rgba(34,197,94,0.6)] border border-green-300 flex items-center gap-3 backdrop-blur-xl font-mono"
+          >
+            <CheckCircle2 size={20} className="text-white shrink-0 animate-bounce" />
+            <span>{toastMsg}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Top Banner Header */}
       <div className="glass-card p-6 md:p-8 flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative overflow-hidden">
         <div className="space-y-2 relative z-10 max-w-2xl">
@@ -874,8 +1042,26 @@ const GroupStage = ({ players = [], matches = [], setMatches, rawPlayers = [], s
               })}
             </div>
 
-            {/* Các nút thêm vòng */}
-            <div className="flex items-center gap-2 shrink-0">
+            {/* Các nút thêm vòng & Đồng bộ Cloud */}
+            <div className="flex items-center gap-2 shrink-0 flex-wrap">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsSyncingCloud(true);
+                  fetchCloudFixtures().finally(() => setIsSyncingCloud(false));
+                }}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-bold uppercase tracking-wider font-mono transition-all shadow-md",
+                  isSyncingCloud 
+                    ? "bg-[#00f2ff]/20 text-[#00f2ff] border-[#00f2ff]/50 animate-pulse" 
+                    : "bg-white/5 border-white/15 text-ucl-silver hover:text-white hover:border-[#00f2ff]/40"
+                )}
+                title="Nhấp để đồng bộ lịch thi đấu từ máy khác qua Cloud Supabase"
+              >
+                <RefreshCw size={13} className={cn("text-[#00f2ff]", isSyncingCloud && "animate-spin")} />
+                <span>{isSyncingCloud ? 'Đang sync...' : 'Đồng bộ Cloud'}</span>
+                {lastSyncedTime && <span className="text-[9px] text-white/40 hidden sm:inline">({lastSyncedTime})</span>}
+              </button>
               <button
                 onClick={handleAddReturnLegRound}
                 className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#00f2ff]/20 to-[#0088ff]/20 border border-[#00f2ff]/40 text-xs font-bold uppercase tracking-wider text-white hover:border-[#00f2ff] hover:shadow-[0_0_15px_rgba(0,242,255,0.35)] transition-all shadow-md"
@@ -1161,14 +1347,32 @@ const GroupStage = ({ players = [], matches = [], setMatches, rawPlayers = [], s
                     </div>
                     <div className="flex flex-col items-center gap-1">
                       <span className="text-[9px] font-bold uppercase text-ucl-silver font-mono">BÀN THẮNG</span>
-                      <input
-                        type="number"
-                        min="0"
-                        placeholder="0"
-                        value={scoreA}
-                        onChange={(e) => setScoreA(e.target.value)}
-                        className="w-16 h-14 text-center text-2xl font-black font-mono bg-black/70 border-2 border-[#00f2ff]/50 rounded-2xl text-white focus:border-[#00f2ff] focus:shadow-[0_0_15px_#00f2ff] outline-none"
-                      />
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setScoreA(prev => String(Math.max(0, (parseInt(prev, 10) || 0) - 1)))}
+                          className="w-8 h-10 rounded-lg bg-white/10 hover:bg-white/20 text-white font-bold flex items-center justify-center transition-all active:scale-95"
+                          title="Giảm 1 bàn"
+                        >
+                          <Minus size={14} />
+                        </button>
+                        <input
+                          type="number"
+                          min="0"
+                          placeholder="0"
+                          value={scoreA}
+                          onChange={(e) => setScoreA(e.target.value)}
+                          className="w-14 h-12 text-center text-2xl font-black font-mono bg-black/70 border-2 border-[#00f2ff]/50 rounded-xl text-white focus:border-[#00f2ff] focus:shadow-[0_0_15px_#00f2ff] outline-none"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setScoreA(prev => String((parseInt(prev, 10) || 0) + 1))}
+                          className="w-8 h-10 rounded-lg bg-[#00f2ff]/20 hover:bg-[#00f2ff]/30 text-[#00f2ff] border border-[#00f2ff]/40 font-bold flex items-center justify-center transition-all active:scale-95"
+                          title="Tăng 1 bàn"
+                        >
+                          <Plus size={14} />
+                        </button>
+                      </div>
                     </div>
                   </div>
 
@@ -1188,14 +1392,32 @@ const GroupStage = ({ players = [], matches = [], setMatches, rawPlayers = [], s
                     </div>
                     <div className="flex flex-col items-center gap-1">
                       <span className="text-[9px] font-bold uppercase text-ucl-silver font-mono">BÀN THẮNG</span>
-                      <input
-                        type="number"
-                        min="0"
-                        placeholder="0"
-                        value={scoreB}
-                        onChange={(e) => setScoreB(e.target.value)}
-                        className="w-16 h-14 text-center text-2xl font-black font-mono bg-black/70 border-2 border-[#00f2ff]/50 rounded-2xl text-white focus:border-[#00f2ff] focus:shadow-[0_0_15px_#00f2ff] outline-none"
-                      />
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setScoreB(prev => String(Math.max(0, (parseInt(prev, 10) || 0) - 1)))}
+                          className="w-8 h-10 rounded-lg bg-white/10 hover:bg-white/20 text-white font-bold flex items-center justify-center transition-all active:scale-95"
+                          title="Giảm 1 bàn"
+                        >
+                          <Minus size={14} />
+                        </button>
+                        <input
+                          type="number"
+                          min="0"
+                          placeholder="0"
+                          value={scoreB}
+                          onChange={(e) => setScoreB(e.target.value)}
+                          className="w-14 h-12 text-center text-2xl font-black font-mono bg-black/70 border-2 border-[#00f2ff]/50 rounded-xl text-white focus:border-[#00f2ff] focus:shadow-[0_0_15px_#00f2ff] outline-none"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setScoreB(prev => String((parseInt(prev, 10) || 0) + 1))}
+                          className="w-8 h-10 rounded-lg bg-[#00f2ff]/20 hover:bg-[#00f2ff]/30 text-[#00f2ff] border border-[#00f2ff]/40 font-bold flex items-center justify-center transition-all active:scale-95"
+                          title="Tăng 1 bàn"
+                        >
+                          <Plus size={14} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
