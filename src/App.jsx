@@ -38,7 +38,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as XLSX from 'xlsx';
-import { cn, calculateStandings } from './lib/utils';
+import { cn, calculateStandings, syncLeagueFixturesToMatches } from './lib/utils';
 import { supabase } from './lib/supabase';
 
 // --- COMPONENTS ---
@@ -277,7 +277,7 @@ const App = () => {
           localStorage.setItem('pes_tourney_matches', JSON.stringify(tourneyMatches));
           localStorage.setItem('pes_matches', JSON.stringify(matches));
           localStorage.setItem('pes_custom_tables', JSON.stringify(customTables));
-          localStorage.setItem('pes_tourney_edition', 'c1_pes_28');
+          localStorage.setItem('pes_tourney_edition', 'c1_pes_28_official');
           
           try {
             await Promise.allSettled([
@@ -304,72 +304,55 @@ const App = () => {
       try {
         setIsLoading(true);
 
-        // Kiểm tra phiên bản giải đấu: nếu chưa được làm sạch, xóa sạch dữ liệu mẫu
-        const currentEdition = localStorage.getItem('pes_tourney_edition');
-        const needsReset = currentEdition !== 'c1_pes_28_clean_v4';
+        // Đảm bảo phiên bản giải đấu C1 PES 28 chính thức (không reset xóa dữ liệu của người dùng)
+        localStorage.setItem('pes_tourney_edition', 'c1_pes_28_official');
 
-        if (needsReset) {
-          localStorage.removeItem('pes_players');
-          localStorage.removeItem('pes_matches');
-          localStorage.removeItem('pes_tourney_matches');
-          localStorage.removeItem('pes_custom_tables');
-          localStorage.removeItem('pes_c1_league_fixtures');
-          localStorage.removeItem('pes_c1_knockout_bracket');
-          localStorage.setItem('pes_tourney_edition', 'c1_pes_28_clean_v4');
-          localStorage.setItem('pes_players', JSON.stringify(INITIAL_PLAYERS));
-          localStorage.setItem('pes_matches', JSON.stringify([]));
-          localStorage.setItem('pes_tourney_matches', JSON.stringify([]));
-
-          setPlayers(INITIAL_PLAYERS);
-          setMatches([]);
-          setTourneyMatches([]);
-          setCustomTables([]);
-          setHasLoadedFromCloud(true);
-
-          // Cố gắng dọn sạch trên Cloud nếu có kết nối
-          try {
-            await Promise.race([
-              Promise.allSettled([
-                supabase.from('matches').delete().neq('id', 'clear_all_wc'),
-                supabase.from('tourney_matches').delete().neq('id', 'clear_all_wc'),
-                supabase.from('players').delete().neq('id', 'clear_all_wc'),
-                supabase.from('players').upsert(INITIAL_PLAYERS)
-              ]),
-              new Promise((res) => setTimeout(res, 500))
-            ]);
-          } catch (e) {
-            // ignore cloud error
-          }
-          return;
-        }
-
-        // Tải từ LocalStorage TRƯỚC TIÊN NGAY LẬP TỨC (0ms)
+        // Hàm kiểm tra nếu là dữ liệu World Cup quá cũ (chứa Qatar, Jordan...) thì mới làm sạch
         const isOldData = (list) => Array.isArray(list) && list.some(item => 
           ['qatar', 'jordan', 'uzbekistan', 'iran', 'brazil', 'haiti', 'curaçao', 'dr congo'].includes((item.name || '').toLowerCase())
         );
 
+        // 1. Tải danh sách CLB từ LocalStorage
+        let currentPlayers = INITIAL_PLAYERS;
         const localP = localStorage.getItem('pes_players');
         if (localP) {
           try {
             const parsed = JSON.parse(localP);
-            setPlayers(isOldData(parsed) ? INITIAL_PLAYERS : parsed);
+            currentPlayers = (isOldData(parsed) || !Array.isArray(parsed) || parsed.length === 0) ? INITIAL_PLAYERS : parsed;
           } catch (e) {
-            setPlayers(INITIAL_PLAYERS);
+            currentPlayers = INITIAL_PLAYERS;
           }
-        } else {
-          setPlayers(INITIAL_PLAYERS);
         }
+        setPlayers(currentPlayers);
 
+        // 2. Tải các trận đấu từ LocalStorage
+        let currentMatches = [];
         const localM = localStorage.getItem('pes_matches');
         if (localM) {
           try {
-            setMatches(JSON.parse(localM));
+            const parsedM = JSON.parse(localM);
+            if (Array.isArray(parsedM) && !isOldData(parsedM)) {
+              currentMatches = parsedM;
+            }
           } catch (e) {
-            setMatches(INITIAL_MATCHES);
+            currentMatches = [];
           }
-        } else {
-          setMatches(INITIAL_MATCHES);
         }
+
+        // 3. TỰ ĐỘNG LIÊN KẾT TRỰC TIẾP VỚI CÁC TRẬN ĐÃ ĐẤU TỪ VÒNG BẢNG (GroupStage Fixtures)
+        try {
+          const savedFixtures = localStorage.getItem('pes_c1_league_fixtures_official_v5');
+          if (savedFixtures) {
+            const parsedF = JSON.parse(savedFixtures);
+            if (Array.isArray(parsedF) && parsedF.length > 0) {
+              currentMatches = syncLeagueFixturesToMatches(parsedF, currentPlayers, currentMatches);
+              localStorage.setItem('pes_matches', JSON.stringify(currentMatches));
+            }
+          }
+        } catch (fixtureErr) {
+          console.warn('Lỗi tự động liên kết fixtures vòng bảng sang matches:', fixtureErr);
+        }
+        setMatches(currentMatches);
         
         const localTourney = localStorage.getItem('pes_tourney_matches');
         if (localTourney) {
@@ -409,7 +392,12 @@ const App = () => {
               setPlayers(result[0].value.data);
             }
             if (result[1].status === 'fulfilled' && result[1].value?.data?.length > 0 && !isOldData(result[1].value.data)) {
-              setMatches(result[1].value.data);
+              const cloudMatches = result[1].value.data;
+              // Hợp nhất cloud matches với các trận từ Vòng Bảng
+              setMatches(prev => {
+                const merged = syncLeagueFixturesToMatches([], currentPlayers, [...cloudMatches, ...prev]);
+                return merged;
+              });
             }
             if (result[2].status === 'fulfilled' && result[2].value?.data?.length > 0) {
               setTourneyMatches(result[2].value.data);
@@ -437,6 +425,37 @@ const App = () => {
     return () => clearTimeout(fallbackTimer);
   }, []);
 
+  // Lắng nghe khi fixtures vòng bảng được cập nhật để tự động đồng bộ sang matches
+  useEffect(() => {
+    const handleFixturesUpdated = () => {
+      try {
+        const savedFixtures = localStorage.getItem('pes_c1_league_fixtures_official_v5');
+        if (savedFixtures) {
+          const parsedF = JSON.parse(savedFixtures);
+          if (Array.isArray(parsedF) && parsedF.length > 0) {
+            setMatches(prevMatches => {
+              const curPlayers = players.length > 0 ? players : INITIAL_PLAYERS;
+              const merged = syncLeagueFixturesToMatches(parsedF, curPlayers, prevMatches);
+              try {
+                localStorage.setItem('pes_matches', JSON.stringify(merged));
+              } catch (err) {}
+              return merged;
+            });
+          }
+        }
+      } catch (err) {
+        console.warn('Lỗi cập nhật fixtures vào matches:', err);
+      }
+    };
+
+    window.addEventListener('pes_fixtures_updated', handleFixturesUpdated);
+    window.addEventListener('storage', handleFixturesUpdated);
+    return () => {
+      window.removeEventListener('pes_fixtures_updated', handleFixturesUpdated);
+      window.removeEventListener('storage', handleFixturesUpdated);
+    };
+  }, [players]);
+
   useEffect(() => {
     const handleChangeTab = (e) => {
       const tab = e.detail;
@@ -451,7 +470,18 @@ const App = () => {
   }, []);
 
   const standings = useMemo(() => {
-    const { standings: s, topScorers, topCards } = calculateStandings(players, matches);
+    // Luôn liên kết trực tiếp với lịch đấu Vòng bảng
+    let currentFixtures = null;
+    try {
+      const saved = localStorage.getItem('pes_c1_league_fixtures_official_v5');
+      if (saved) currentFixtures = JSON.parse(saved);
+    } catch (e) {}
+
+    const { standings: s, topScorers, topCards } = calculateStandings(
+      players.length > 0 ? players : INITIAL_PLAYERS, 
+      matches, 
+      currentFixtures
+    );
     return { standings: s, topScorers, topCards };
   }, [players, matches]);
 

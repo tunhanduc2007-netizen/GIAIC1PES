@@ -25,7 +25,7 @@ import {
   Cloud,
   RefreshCw
 } from 'lucide-react';
-import { cn, getTeamLogo } from '../lib/utils';
+import { cn, getTeamLogo, normalizeTeamKey } from '../lib/utils';
 import { supabase } from '../lib/supabase';
 import { getClubSquad, addTransferPlayer, removeTransferPlayer } from '../lib/squads';
 
@@ -173,6 +173,7 @@ const GroupStage = ({ players = [], matches = [], setMatches, rawPlayers = [], s
               (JSON.stringify(currentLocal) !== JSON.stringify(remote) && Date.now() - lastLocalSaveTimeRef.current >= 5000)
             ) {
               localStorage.setItem('pes_c1_league_fixtures_official_v5', JSON.stringify(remote));
+              window.dispatchEvent(new CustomEvent('pes_fixtures_updated', { detail: remote }));
               return remote;
             }
             return currentLocal;
@@ -211,6 +212,7 @@ const GroupStage = ({ players = [], matches = [], setMatches, rawPlayers = [], s
             if (Array.isArray(remote) && remote.length > 0) {
               setFixtures(remote);
               localStorage.setItem('pes_c1_league_fixtures_official_v5', JSON.stringify(remote));
+              window.dispatchEvent(new CustomEvent('pes_fixtures_updated', { detail: remote }));
               setLastSyncedTime(new Date().toLocaleTimeString());
             }
           } catch (e) {
@@ -551,15 +553,21 @@ const GroupStage = ({ players = [], matches = [], setMatches, rawPlayers = [], s
     localStorage.setItem('pes_c1_league_fixtures_official_v5', JSON.stringify(updatedFixtures));
     pushFixturesToCloud(updatedFixtures);
 
-    // Tìm id player tương ứng
-    const pA = (rawPlayers.length > 0 ? rawPlayers : players).find(p => p.name === editingFixture.teamA || p.team === editingFixture.teamA);
-    const pB = (rawPlayers.length > 0 ? rawPlayers : players).find(p => p.name === editingFixture.teamB || p.team === editingFixture.teamB);
+    // Tìm id player tương ứng bằng hàm chuẩn hóa tên đội
+    const findP = (name) => {
+      const norm = normalizeTeamKey(name);
+      return (rawPlayers.length > 0 ? rawPlayers : players).find(p => 
+        normalizeTeamKey(p.name) === norm || normalizeTeamKey(p.team) === norm
+      );
+    };
+    const pA = findP(editingFixture.teamA);
+    const pB = findP(editingFixture.teamB);
 
     const matchRecord = {
       id: `match_${editingFixture.id}_${Date.now()}`,
       fixtureId: editingFixture.id,
-      playerAId: pA?.id || editingFixture.ownerA.toLowerCase(),
-      playerBId: pB?.id || editingFixture.ownerB.toLowerCase(),
+      playerAId: pA?.id || editingFixture.teamA,
+      playerBId: pB?.id || editingFixture.teamB,
       teamA: editingFixture.teamA,
       teamB: editingFixture.teamB,
       scoreA: sA,
@@ -571,6 +579,7 @@ const GroupStage = ({ players = [], matches = [], setMatches, rawPlayers = [], s
       redA: (redA || '').trim(),
       redB: (redB || '').trim(),
       date: new Date().toISOString(),
+      roundNumber: editingFixture.roundNumber || 1,
       type: 'league'
     };
 
@@ -585,6 +594,9 @@ const GroupStage = ({ players = [], matches = [], setMatches, rawPlayers = [], s
         return nextMatches;
       });
     }
+
+    // Phát event để Bảng xếp hạng và toàn bộ app đồng bộ ngay lập tức
+    window.dispatchEvent(new CustomEvent('pes_fixtures_updated', { detail: updatedFixtures }));
 
     setToastMsg(`⚽ Đã ghi nhận: ${editingFixture.teamA} ${sA} - ${sB} ${editingFixture.teamB} thành công!`);
     setTimeout(() => setToastMsg(null), 3500);
@@ -719,13 +731,9 @@ const GroupStage = ({ players = [], matches = [], setMatches, rawPlayers = [], s
   };
 
   const getTeamStats = (teamName) => {
-    const tClean = teamName.trim().toLowerCase();
+    const tNorm = normalizeTeamKey(teamName);
     const found = players.find(p => {
-      const pClean = (p.name || '').trim().toLowerCase();
-      if (pClean === tClean) return true;
-      if (tClean === 'psg' && pClean.includes('paris')) return true;
-      if (pClean === 'psg' && tClean.includes('paris')) return true;
-      return false;
+      return normalizeTeamKey(p.name) === tNorm || normalizeTeamKey(p.team) === tNorm;
     });
     return found || {
       name: teamName,
@@ -876,6 +884,11 @@ const GroupStage = ({ players = [], matches = [], setMatches, rawPlayers = [], s
                 <span className="w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_8px_red]" />
                 Hạng 21 - 28: Bị loại trực tiếp (8 Đội)
               </span>
+            </div>
+            <div className="flex items-center gap-3 text-ucl-silver font-bold border-t sm:border-t-0 sm:border-l border-white/10 pt-2 sm:pt-0 sm:pl-4">
+              <span className="text-green-400">Thắng: +3đ</span>
+              <span className="text-yellow-400">Hòa: +1đ</span>
+              <span className="text-red-400">Thua: 0đ</span>
             </div>
           </div>
 

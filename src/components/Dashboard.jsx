@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Trophy, Sword, Swords, TrendingUp, DollarSign, Target, Activity, Zap, Star, ChevronRight, Sparkles } from 'lucide-react';
-import { cn, getTeamLogo } from '../lib/utils';
+import { cn, getTeamLogo, normalizeTeamKey } from '../lib/utils';
 
 const StatCard = ({ title, value, icon: Icon, color, delay, subValue }) => (
   <motion.div
@@ -31,14 +31,22 @@ const Dashboard = ({ players, matches, standings, topScorers = [], onViewAllMatc
   const topGoalScorer = topScorers[0];
 
   // Rivalry Stats Calculation
-  const getOwner = (playerId) => {
-    const player = players.find(p => String(p.id) === String(playerId));
+  const getOwner = (playerId, teamName) => {
+    const rawId = String(playerId || '').toLowerCase().trim();
+    if (rawId === 'thịnh' || rawId === 'thinh') return 'THỊNH';
+    if (rawId === 'bu') return 'BU';
+    const norm = normalizeTeamKey(teamName || playerId);
+    const player = players.find(p => 
+      String(p.id) === String(playerId) ||
+      normalizeTeamKey(p.name) === norm ||
+      normalizeTeamKey(p.team) === norm
+    );
     return player ? player.owner.toUpperCase() : 'UNKNOWN';
   };
 
   const derbyMatches = matches.filter(match => {
-    const ownerA = getOwner(match.playerAId);
-    const ownerB = getOwner(match.playerBId);
+    const ownerA = getOwner(match.playerAId, match.teamA);
+    const ownerB = getOwner(match.playerBId, match.teamB);
     return (ownerA === 'THỊNH' && ownerB === 'BU') || (ownerA === 'BU' && ownerB === 'THỊNH');
   });
 
@@ -52,9 +60,9 @@ const Dashboard = ({ players, matches, standings, topScorers = [], onViewAllMatc
   };
 
   derbyMatches.forEach(match => {
-    const ownerA = getOwner(match.playerAId);
-    const scoreA = parseInt(match.scoreA) || 0;
-    const scoreB = parseInt(match.scoreB) || 0;
+    const ownerA = getOwner(match.playerAId, match.teamA);
+    const scoreA = parseInt(match.scoreA, 10) || 0;
+    const scoreB = parseInt(match.scoreB, 10) || 0;
 
     if (ownerA === 'THỊNH') {
       derbyStats.thinhGoals += scoreA;

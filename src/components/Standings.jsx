@@ -17,9 +17,10 @@ const Standings = ({ standings = [], topScorers = [], topCards = [] }) => {
           <Trophy className="text-ucl-neon shrink-0" size={24} />
           <h3 className="text-base md:text-xl font-bold italic tracking-tighter uppercase font-bebas">BẢNG XẾP HẠNG <span className="text-ucl-neon font-bebas">UEFA CHAMPIONS LEAGUE C1</span></h3>
         </div>
-        <div className="flex items-center gap-4 text-[8px] md:text-xs font-bold text-ucl-silver uppercase tracking-widest font-montserrat">
-          <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-green-500" /> Thắng +3đ</span>
-          <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-yellow-500" /> Hòa +1đ</span>
+        <div className="flex items-center gap-3 md:gap-4 text-[8px] md:text-xs font-bold text-ucl-silver uppercase tracking-widest font-montserrat">
+          <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" /> Thắng +3đ</span>
+          <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.6)]" /> Hòa +1đ</span>
+          <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]" /> Thua 0đ</span>
         </div>
       </div>
 
